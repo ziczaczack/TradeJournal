@@ -23,21 +23,6 @@ export interface EconomicEventWithTimestamp extends EconomicEvent {
 }
 
 // ============================================
-// API Configuration
-// ============================================
-
-const FMP_BASE_URL = 'https://financialmodelingprep.com/api/v3';
-
-function getApiKey(): string {
-    const apiKey = process.env.NEXT_PUBLIC_FMP_API_KEY;
-    if (!apiKey) {
-        console.warn('NEXT_PUBLIC_FMP_API_KEY not set - economic calendar will be unavailable');
-        return '';
-    }
-    return apiKey;
-}
-
-// ============================================
 // Data Fetching
 // ============================================
 
@@ -50,17 +35,12 @@ export async function fetchEconomicCalendar(
     startDate: string,
     endDate: string
 ): Promise<EconomicEvent[]> {
-    const apiKey = getApiKey();
-    if (!apiKey) {
-        return [];
-    }
-
     try {
-        const url = `${FMP_BASE_URL}/economic_calendar?from=${startDate}&to=${endDate}&apikey=${apiKey}`;
+        const url = `/api/economic-calendar?from=${startDate}&to=${endDate}`;
         const response = await fetch(url);
 
         if (!response.ok) {
-            console.error('FMP API error:', response.status, response.statusText);
+            console.error('API error:', response.status, response.statusText);
             return [];
         }
 

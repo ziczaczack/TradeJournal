@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import {
     Select,
     SelectContent,
@@ -20,6 +21,13 @@ interface TradeListProps {
     selectedTradeId?: string;
 }
 
+// 虚拟化阈值：超过此数量启用虚拟滚动
+const VIRTUALIZATION_THRESHOLD = 100;
+// 预估行高 (px)
+const ESTIMATED_ROW_HEIGHT = 72;
+// 列表最大高度 (px)
+const MAX_LIST_HEIGHT = 600;
+
 export function TradeList({
     trades,
     symbols,
@@ -29,6 +37,7 @@ export function TradeList({
 }: TradeListProps) {
     const [symbolFilter, setSymbolFilter] = useState<string>('all');
     const [setupTypeFilter, setSetupTypeFilter] = useState<string>('all');
+    const parentRef = useRef<HTMLDivElement>(null);
 
     // Filter trades based on selections
     const filteredTrades = useMemo(() => {
@@ -41,6 +50,17 @@ export function TradeList({
             return matchesSymbol && matchesSetup;
         });
     }, [trades, symbolFilter, setupTypeFilter]);
+
+    // 是否需要虚拟化
+    const shouldVirtualize = filteredTrades.length > VIRTUALIZATION_THRESHOLD;
+
+    // 虚拟化配置
+    const virtualizer = useVirtualizer({
+        count: filteredTrades.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => ESTIMATED_ROW_HEIGHT,
+        overscan: 5, // 预渲染 5 个额外项以提升滚动体验
+    });
 
     return (
         <div className="space-y-4">
@@ -82,17 +102,59 @@ export function TradeList({
 
                 <div className="ml-auto text-sm text-zinc-500">
                     Showing {filteredTrades.length} of {trades.length} trades
+                    {shouldVirtualize && (
+                        <span className="ml-2 text-blue-400">(virtualized)</span>
+                    )}
                 </div>
             </div>
 
             {/* Trade List */}
-            <div className="space-y-2">
-                {filteredTrades.length === 0 ? (
-                    <div className="text-center py-12 text-zinc-500">
-                        <p>No trades found</p>
+            {filteredTrades.length === 0 ? (
+                <div className="text-center py-12 text-zinc-500">
+                    <p>No trades found</p>
+                </div>
+            ) : shouldVirtualize ? (
+                /* 虚拟化列表 - 大数据量 */
+                <div
+                    ref={parentRef}
+                    className="overflow-auto"
+                    style={{ maxHeight: MAX_LIST_HEIGHT }}
+                >
+                    <div
+                        style={{
+                            height: `${virtualizer.getTotalSize()}px`,
+                            width: '100%',
+                            position: 'relative',
+                        }}
+                    >
+                        {virtualizer.getVirtualItems().map((virtualRow) => {
+                            const trade = filteredTrades[virtualRow.index];
+                            return (
+                                <div
+                                    key={trade.id}
+                                    style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        width: '100%',
+                                        transform: `translateY(${virtualRow.start}px)`,
+                                    }}
+                                >
+                                    <TradeListItem
+                                        trade={trade}
+                                        isSelected={trade.id === selectedTradeId}
+                                        onClick={() => onSelectTrade(trade)}
+                                        index={virtualRow.index}
+                                    />
+                                </div>
+                            );
+                        })}
                     </div>
-                ) : (
-                    filteredTrades.map((trade, index) => (
+                </div>
+            ) : (
+                /* 常规列表 - 小数据量 */
+                <div className="space-y-2">
+                    {filteredTrades.map((trade, index) => (
                         <TradeListItem
                             key={trade.id}
                             trade={trade}
@@ -100,9 +162,9 @@ export function TradeList({
                             onClick={() => onSelectTrade(trade)}
                             index={index}
                         />
-                    ))
-                )}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

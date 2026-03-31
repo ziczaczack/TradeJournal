@@ -1,27 +1,47 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { processTradovateCSV, ParseResult } from '@/lib/processTradovateCSV';
 import { insertTrades, InsertResult } from '@/lib/insertTrades';
+import { useAccount } from '@/components/providers/AccountContext';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Building2, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
 
 interface FileUploaderProps {
-    userId?: string | null;  // Optional - will import without user association if not provided
+    userId: string;  // Required - must be authenticated to upload
     onUploadComplete?: (result: InsertResult) => void;
 }
 
-type UploadState = 'idle' | 'parsing' | 'uploading' | 'success' | 'error';
+type UploadState = 'idle' | 'selecting-account' | 'parsing' | 'uploading' | 'success' | 'error';
 
 export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
+    const { accounts, currentAccount, isLoading: accountsLoading } = useAccount();
     const [state, setState] = useState<UploadState>('idle');
     const [progress, setProgress] = useState(0);
     const [parseResult, setParseResult] = useState<ParseResult | null>(null);
     const [uploadResult, setUploadResult] = useState<InsertResult | null>(null);
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [isDragOver, setIsDragOver] = useState(false);
+    const [selectedAccountId, setSelectedAccountId] = useState<string>('');
+    const [pendingFile, setPendingFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Initialize selected account from current account
+    useEffect(() => {
+        if (currentAccount && !selectedAccountId) {
+            setSelectedAccountId(currentAccount.id);
+        }
+    }, [currentAccount, selectedAccountId]);
 
     const resetState = () => {
         setState('idle');
@@ -29,9 +49,10 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
         setParseResult(null);
         setUploadResult(null);
         setErrorMessage('');
+        setPendingFile(null);
     };
 
-    const handleFile = useCallback(async (file: File) => {
+    const handleFileSelected = useCallback((file: File) => {
         // Validate file type
         if (!file.name.endsWith('.csv')) {
             setErrorMessage('Please upload a CSV file');
@@ -46,12 +67,37 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
             return;
         }
 
+        // Store file and show account selection
+        setPendingFile(file);
+        setState('selecting-account');
+    }, []);
+
+    const processFile = useCallback(async () => {
+        // Validate userId is present (security check)
+        if (!userId) {
+            setErrorMessage('Authentication required. Please sign in to upload trades.');
+            setState('error');
+            return;
+        }
+
+        if (!selectedAccountId) {
+            setErrorMessage('Please select an account to import trades into.');
+            setState('error');
+            return;
+        }
+
+        if (!pendingFile) {
+            setErrorMessage('No file selected.');
+            setState('error');
+            return;
+        }
+
         try {
             // Step 1: Parse CSV
             setState('parsing');
             setProgress(20);
 
-            const text = await file.text();
+            const text = await pendingFile.text();
             const result = processTradovateCSV(text);
             setParseResult(result);
             setProgress(50);
@@ -62,11 +108,11 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
                 return;
             }
 
-            // Step 2: Upload to Supabase
+            // Step 2: Upload to Supabase with selected account
             setState('uploading');
             setProgress(70);
 
-            const insertResult = await insertTrades(result.data, userId);
+            const insertResult = await insertTrades(result.data, userId, selectedAccountId);
             setUploadResult(insertResult);
             setProgress(100);
 
@@ -82,14 +128,14 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
             setErrorMessage(err instanceof Error ? err.message : 'An unknown error occurred');
             setState('error');
         }
-    }, [userId, onUploadComplete]);
+    }, [userId, selectedAccountId, pendingFile, onUploadComplete]);
 
     const handleDrop = useCallback((e: React.DragEvent) => {
         e.preventDefault();
         setIsDragOver(false);
         const file = e.dataTransfer.files[0];
-        if (file) handleFile(file);
-    }, [handleFile]);
+        if (file) handleFileSelected(file);
+    }, [handleFileSelected]);
 
     const handleDragOver = useCallback((e: React.DragEvent) => {
         e.preventDefault();
@@ -101,10 +147,10 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
         setIsDragOver(false);
     }, []);
 
-    const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) handleFile(file);
-    }, [handleFile]);
+        if (file) handleFileSelected(file);
+    }, [handleFileSelected]);
 
     const handleClick = () => {
         fileInputRef.current?.click();
@@ -139,7 +185,7 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
                             ref={fileInputRef}
                             type="file"
                             accept=".csv"
-                            onChange={handleFileSelect}
+                            onChange={handleFileInputChange}
                             className="hidden"
                         />
                         <div className="space-y-4">
@@ -156,6 +202,94 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
                                 Supports Tradovate Performance Report format (max 10MB)
                             </p>
                         </div>
+                    </div>
+                )}
+
+                {/* Account Selection Step */}
+                {state === 'selecting-account' && (
+                    <div className="space-y-6 py-4">
+                        <div className="text-center mb-6">
+                            <div className="text-4xl mb-4">📋</div>
+                            <p className="text-lg font-medium text-white">
+                                Select Target Account
+                            </p>
+                            <p className="text-sm text-zinc-400 mt-1">
+                                Choose which account to import {pendingFile?.name} into
+                            </p>
+                        </div>
+
+                        {accounts.length === 0 ? (
+                            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+                                <div className="flex items-center gap-3">
+                                    <AlertCircle className="w-5 h-5 text-yellow-500" />
+                                    <div>
+                                        <p className="text-sm font-medium text-yellow-400">
+                                            No accounts found
+                                        </p>
+                                        <p className="text-xs text-zinc-400 mt-1">
+                                            Please create an account first to import trades.
+                                        </p>
+                                    </div>
+                                </div>
+                                <Link href="/settings/accounts">
+                                    <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-500">
+                                        <Building2 className="w-4 h-4 mr-2" />
+                                        Create Account
+                                    </Button>
+                                </Link>
+                            </div>
+                        ) : (
+                            <>
+                                <div>
+                                    <label className="text-sm text-zinc-400 mb-2 block">
+                                        Import to Account
+                                    </label>
+                                    <Select
+                                        value={selectedAccountId}
+                                        onValueChange={setSelectedAccountId}
+                                    >
+                                        <SelectTrigger className="w-full bg-zinc-800 border-zinc-700 text-white">
+                                            <SelectValue placeholder="Select an account" />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-zinc-900 border-zinc-700">
+                                            {accounts.map((account) => (
+                                                <SelectItem
+                                                    key={account.id}
+                                                    value={account.id}
+                                                    className="text-zinc-200 focus:bg-zinc-800 focus:text-white"
+                                                >
+                                                    <div className="flex flex-col items-start">
+                                                        <span>{account.account_name}</span>
+                                                        {account.broker_name && (
+                                                            <span className="text-xs text-zinc-500">
+                                                                {account.broker_name}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <Button
+                                        variant="outline"
+                                        className="flex-1 border-zinc-700"
+                                        onClick={resetState}
+                                    >
+                                        Cancel
+                                    </Button>
+                                    <Button
+                                        className="flex-1 bg-blue-600 hover:bg-blue-500"
+                                        onClick={processFile}
+                                        disabled={!selectedAccountId}
+                                    >
+                                        Import Trades
+                                    </Button>
+                                </div>
+                            </>
+                        )}
                     </div>
                 )}
 

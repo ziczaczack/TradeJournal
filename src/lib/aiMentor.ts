@@ -37,6 +37,14 @@ export interface TradeDataForAI {
     isWin: boolean;
 }
 
+export interface EconomicEventForAI {
+    time: string;           // UTC time
+    country: string;        // Currency code
+    event: string;          // Event name
+    impact: string;         // High/Medium/Low
+    relativeToTrade: string; // e.g., "-15min", "+2h"
+}
+
 // ============================================
 // Groq Client
 // ============================================
@@ -70,6 +78,10 @@ const ASK_MENTOR_SYSTEM_PROMPT = `你是一位资深的 ICT/SMC 交易教练，�
 2. 引用具体的交易数据作为依据
 3. 给出实际可行的改进建议
 4. 保持专业但具有启发性的语气
+5. 如果提供了财经日历数据，分析交易时机与重大新闻的关系：
+   - 在重要数据发布（如CPI、NFP、利率决议）前入场可能是赌博行为
+   - 在重大新闻后立即追涨杀跌可能过于冒险
+   - 评估交易者是否有意识地规避或利用新闻事件
 
 使用 Markdown 格式输出。`;
 
@@ -338,7 +350,8 @@ ${emotionWarnings.length > 0
 export async function askMentor(
     question: string,
     trades: Trade[],
-    specificDate?: string
+    specificDate?: string,
+    economicEvents?: EconomicEventForAI[]
 ): Promise<AskMentorResult> {
     const groq = getGroqClient();
 
@@ -354,12 +367,23 @@ export async function askMentor(
     const serializedTrades = serializeTradesForAI(relevantTrades);
     const summary = generateTradeSummary(relevantTrades);
 
+    // Build economic events section if provided
+    const economicEventsSection = economicEvents && economicEvents.length > 0
+        ? `
+## 相关财经日历事件
+以下是交易入场前后±1小时内的重要经济事件：
+\`\`\`json
+${JSON.stringify(economicEvents, null, 2)}
+\`\`\`
+`
+        : '';
+
     const userMessage = `
 ## 交易背景
 ${summary}
 
 ${specificDate ? `## 指定日期: ${specificDate}` : ''}
-
+${economicEventsSection}
 ## 交易数据
     \`\`\`json
 ${JSON.stringify(serializedTrades.slice(0, 20), null, 2)}

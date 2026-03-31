@@ -13,9 +13,11 @@ import { SkeletonCalendar, SkeletonTradeList, SkeletonStatsGrid } from '@/compon
 import { EmptyState, EMPTY_STATE_MESSAGES } from '@/components/ui/EmptyState';
 import { fetchTradesByMonth, Trade } from '@/lib/tradeQueries';
 import { formatPnL } from '@/lib/tradeStats';
+import { useAccount } from '@/components/providers/AccountContext';
 import { CalendarDays, X } from 'lucide-react';
 
 export default function CalendarPage() {
+    const { currentAccount, isLoading: accountLoading } = useAccount();
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<Date | null>(null);
     const [trades, setTrades] = useState<Trade[]>([]);
@@ -24,14 +26,21 @@ export default function CalendarPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Fetch trades for current month
+    // Fetch trades for current month (filtered by account)
     const loadMonthData = useCallback(async () => {
+        if (!currentAccount?.id) {
+            setTrades([]);
+            setIsLoading(false);
+            return;
+        }
+
         try {
             setIsLoading(true);
             setError(null);
             const data = await fetchTradesByMonth(
                 currentMonth.getFullYear(),
-                currentMonth.getMonth()
+                currentMonth.getMonth(),
+                currentAccount.id
             );
             setTrades(data);
         } catch (err) {
@@ -40,11 +49,13 @@ export default function CalendarPage() {
         } finally {
             setIsLoading(false);
         }
-    }, [currentMonth]);
+    }, [currentMonth, currentAccount?.id]);
 
     useEffect(() => {
-        loadMonthData();
-    }, [loadMonthData]);
+        if (!accountLoading) {
+            loadMonthData();
+        }
+    }, [loadMonthData, accountLoading]);
 
     // Filter trades by selected date (memoized for performance)
     const filteredTrades = useMemo(() => {
@@ -217,8 +228,8 @@ export default function CalendarPage() {
                                             </span>
                                             <span
                                                 className={`text-lg font-bold ${daySummary.totalPnL >= 0
-                                                        ? 'text-gradient-profit profit-glow'
-                                                        : 'text-gradient-loss loss-glow'
+                                                    ? 'text-gradient-profit profit-glow'
+                                                    : 'text-gradient-loss loss-glow'
                                                     }`}
                                             >
                                                 {daySummary.formatted.text}

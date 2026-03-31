@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -9,46 +9,31 @@ import { StatsCards } from '@/components/dashboard/StatsCards';
 import { TradeList } from '@/components/dashboard/TradeList';
 import { TradeDetailSheet } from '@/components/dashboard/TradeDetailSheet';
 import { SkeletonStatsGrid, SkeletonTradeList } from '@/components/ui/Skeleton';
-import { fetchTrades, fetchFilterOptions, Trade } from '@/lib/tradeQueries';
+import { Trade } from '@/lib/tradeQueries';
 import { calculateStats, TradeStats } from '@/lib/tradeStats';
+import { useTradesForCurrentAccount, useFilterOptions, useInvalidateTrades } from '@/hooks/useTrades';
 import { ListFilter, RefreshCw } from 'lucide-react';
 
 export default function HistoryPage() {
-    const [trades, setTrades] = useState<Trade[]>([]);
-    const [stats, setStats] = useState<TradeStats | null>(null);
-    const [symbols, setSymbols] = useState<string[]>([]);
-    const [setupTypes, setSetupTypes] = useState<string[]>([]);
     const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
 
-    // Fetch all data
-    const loadData = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            setError(null);
+    // 使用 TanStack Query 获取数据 (自动按账户过滤)
+    const { data: trades = [], isLoading: isLoadingTrades, error: tradesError, refetch } = useTradesForCurrentAccount();
+    const { data: filterOptions, isLoading: isLoadingFilters } = useFilterOptions();
+    const invalidateTrades = useInvalidateTrades();
 
-            const [tradesData, filterOptions] = await Promise.all([
-                fetchTrades(),
-                fetchFilterOptions(),
-            ]);
+    const isLoading = isLoadingTrades || isLoadingFilters;
+    const error = tradesError ? 'Failed to load trades. Please check your Supabase connection.' : null;
 
-            setTrades(tradesData);
-            setStats(calculateStats(tradesData));
-            setSymbols(filterOptions.symbols);
-            setSetupTypes(filterOptions.setupTypes);
-        } catch (err) {
-            console.error('Failed to load trades:', err);
-            setError('Failed to load trades. Please check your Supabase connection.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+    // 使用 useMemo 缓存统计计算
+    const stats = useMemo<TradeStats | null>(() => {
+        if (trades.length === 0) return null;
+        return calculateStats(trades);
+    }, [trades]);
 
-    useEffect(() => {
-        loadData();
-    }, [loadData]);
+    const symbols = filterOptions?.symbols ?? [];
+    const setupTypes = filterOptions?.setupTypes ?? [];
 
     const handleSelectTrade = (trade: Trade) => {
         setSelectedTrade(trade);
@@ -56,18 +41,13 @@ export default function HistoryPage() {
     };
 
     const handleUpdateTrade = (updatedTrade: Trade) => {
-        // Update trade in the list
-        setTrades((prev) =>
-            prev.map((t) => (t.id === updatedTrade.id ? updatedTrade : t))
-        );
-        // Recalculate stats
-        setStats(calculateStats(trades.map((t) =>
-            t.id === updatedTrade.id ? updatedTrade : t
-        )));
-        // Update filter options if setup_type changed
-        if (updatedTrade.setup_type && !setupTypes.includes(updatedTrade.setup_type)) {
-            setSetupTypes((prev) => [...prev, updatedTrade.setup_type!]);
-        }
+        // 使缓存失效，触发重新获取
+        invalidateTrades();
+        setSelectedTrade(updatedTrade);
+    };
+
+    const handleRefresh = () => {
+        refetch();
     };
 
     return (
@@ -91,7 +71,7 @@ export default function HistoryPage() {
                 >
                     <Button
                         variant="outline"
-                        onClick={loadData}
+                        onClick={handleRefresh}
                         disabled={isLoading}
                         className="bg-zinc-900/50 border-zinc-700 hover:bg-zinc-800 btn-scale"
                     >

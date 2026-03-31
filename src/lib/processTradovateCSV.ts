@@ -90,7 +90,8 @@ function parseTimestamp(timestampStr: string | null | undefined): string | null 
 
     const [, month, day, year, hours, minutes, seconds] = match;
 
-    const date = new Date(
+    // 使用 Date.UTC 确保时间戳以 UTC 存储，不受客户端时区影响
+    const utcMillis = Date.UTC(
         parseInt(year, 10),
         parseInt(month, 10) - 1,
         parseInt(day, 10),
@@ -98,6 +99,7 @@ function parseTimestamp(timestampStr: string | null | undefined): string | null 
         parseInt(minutes, 10),
         parseInt(seconds, 10)
     );
+    const date = new Date(utcMillis);
 
     if (isNaN(date.getTime())) {
         console.warn(`Invalid date created from: "${timestampStr}"`);

@@ -22,6 +22,15 @@ import { Badge } from '@/components/ui/badge';
 import { Trade, updateTrade } from '@/lib/tradeQueries';
 import { ScreenshotUploader } from '@/components/ScreenshotUploader';
 import { formatPnL } from '@/lib/tradeStats';
+import { RelatedEconomicEvents } from './RelatedEconomicEvents';
+import { PlaybookSetup, fetchPlaybookSetups } from '@/lib/playbookQueries';
+import dynamic from 'next/dynamic';
+
+// Load chart client-side only (uses browser APIs)
+const TradingChart = dynamic(
+    () => import('@/components/TradingChart').then(m => m.TradingChart),
+    { ssr: false }
+);
 
 interface TradeDetailSheetProps {
     trade: Trade | null;
@@ -65,6 +74,20 @@ export function TradeDetailSheet({
     const [notes, setNotes] = useState<string>('');
     const [screenshotUrl, setScreenshotUrl] = useState<string>('');
     const [isSaving, setIsSaving] = useState(false);
+    const [playbookSetups, setPlaybookSetups] = useState<PlaybookSetup[]>([]);
+
+    // Fetch setups from playbook
+    useEffect(() => {
+        const loadSetups = async () => {
+            try {
+                const data = await fetchPlaybookSetups();
+                setPlaybookSetups(data);
+            } catch (err) {
+                console.error('Failed to load playbook setups:', err);
+            }
+        };
+        loadSetups();
+    }, []);
 
     // Reset form when trade changes
     useEffect(() => {
@@ -127,69 +150,101 @@ export function TradeDetailSheet({
 
     return (
         <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <SheetContent className="w-[400px] sm:w-[540px] bg-slate-900 border-slate-700 overflow-y-auto">
-                <SheetHeader>
+            <SheetContent className="w-[400px] sm:w-[540px] glass-card border-zinc-800/50 overflow-y-auto">
+                <SheetHeader className="pb-4 border-b border-zinc-800/50">
                     <SheetTitle className="flex items-center gap-3">
-                        <Badge variant="outline" className="text-lg px-3 py-1">
+                        <Badge
+                            variant="outline"
+                            className="text-lg px-3 py-1 bg-zinc-800/50 border-zinc-700 text-white font-mono"
+                        >
                             {trade.symbol}
                         </Badge>
                         <span
-                            className={`text-xl font-bold ${pnlFormatted.isPositive ? 'text-green-400' : 'text-red-400'
+                            className={`text-xl font-bold font-mono ${pnlFormatted.isPositive
+                                ? 'text-emerald-400'
+                                : 'text-rose-400'
                                 }`}
                         >
                             {pnlFormatted.text}
                         </span>
                     </SheetTitle>
-                    <SheetDescription className="text-slate-400">
+                    <SheetDescription className="text-zinc-500">
                         Review and annotate this trade
                     </SheetDescription>
                 </SheetHeader>
 
                 <div className="mt-6 space-y-6">
                     {/* Read-only Trade Info */}
-                    <div className="grid grid-cols-2 gap-4 p-4 bg-slate-800/50 rounded-lg">
+                    <div className="grid grid-cols-2 gap-4 p-4 bg-zinc-900/50 rounded-xl border border-zinc-800/50">
                         <div>
-                            <p className="text-xs text-slate-500">Entry</p>
-                            <p className="text-sm text-white">{formatTime(trade.entry_time)}</p>
+                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Entry</p>
+                            <p className="text-sm text-zinc-200 font-medium">{formatTime(trade.entry_time)}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-slate-500">Exit</p>
-                            <p className="text-sm text-white">{formatTime(trade.exit_time)}</p>
+                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Exit</p>
+                            <p className="text-sm text-zinc-200 font-medium">{formatTime(trade.exit_time)}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-slate-500">Quantity</p>
-                            <p className="text-sm text-white">{trade.quantity || '-'}</p>
+                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Quantity</p>
+                            <p className="text-sm text-zinc-200 font-medium font-mono">{trade.quantity || '-'}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-slate-500">Duration</p>
-                            <p className="text-sm text-white">{trade.duration || '-'}</p>
+                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Duration</p>
+                            <p className="text-sm text-zinc-200 font-medium">{trade.duration || '-'}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-slate-500">Buy Price</p>
-                            <p className="text-sm text-white">${trade.buy_price?.toFixed(2) || '-'}</p>
+                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Buy Price</p>
+                            <p className="text-sm text-zinc-200 font-medium font-mono">${trade.buy_price?.toFixed(2) || '-'}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-slate-500">Sell Price</p>
-                            <p className="text-sm text-white">${trade.sell_price?.toFixed(2) || '-'}</p>
+                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Sell Price</p>
+                            <p className="text-sm text-zinc-200 font-medium font-mono">${trade.sell_price?.toFixed(2) || '-'}</p>
                         </div>
                     </div>
 
+                    {/* K-Line Chart — temporarily disabled.
+                        Yahoo Finance does not support CME continuous contracts (e.g. MNQ1!).
+                        Re-enable when a compatible data source is available.
+                    {trade.symbol && trade.entry_time && (
+                        <div>
+                            <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Chart</p>
+                            <TradingChart
+                                symbol={trade.symbol}
+                                entryTime={trade.entry_time}
+                                exitTime={trade.exit_time}
+                                entryPrice={trade.buy_price ?? undefined}
+                                exitPrice={trade.sell_price ?? undefined}
+                                pnl={trade.pnl}
+                            />
+                        </div>
+                    )} */}
+
+                    {/* Economic Context - Events around trade entry */}
+                    <RelatedEconomicEvents entryTime={trade.entry_time} />
+
                     {/* Editable Fields */}
                     <div className="space-y-4">
-                        <h3 className="text-sm font-medium text-slate-300 border-b border-slate-700 pb-2">
-                            📝 Trade Review
+                        <h3 className="text-sm font-semibold text-zinc-300 border-b border-zinc-800/50 pb-2 flex items-center gap-2">
+                            <span className="w-6 h-6 rounded-lg bg-blue-500/20 flex items-center justify-center text-xs">📝</span>
+                            Trade Review
                         </h3>
 
                         {/* Setup Type */}
                         <div className="space-y-2">
-                            <label className="text-sm text-slate-400">Setup Type</label>
+                            <label className="text-sm text-zinc-400 font-medium">Setup Type</label>
                             <Select value={setupType} onValueChange={setSetupType}>
-                                <SelectTrigger className="bg-slate-800 border-slate-700">
+                                <SelectTrigger className="bg-zinc-900/50 border-zinc-700/50 hover:border-zinc-600 transition-colors focus:ring-blue-500/30">
                                     <SelectValue placeholder="Select setup..." />
                                 </SelectTrigger>
-                                <SelectContent className="bg-slate-800 border-slate-700">
+                                <SelectContent className="bg-zinc-900 border-zinc-700">
                                     <SelectItem value="__none__">None</SelectItem>
-                                    {SETUP_TYPES.map((s) => (
+                                    {playbookSetups.map((s) => (
+                                        <SelectItem key={s.id} value={s.name}>
+                                            {s.name}
+                                        </SelectItem>
+                                    ))}
+                                    {/* Fallback to static ones if playbook is empty, for better UX */}
+                                    {playbookSetups.length === 0 && SETUP_TYPES.map((s) => (
                                         <SelectItem key={s} value={s}>
                                             {s}
                                         </SelectItem>
@@ -200,27 +255,31 @@ export function TradeDetailSheet({
 
                         {/* Valid Setup */}
                         <div className="space-y-2">
-                            <label className="text-sm text-slate-400">Valid Setup?</label>
+                            <label className="text-sm text-zinc-400 font-medium">Valid Setup?</label>
                             <Select value={isValidSetup} onValueChange={setIsValidSetup}>
-                                <SelectTrigger className="bg-slate-800 border-slate-700">
+                                <SelectTrigger className="bg-zinc-900/50 border-zinc-700/50 hover:border-zinc-600 transition-colors focus:ring-blue-500/30">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-slate-800 border-slate-700">
+                                <SelectContent className="bg-zinc-900 border-zinc-700">
                                     <SelectItem value="null">Not Reviewed</SelectItem>
-                                    <SelectItem value="true">✓ Yes, Valid Setup</SelectItem>
-                                    <SelectItem value="false">✗ No, Invalid Setup</SelectItem>
+                                    <SelectItem value="true">
+                                        <span className="text-emerald-400">✓</span> Yes, Valid Setup
+                                    </SelectItem>
+                                    <SelectItem value="false">
+                                        <span className="text-rose-400">✗</span> No, Invalid Setup
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
 
                         {/* Psychology Tag */}
                         <div className="space-y-2">
-                            <label className="text-sm text-slate-400">Psychology Tag</label>
+                            <label className="text-sm text-zinc-400 font-medium">Psychology Tag</label>
                             <Select value={psychologyTag} onValueChange={setPsychologyTag}>
-                                <SelectTrigger className="bg-slate-800 border-slate-700">
+                                <SelectTrigger className="bg-zinc-900/50 border-zinc-700/50 hover:border-zinc-600 transition-colors focus:ring-blue-500/30">
                                     <SelectValue placeholder="How were you feeling?" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-slate-800 border-slate-700">
+                                <SelectContent className="bg-zinc-900 border-zinc-700">
                                     <SelectItem value="__none__">None</SelectItem>
                                     {PSYCHOLOGY_TAGS.map((tag) => (
                                         <SelectItem key={tag} value={tag}>
@@ -233,14 +292,16 @@ export function TradeDetailSheet({
 
                         {/* Rating */}
                         <div className="space-y-2">
-                            <label className="text-sm text-slate-400">Rating (1-5)</label>
-                            <div className="flex gap-2">
+                            <label className="text-sm text-zinc-400 font-medium">Rating</label>
+                            <div className="flex items-center gap-1 p-2 bg-zinc-900/30 rounded-lg w-fit">
                                 {[1, 2, 3, 4, 5].map((star) => (
                                     <button
                                         key={star}
                                         type="button"
                                         onClick={() => setRating(star)}
-                                        className={`text-2xl transition-transform hover:scale-110 ${star <= rating ? 'opacity-100' : 'opacity-30'
+                                        className={`text-2xl transition-all duration-200 hover:scale-125 ${star <= rating
+                                            ? 'opacity-100 drop-shadow-[0_0_8px_rgba(234,179,8,0.5)]'
+                                            : 'opacity-30 hover:opacity-50'
                                             }`}
                                     >
                                         ⭐
@@ -250,7 +311,7 @@ export function TradeDetailSheet({
                                     <button
                                         type="button"
                                         onClick={() => setRating(0)}
-                                        className="text-xs text-slate-500 ml-2"
+                                        className="text-xs text-zinc-500 hover:text-zinc-400 ml-3 transition-colors"
                                     >
                                         Clear
                                     </button>
@@ -260,12 +321,12 @@ export function TradeDetailSheet({
 
                         {/* Notes */}
                         <div className="space-y-2">
-                            <label className="text-sm text-slate-400">Notes</label>
+                            <label className="text-sm text-zinc-400 font-medium">Notes</label>
                             <Textarea
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 placeholder="What did you learn from this trade?"
-                                className="bg-slate-800 border-slate-700 min-h-[100px]"
+                                className="bg-zinc-900/50 border-zinc-700/50 min-h-[100px] focus:ring-blue-500/30 focus:border-zinc-600 placeholder:text-zinc-600 resize-none"
                             />
                         </div>
 
@@ -279,13 +340,20 @@ export function TradeDetailSheet({
                     </div>
 
                     {/* Save Button */}
-                    <div className="pt-4 border-t border-slate-700">
+                    <div className="pt-4 border-t border-zinc-800/50">
                         <Button
                             onClick={handleSave}
                             disabled={isSaving}
-                            className="w-full bg-blue-600 hover:bg-blue-700"
+                            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 shadow-lg shadow-blue-500/20 transition-all duration-200 btn-scale"
                         >
-                            {isSaving ? 'Saving...' : 'Save Review'}
+                            {isSaving ? (
+                                <span className="flex items-center gap-2">
+                                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                    Saving...
+                                </span>
+                            ) : (
+                                'Save Review'
+                            )}
                         </Button>
                     </div>
                 </div>

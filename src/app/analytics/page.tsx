@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useMemo, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
@@ -11,55 +11,122 @@ import { EquityCurveChart } from '@/components/analytics/EquityCurveChart';
 import { SetupPerformanceChart } from '@/components/analytics/SetupPerformanceChart';
 import { PsychologyImpactChart } from '@/components/analytics/PsychologyImpactChart';
 import { AIMentorInsights } from '@/components/analytics/AIMentorInsights';
-import { fetchTrades, Trade } from '@/lib/tradeQueries';
+import { PerformanceHeatmap } from '@/components/analytics/PerformanceHeatmap';
+import { PlaybookComparisonChart } from '@/components/analytics/PlaybookComparisonChart';
+import { useTradesForCurrentAccount } from '@/hooks/useTrades';
+import { useComputeWithDegradation } from '@/hooks/useComputeWithDegradation';
 import {
     calculateAnalyticsStats,
     generateEquityCurveData,
     generateSetupPerformanceData,
     generatePsychologyData,
-    AnalyticsStats,
-    EquityCurvePoint,
-    SetupPerformance,
-    PsychologyBreakdown,
+    generateHeatmapData,
     formatCurrency,
     formatPercent,
+    PlaybookComparison,
 } from '@/lib/analyticsStats';
-import { TrendingDown, Scale, LineChart, BarChart3, Brain, TableProperties } from 'lucide-react';
+import { fetchPlaybookSetups } from '@/lib/playbookQueries';
+import { TrendingDown, Scale, LineChart, BarChart3, Brain, TableProperties, Loader2, Download, Grid3X3, BookOpen } from 'lucide-react';
+
+// 空状态默认值
+const DEFAULT_STATS = {
+    totalNetPnL: 0,
+    winRate: 0,
+    profitFactor: 0,
+    averageRRR: 0,
+    maxDrawdown: 0,
+    maxDrawdownPercent: 0,
+    totalTrades: 0,
+    winningTrades: 0,
+    losingTrades: 0,
+};
 
 export default function AnalyticsPage() {
-    const [trades, setTrades] = useState<Trade[]>([]);
-    const [stats, setStats] = useState<AnalyticsStats | null>(null);
-    const [equityCurveData, setEquityCurveData] = useState<EquityCurvePoint[]>([]);
-    const [setupPerformanceData, setSetupPerformanceData] = useState<SetupPerformance[]>([]);
-    const [psychologyData, setPsychologyData] = useState<PsychologyBreakdown[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    // 使用 TanStack Query 获取数据 (自动按账户过滤)
+    const { data: trades = [], isLoading, error: queryError } = useTradesForCurrentAccount();
+    const error = queryError ? 'Failed to load analytics data. Please check your Supabase connection.' : null;
 
-    // Fetch and process data
-    const loadData = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            setError(null);
+    // 使用计算降级策略 - 大数据量时延迟计算
+    const { result: stats, isComputing: isComputingStats } = useComputeWithDegradation(
+        trades,
+        calculateAnalyticsStats,
+        DEFAULT_STATS
+    );
 
-            const tradesData = await fetchTrades();
-            setTrades(tradesData);
+    // 图表数据使用 useMemo 缓存
+    const equityCurveData = useMemo(
+        () => generateEquityCurveData(trades),
+        [trades]
+    );
 
-            // Calculate all statistics and chart data
-            setStats(calculateAnalyticsStats(tradesData));
-            setEquityCurveData(generateEquityCurveData(tradesData));
-            setSetupPerformanceData(generateSetupPerformanceData(tradesData));
-            setPsychologyData(generatePsychologyData(tradesData));
-        } catch (err) {
-            console.error('Failed to load analytics data:', err);
-            setError('Failed to load analytics data. Please check your Supabase connection.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+    const setupPerformanceData = useMemo(
+        () => generateSetupPerformanceData(trades),
+        [trades]
+    );
 
+    const psychologyData = useMemo(
+        () => generatePsychologyData(trades),
+        [trades]
+    );
+
+    const heatmapData = useMemo(
+        () => generateHeatmapData(trades),
+        [trades]
+    );
+
+    // Playbook comparison - fetches playbook setups and cross-references live trades
+    const [playbookComparison, setPlaybookComparison] = useState<PlaybookComparison[]>([]);
     useEffect(() => {
-        loadData();
-    }, [loadData]);
+        if (trades.length === 0) return;
+        fetchPlaybookSetups().then(setups => {
+            const liveSetupMap = new Map<string, { wins: number; total: number }>();
+            for (const t of trades) {
+                if (!t.setup_type) continue;
+                const s = liveSetupMap.get(t.setup_type) || { wins: 0, total: 0 };
+                s.total += 1;
+                if ((t.pnl || 0) > 0) s.wins += 1;
+                liveSetupMap.set(t.setup_type, s);
+            }
+            const comparison: PlaybookComparison[] = setups.map(setup => {
+                const live = liveSetupMap.get(setup.name) || { wins: 0, total: 0 };
+                return {
+                    setupName: setup.name,
+                    targetWinRate: setup.win_rate_target,
+                    actualWinRate: live.total > 0 ? (live.wins / live.total) * 100 : 0,
+                    tradeCount: live.total,
+                };
+            });
+            setPlaybookComparison(comparison.filter(c => c.tradeCount > 0 || true)); // show all setups
+        }).catch(console.error);
+    }, [trades]);
+
+    // CSV Export
+    const handleExportCSV = useCallback(() => {
+        if (trades.length === 0) return;
+        const headers = ['symbol', 'entry_time', 'exit_time', 'pnl', 'setup_type', 'psychology_tag', 'rating', 'notes', 'duration'];
+        const rows = trades.map(t => [
+            t.symbol ?? '',
+            t.entry_time ?? '',
+            t.exit_time ?? '',
+            t.pnl ?? 0,
+            t.setup_type ?? '',
+            t.psychology_tag ?? '',
+            t.rating ?? '',
+            (t.notes ?? '').replace(/,/g, ';').replace(/\n/g, ' '),
+            t.duration ?? '',
+        ]);
+        const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `trading-journal-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }, [trades]);
+
+    // 显示计算中状态
+    const showComputingOverlay = isComputingStats && trades.length > 2000;
 
     return (
         <DashboardLayout>
@@ -67,14 +134,31 @@ export default function AnalyticsPage() {
             <motion.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="mb-8"
+                className="mb-8 flex items-center justify-between"
             >
-                <h2 className="text-3xl font-bold text-white mb-1 tracking-tight">
-                    Trading Analytics
-                </h2>
-                <p className="text-zinc-400">
-                    Deep dive into your trading performance with comprehensive statistics and visualizations.
-                </p>
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-1 tracking-tight">
+                        Trading Analytics
+                    </h2>
+                    <p className="text-zinc-400">
+                        Deep dive into your trading performance with comprehensive statistics and visualizations.
+                        {trades.length > 2000 && (
+                            <span className="ml-2 text-blue-400">
+                                ({trades.length.toLocaleString()} trades)
+                            </span>
+                        )}
+                    </p>
+                </div>
+                {!isLoading && trades.length > 0 && (
+                    <Button
+                        onClick={handleExportCSV}
+                        variant="outline"
+                        className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 hover:text-white gap-2"
+                    >
+                        <Download className="w-4 h-4" />
+                        Export CSV
+                    </Button>
+                )}
             </motion.div>
 
             {/* Error State */}
@@ -98,6 +182,21 @@ export default function AnalyticsPage() {
                 </div>
             )}
 
+            {/* Computing Overlay for Large Datasets */}
+            {showComputingOverlay && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="fixed inset-0 bg-zinc-950/50 backdrop-blur-sm z-40 flex items-center justify-center"
+                >
+                    <div className="glass-card p-8 text-center">
+                        <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-4" />
+                        <p className="text-white font-medium">Processing {trades.length.toLocaleString()} trades...</p>
+                        <p className="text-zinc-400 text-sm mt-1">This may take a moment for large datasets</p>
+                    </div>
+                </motion.div>
+            )}
+
             {/* Content */}
             {!isLoading && !error && (
                 <div className="space-y-8">
@@ -107,11 +206,11 @@ export default function AnalyticsPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
                     >
-                        {stats && <AnalyticsStatsCards stats={stats} />}
+                        <AnalyticsStatsCards stats={stats} />
                     </motion.div>
 
                     {/* Max Drawdown and RRR Cards */}
-                    {stats && stats.maxDrawdown > 0 && (
+                    {stats.maxDrawdown > 0 && (
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -302,6 +401,65 @@ export default function AnalyticsPage() {
                     >
                         <AIMentorInsights trades={trades} />
                     </motion.div>
+
+                    {/* Performance Heatmap */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.45 }}
+                    >
+                        <Card className="glass-card">
+                            <CardHeader>
+                                <div className="flex items-center gap-2">
+                                    <div className="p-2 rounded-lg bg-violet-500/10">
+                                        <Grid3X3 className="w-4 h-4 text-violet-400" />
+                                    </div>
+                                    <div>
+                                        <CardTitle className="text-lg font-semibold text-white">
+                                            Performance Heatmap
+                                        </CardTitle>
+                                        <p className="text-sm text-zinc-400">
+                                            Avg PnL by day &amp; hour — find your Golden Hours
+                                        </p>
+                                    </div>
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <PerformanceHeatmap data={heatmapData} />
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+
+                    {/* Playbook Win Rate Comparison */}
+                    {playbookComparison.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.5 }}
+                        >
+                            <Card className="glass-card">
+                                <CardHeader>
+                                    <div className="flex items-center gap-2">
+                                        <div className="p-2 rounded-lg bg-emerald-500/10">
+                                            <BookOpen className="w-4 h-4 text-emerald-400" />
+                                        </div>
+                                        <div>
+                                            <CardTitle className="text-lg font-semibold text-white">
+                                                Playbook vs. Reality
+                                            </CardTitle>
+                                            <p className="text-sm text-zinc-400">
+                                                Target win rate (blue) vs. actual win rate (green/red) per setup
+                                            </p>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <PlaybookComparisonChart data={playbookComparison} />
+                                </CardContent>
+                            </Card>
+                        </motion.div>
+                    )}
+
                 </div>
             )}
 

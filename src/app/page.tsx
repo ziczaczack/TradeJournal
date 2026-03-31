@@ -1,13 +1,36 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { FileUploader } from '@/components/FileUploader';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, RefreshCcw, Shield, Sparkles } from 'lucide-react';
+import { ArrowRight, RefreshCcw, Shield, Sparkles, LogIn } from 'lucide-react';
+import { getSupabase } from '@/lib/supabase';
+import type { User } from '@supabase/supabase-js';
 
 export default function Home() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const supabase = getSupabase();
+
+    // Get initial session
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   return (
     <DashboardLayout>
       {/* Hero Section */}
@@ -27,17 +50,55 @@ export default function Home() {
         </motion.div>
       </div>
 
-      {/* File Uploader */}
+      {/* File Uploader or Auth Prompt */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.1 }}
       >
-        <FileUploader
-          onUploadComplete={(result) => {
-            console.log('Upload complete:', result);
-          }}
-        />
+        {loading ? (
+          <div className="glass-card p-12 text-center">
+            <div className="animate-pulse text-zinc-400">Checking session...</div>
+          </div>
+        ) : user ? (
+          <FileUploader
+            userId={user.id}
+            onUploadComplete={(result) => {
+              console.log('Upload complete:', result);
+            }}
+          />
+        ) : (
+          <div className="glass-card p-12 text-center space-y-8 relative overflow-hidden group">
+            {/* Animated background decoration */}
+            <div className="absolute -top-24 -left-24 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl group-hover:bg-blue-600/20 transition-colors duration-500" />
+            <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl group-hover:bg-purple-600/20 transition-colors duration-500" />
+
+            <div className="relative z-10">
+              <div className="w-20 h-20 mx-auto rounded-2xl bg-zinc-800/50 flex items-center justify-center mb-6 border border-zinc-700/50 shadow-xl group-hover:scale-110 transition-transform duration-500">
+                <LogIn className="w-10 h-10 text-blue-400" />
+              </div>
+              <div className="max-w-md mx-auto">
+                <h3 className="text-2xl font-bold text-white mb-3">Begin Your Journey</h3>
+                <p className="text-zinc-400 mb-8 leading-relaxed">
+                  Join a community of disciplined traders. Sign in to securely upload, track, and analyze your performance with AI insights.
+                </p>
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <Link href="/login" className="w-full sm:w-auto">
+                    <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-8 h-12 rounded-xl shadow-lg shadow-blue-600/20 btn-scale group">
+                      Sign In Now
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                  <Link href="/login" className="w-full sm:w-auto">
+                    <Button variant="outline" className="w-full sm:w-auto border-zinc-700 hover:bg-zinc-800/50 text-zinc-300 px-8 h-12 rounded-xl">
+                      Create Free Account
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </motion.div>
 
       {/* Features Section */}

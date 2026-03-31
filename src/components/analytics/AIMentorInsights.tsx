@@ -1,33 +1,43 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Trade } from '@/lib/tradeQueries';
 import { EmotionWarning } from '@/lib/aiMentor';
+import { useAIMentorStore } from '@/stores/aiMentorStore';
 
 interface AIMentorInsightsProps {
     trades: Trade[];
 }
 
-interface ReviewState {
-    insights: string;
-    recommendations: string[];
-    emotionWarnings: EmotionWarning[];
-}
-
 export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
-    const [review, setReview] = useState<ReviewState | null>(null);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [question, setQuestion] = useState('');
-    const [questionAnswer, setQuestionAnswer] = useState<string | null>(null);
-    const [isAskingQuestion, setIsAskingQuestion] = useState(false);
+    // 使用 Zustand store - 状态在页面间切换时保持
+    const {
+        status,
+        insights,
+        recommendations,
+        emotionWarnings,
+        error,
+        setStatus,
+        setInsights,
+        setError,
+        needsReanalysis,
+    } = useAIMentorStore();
+
+    const isLoading = status === 'analyzing';
+
+    // 检查是否需要重新分析 (交易数量变化超过 5%)
+    useEffect(() => {
+        if (status === 'completed' && needsReanalysis(trades.length)) {
+            // 不自动重置，只显示提示
+            console.log('Trade count changed significantly, consider re-analyzing');
+        }
+    }, [trades.length, status, needsReanalysis]);
 
     const generateReview = useCallback(async () => {
-        setIsLoading(true);
-        setError(null);
+        setStatus('analyzing');
 
         try {
             const response = await fetch('/api/ai-mentor/review', {
@@ -42,43 +52,17 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
                 throw new Error(result.error || 'Failed to generate review');
             }
 
-            setReview(result.data);
+            setInsights(
+                result.data.insights,
+                result.data.recommendations || [],
+                result.data.emotionWarnings || [],
+                trades.length
+            );
         } catch (err) {
             console.error('Error generating review:', err);
             setError(err instanceof Error ? err.message : 'AI 分析请求失败');
-        } finally {
-            setIsLoading(false);
         }
-    }, []);
-
-    const askQuestion = useCallback(async () => {
-        if (!question.trim()) return;
-
-        setIsAskingQuestion(true);
-        setError(null);
-
-        try {
-            const response = await fetch('/api/ai-mentor/ask', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: question.trim() }),
-            });
-
-            const result = await response.json();
-
-            if (!result.success) {
-                throw new Error(result.error || 'Failed to get answer');
-            }
-
-            setQuestionAnswer(result.data.answer);
-            setQuestion('');
-        } catch (err) {
-            console.error('Error asking question:', err);
-            setError(err instanceof Error ? err.message : 'AI 回答请求失败');
-        } finally {
-            setIsAskingQuestion(false);
-        }
-    }, [question]);
+    }, [setStatus, setInsights, setError, trades.length]);
 
     const getSeverityColor = (severity: 'high' | 'medium' | 'low') => {
         switch (severity) {
@@ -114,6 +98,11 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
                 <div className="flex items-center justify-between">
                     <CardTitle className="text-lg font-semibold text-white flex items-center gap-2">
                         <span>🤖</span> AI Mentor Insights
+                        {status === 'completed' && (
+                            <span className="text-xs font-normal text-green-400 bg-green-900/30 px-2 py-0.5 rounded-full">
+                                已缓存
+                            </span>
+                        )}
                     </CardTitle>
                     <Button
                         onClick={generateReview}
@@ -124,6 +113,11 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
                             <>
                                 <span className="animate-spin mr-2">⏳</span>
                                 分析中...
+                            </>
+                        ) : status === 'completed' ? (
+                            <>
+                                <span className="mr-2">🔄</span>
+                                重新分析
                             </>
                         ) : (
                             <>
@@ -146,13 +140,13 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
                 )}
 
                 {/* Emotion Warnings */}
-                {review?.emotionWarnings && review.emotionWarnings.length > 0 && (
+                {emotionWarnings && emotionWarnings.length > 0 && (
                     <div className="space-y-3">
                         <h4 className="text-sm font-semibold text-white flex items-center gap-2">
                             <span>⚠️</span> 情绪关联警告
                         </h4>
                         <div className="grid gap-3">
-                            {review.emotionWarnings.map((warning, idx) => (
+                            {emotionWarnings.map((warning: EmotionWarning, idx: number) => (
                                 <div
                                     key={idx}
                                     className={`p-4 rounded-lg border ${getSeverityColor(warning.severity)}`}
@@ -179,7 +173,7 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
                 )}
 
                 {/* AI Insights (Markdown) */}
-                {review?.insights && (
+                {insights && (
                     <div className="space-y-3">
                         <h4 className="text-sm font-semibold text-white flex items-center gap-2">
                             <span>📋</span> 详细分析
@@ -219,78 +213,17 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
                                     ),
                                 }}
                             >
-                                {review.insights}
+                                {insights}
                             </ReactMarkdown>
                         </div>
                     </div>
                 )}
 
-                {/* Ask Mentor Section */}
-                <div className="space-y-3 pt-4 border-t border-slate-700/50">
-                    <h4 className="text-sm font-semibold text-white flex items-center gap-2">
-                        <span>💬</span> 向导师提问
-                    </h4>
-                    <div className="flex gap-3">
-                        <input
-                            type="text"
-                            value={question}
-                            onChange={(e) => setQuestion(e.target.value)}
-                            placeholder="例如：我应该如何改善我的报复性交易？"
-                            className="flex-1 bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !isAskingQuestion) {
-                                    askQuestion();
-                                }
-                            }}
-                        />
-                        <Button
-                            onClick={askQuestion}
-                            disabled={isAskingQuestion || !question.trim()}
-                            className="bg-blue-600 hover:bg-blue-700"
-                        >
-                            {isAskingQuestion ? (
-                                <span className="animate-spin">⏳</span>
-                            ) : (
-                                '提问'
-                            )}
-                        </Button>
-                    </div>
-
-                    {/* Question Answer */}
-                    {questionAnswer && (
-                        <div className="mt-4 bg-slate-900/50 rounded-lg p-6 border border-slate-700/50">
-                            <div className="flex items-center gap-2 mb-3 text-sm text-slate-400">
-                                <span>🤖</span> AI 导师回复
-                            </div>
-                            <div className="prose prose-invert prose-sm max-w-none">
-                                <ReactMarkdown
-                                    components={{
-                                        p: ({ children }) => (
-                                            <p className="text-slate-300 mb-3 leading-relaxed">{children}</p>
-                                        ),
-                                        ul: ({ children }) => (
-                                            <ul className="list-disc list-inside text-slate-300 mb-3 space-y-1">{children}</ul>
-                                        ),
-                                        ol: ({ children }) => (
-                                            <ol className="list-decimal list-inside text-slate-300 mb-3 space-y-1">{children}</ol>
-                                        ),
-                                        strong: ({ children }) => (
-                                            <strong className="text-white font-semibold">{children}</strong>
-                                        ),
-                                    }}
-                                >
-                                    {questionAnswer}
-                                </ReactMarkdown>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
                 {/* Initial Empty State */}
-                {!review && !isLoading && !error && (
+                {status === 'idle' && !isLoading && !error && (
                     <div className="text-center py-8 text-slate-400">
                         <div className="text-4xl mb-4">🧠</div>
-                        <p className="mb-2">点击"生成复盘"按钮开始 AI 分析</p>
+                        <p className="mb-2">点击&quot;生成复盘&quot;按钮开始 AI 分析</p>
                         <p className="text-sm text-slate-500">
                             AI 将分析您最近的交易，找出心理误区、最佳策略和改进建议
                         </p>

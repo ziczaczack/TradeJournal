@@ -15,11 +15,14 @@ import {
     subMonths,
 } from 'date-fns';
 import { Trade } from '@/lib/tradeQueries';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useEconomicCalendar, getEventsForDate, hasHighImpactEvent } from '@/lib/economicCalendarQueries';
+import { EventTooltip } from './EventTooltip';
 
 interface DayData {
     date: Date;
+    dateString: string;  // YYYY-MM-DD for event lookup
     trades: Trade[];
     totalPnL: number;
     isCurrentMonth: boolean;
@@ -40,6 +43,12 @@ export function TradingCalendar({
     onMonthChange,
     onDateSelect,
 }: TradingCalendarProps) {
+    // Fetch economic calendar events for this month
+    const { data: economicEvents = [] } = useEconomicCalendar(
+        currentMonth.getFullYear(),
+        currentMonth.getMonth()
+    );
+
     // Generate calendar days
     const calendarDays = useMemo(() => {
         const monthStart = startOfMonth(currentMonth);
@@ -59,6 +68,7 @@ export function TradingCalendar({
 
             return {
                 date,
+                dateString: format(date, 'yyyy-MM-dd'),
                 trades: dayTrades,
                 totalPnL,
                 isCurrentMonth: isSameMonth(date, currentMonth),
@@ -136,83 +146,93 @@ export function TradingCalendar({
                     const hasTrades = day.trades.length > 0;
                     const isProfit = day.totalPnL > 0;
                     const isLoss = day.totalPnL < 0;
+                    const dayEvents = getEventsForDate(economicEvents, day.dateString);
+                    const hasHighImpact = hasHighImpactEvent(economicEvents, day.dateString);
 
                     return (
-                        <motion.button
-                            key={day.date.toISOString()}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: index * 0.01, duration: 0.15 }}
-                            onClick={() => handleDateClick(day)}
-                            disabled={!day.isCurrentMonth}
-                            className={`
-                                relative h-[72px] p-2 rounded-xl transition-all duration-200 text-left
-                                ${!day.isCurrentMonth
-                                    ? 'opacity-25 cursor-not-allowed'
-                                    : 'cursor-pointer hover:-translate-y-0.5'
-                                }
-                                ${isSelected
-                                    ? 'ring-2 ring-blue-500 bg-blue-500/10 glow-ring'
-                                    : 'hover:bg-zinc-800/50'
-                                }
-                                ${hasTrades && !isSelected
-                                    ? isProfit
-                                        ? 'bg-emerald-500/5 border-l-2 border-l-emerald-500'
-                                        : isLoss
-                                            ? 'bg-rose-500/5 border-l-2 border-l-rose-500'
-                                            : 'bg-zinc-800/30'
-                                    : 'bg-zinc-900/30'
-                                }
-                            `}
-                            style={{
-                                boxShadow: isSelected
-                                    ? '0 0 20px rgba(59, 130, 246, 0.3)'
-                                    : hasTrades
-                                        ? '0 2px 8px rgba(0, 0, 0, 0.2)'
-                                        : 'none'
-                            }}
-                        >
-                            {/* Date number */}
-                            <span
+                        <EventTooltip key={day.date.toISOString()} events={dayEvents}>
+                            <motion.button
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: index * 0.01, duration: 0.15 }}
+                                onClick={() => handleDateClick(day)}
+                                disabled={!day.isCurrentMonth}
                                 className={`
-                                    text-sm font-semibold
+                                    relative h-[72px] p-2 rounded-xl transition-all duration-200 text-left w-full
                                     ${!day.isCurrentMonth
-                                        ? 'text-zinc-700'
-                                        : isSelected
-                                            ? 'text-blue-400'
-                                            : hasTrades
-                                                ? isProfit
-                                                    ? 'text-emerald-400'
-                                                    : isLoss
-                                                        ? 'text-rose-400'
-                                                        : 'text-white'
-                                                : 'text-zinc-400'
+                                        ? 'opacity-25 cursor-not-allowed'
+                                        : 'cursor-pointer hover:-translate-y-0.5'
+                                    }
+                                    ${isSelected
+                                        ? 'ring-2 ring-blue-500 bg-blue-500/10 glow-ring'
+                                        : 'hover:bg-zinc-800/50'
+                                    }
+                                    ${hasTrades && !isSelected
+                                        ? isProfit
+                                            ? 'bg-emerald-500/5 border-l-2 border-l-emerald-500'
+                                            : isLoss
+                                                ? 'bg-rose-500/5 border-l-2 border-l-rose-500'
+                                                : 'bg-zinc-800/30'
+                                        : 'bg-zinc-900/30'
                                     }
                                 `}
+                                style={{
+                                    boxShadow: isSelected
+                                        ? '0 0 20px rgba(59, 130, 246, 0.3)'
+                                        : hasTrades
+                                            ? '0 2px 8px rgba(0, 0, 0, 0.2)'
+                                            : 'none'
+                                }}
                             >
-                                {format(day.date, 'd')}
-                            </span>
-
-                            {/* PnL amount */}
-                            {hasTrades && day.isCurrentMonth && (
-                                <div
+                                {/* Date number */}
+                                <span
                                     className={`
-                                        absolute bottom-2 left-2 right-2
-                                        text-xs font-bold font-mono truncate
-                                        ${isProfit ? 'text-gradient-profit profit-glow' : 'text-gradient-loss loss-glow'}
+                                        text-sm font-semibold
+                                        ${!day.isCurrentMonth
+                                            ? 'text-zinc-700'
+                                            : isSelected
+                                                ? 'text-blue-400'
+                                                : hasTrades
+                                                    ? isProfit
+                                                        ? 'text-emerald-400'
+                                                        : isLoss
+                                                            ? 'text-rose-400'
+                                                            : 'text-white'
+                                                    : 'text-zinc-400'
+                                        }
                                     `}
                                 >
-                                    {formatPnL(day.totalPnL)}
-                                </div>
-                            )}
-
-                            {/* Trade count indicator */}
-                            {day.trades.length > 1 && day.isCurrentMonth && (
-                                <span className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center text-[10px] font-medium bg-zinc-800 text-zinc-400 rounded-full">
-                                    {day.trades.length}
+                                    {format(day.date, 'd')}
                                 </span>
-                            )}
-                        </motion.button>
+
+                                {/* High-impact economic event indicator */}
+                                {hasHighImpact && day.isCurrentMonth && (
+                                    <div className="absolute top-2 right-2 flex items-center gap-0.5">
+                                        <Zap className="w-3 h-3 text-rose-400 fill-rose-400" />
+                                    </div>
+                                )}
+
+                                {/* Trade count indicator - shifted left when there's high impact event */}
+                                {day.trades.length > 1 && day.isCurrentMonth && (
+                                    <span className={`absolute top-2 ${hasHighImpact ? 'right-7' : 'right-2'} w-5 h-5 flex items-center justify-center text-[10px] font-medium bg-zinc-800 text-zinc-400 rounded-full`}>
+                                        {day.trades.length}
+                                    </span>
+                                )}
+
+                                {/* PnL amount */}
+                                {hasTrades && day.isCurrentMonth && (
+                                    <div
+                                        className={`
+                                            absolute bottom-2 left-2 right-2
+                                            text-xs font-bold font-mono truncate
+                                            ${isProfit ? 'text-gradient-profit profit-glow' : 'text-gradient-loss loss-glow'}
+                                        `}
+                                    >
+                                        {formatPnL(day.totalPnL)}
+                                    </div>
+                                )}
+                            </motion.button>
+                        </EventTooltip>
                     );
                 })}
             </div>

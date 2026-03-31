@@ -5,6 +5,7 @@ import { startOfMonth, endOfMonth, format } from 'date-fns';
 export interface Trade {
     id: string;
     user_id?: string | null;
+    account_id?: string | null;
     symbol: string;
     pnl: number;
     buy_price?: number | null;
@@ -27,6 +28,7 @@ export interface Trade {
 export interface TradeFilters {
     symbol?: string;
     setupType?: string;
+    accountId?: string;
 }
 
 export interface TradeUpdate {
@@ -42,12 +44,27 @@ export interface TradeUpdate {
  * Fetch all trades with optional filters
  */
 export async function fetchTrades(filters?: TradeFilters): Promise<Trade[]> {
+    // Debug logging
+    console.log('[fetchTrades] Called with filters:', {
+        accountId: filters?.accountId,
+        symbol: filters?.symbol,
+        setupType: filters?.setupType,
+    });
+
     // Optimized query: only fetch fields needed for list views
     // notes and screenshot_url are excluded to reduce payload
     let query = getSupabase()
         .from('trading_journal')
-        .select('id, symbol, pnl, buy_price, sell_price, quantity, entry_time, exit_time, duration, trade_id, setup_type, is_valid_setup, psychology_tag, rating')
+        .select('id, account_id, symbol, pnl, buy_price, sell_price, quantity, entry_time, exit_time, duration, trade_id, setup_type, is_valid_setup, psychology_tag, rating')
         .order('entry_time', { ascending: false });
+
+    // Filter by account if provided
+    if (filters?.accountId) {
+        console.log('[fetchTrades] Filtering by account_id:', filters.accountId);
+        query = query.eq('account_id', filters.accountId);
+    } else {
+        console.log('[fetchTrades] WARNING: No accountId filter - will return all trades!');
+    }
 
     if (filters?.symbol) {
         query = query.eq('symbol', filters.symbol);
@@ -64,6 +81,7 @@ export async function fetchTrades(filters?: TradeFilters): Promise<Trade[]> {
         throw error;
     }
 
+    console.log('[fetchTrades] Returned', data?.length || 0, 'trades');
     return (data as Trade[]) || [];
 }
 
@@ -114,19 +132,31 @@ export async function updateTrade(
 /**
  * Fetch trades for a specific month (by exit_time)
  * Used by the calendar component for efficient data loading
+ * @param accountId - Optional account ID to filter by
  */
-export async function fetchTradesByMonth(year: number, month: number): Promise<Trade[]> {
+export async function fetchTradesByMonth(
+    year: number,
+    month: number,
+    accountId?: string
+): Promise<Trade[]> {
     const monthDate = new Date(year, month, 1);
     const monthStart = format(startOfMonth(monthDate), 'yyyy-MM-dd');
     const monthEnd = format(endOfMonth(monthDate), 'yyyy-MM-dd');
 
     // Optimized query: only fetch fields needed for calendar display
-    const { data, error } = await getSupabase()
+    let query = getSupabase()
         .from('trading_journal')
-        .select('id, symbol, pnl, entry_time, exit_time, duration, trade_id, setup_type, is_valid_setup, psychology_tag, rating')
+        .select('id, account_id, symbol, pnl, entry_time, exit_time, duration, trade_id, setup_type, is_valid_setup, psychology_tag, rating')
         .gte('exit_time', `${monthStart}T00:00:00`)
         .lte('exit_time', `${monthEnd}T23:59:59`)
         .order('exit_time', { ascending: false });
+
+    // Filter by account if provided
+    if (accountId) {
+        query = query.eq('account_id', accountId);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
         console.error('Error fetching trades by month:', error);

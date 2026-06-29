@@ -72,7 +72,13 @@ export default function PlaybookPage() {
     const handleSave = async () => {
         if (!name.trim()) return;
 
+        if (!currentAccount?.user_id) {
+            console.error('No active session or account available.');
+            return;
+        }
+
         const setupData = {
+            user_id: currentAccount.user_id,
             name: name.trim(),
             description: description.trim() || undefined,
             timeframe: timeframe.trim() || undefined,

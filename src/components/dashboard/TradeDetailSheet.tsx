@@ -22,7 +22,6 @@ import { Badge } from '@/components/ui/badge';
 import { Trade, updateTrade } from '@/lib/tradeQueries';
 import { ScreenshotUploader } from '@/components/ScreenshotUploader';
 import { formatPnL } from '@/lib/tradeStats';
-import { RelatedEconomicEvents } from './RelatedEconomicEvents';
 import { PlaybookSetup, fetchPlaybookSetups } from '@/lib/playbookQueries';
 import dynamic from 'next/dynamic';
 
@@ -219,8 +218,8 @@ export function TradeDetailSheet({
                         </div>
                     )} */}
 
-                    {/* Economic Context - Events around trade entry */}
-                    <RelatedEconomicEvents entryTime={trade.entry_time} />
+                    {/* Economic Context disabled — see ECONOMIC_CALENDAR_ENABLED in economicCalendarQueries.ts
+                    <RelatedEconomicEvents entryTime={trade.entry_time} /> */}
 
                     {/* Editable Fields */}
                     <div className="space-y-4">

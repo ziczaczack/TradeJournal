@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# My Trading Journal 📈
 
-## Getting Started
+![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 
-First, run the development server:
+A comprehensive, full-stack trading journaling application designed to help traders track performance, maintain discipline, and analyze their edge. Built thoughtfully with modern web technologies, this platform goes beyond simple logging by offering AI-powered mentoring, detailed analytics, automated CSV imports, and setup playbooks.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Automated Trade Imports**: Easily import execution data from Tradovate via CSV parsing.
+- **Advanced Analytics Dashboard**: Gain deep insights into your trading performance with win rates, profit/loss tracking, and expectancy metrics visualized through interactive charts (Recharts & Lightweight Charts).
+- **Interactive Trading Calendar**: Review day-to-day performance at a glance with a visual calendar heat map.
+- **AI Trading Mentor**: Integrated Groq AI to act as a virtual trading coach, reviewing performance and providing data-driven feedback on your journaling.
+- **Playbooks & Setups**: Document your 'A+' setups with strict rules, conditions, and visual chart tracking.
+- **Pre-Trade Checklists**: Enforce discipline before taking a trade to protect psychological capital.
+- **Performance Backtesting**: Test strategies against historical performance and manage backtest logs directly in the app.
+- **Multimedia Journaling**: Upload and store annotated chart screenshots for each executed trade (powered by Supabase Storage and client-side image compression).
+- **Multiple Accounts**: Seamlessly manage and toggle between various trading accounts (e.g., Funded, Evaluations, Personal).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> **Note:** An Economic Calendar (red-folder news events) is scaffolded in the codebase but currently **disabled** — it's gated behind the `ECONOMIC_CALENDAR_ENABLED` flag in `src/lib/economicCalendarQueries.ts` pending a data provider that supports historical date ranges.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+### Core
+- **Framework:** Next.js 15+ (App Router)
+- **Language:** TypeScript
+- **UI Library:** React 19
 
-To learn more about Next.js, take a look at the following resources:
+### Design & Architecture
+- **Styling:** Tailwind CSS v4
+- **Components:** Radix UI primitives with Framer Motion for sleek micro-animations
+- **Icons:** Lucide React
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### State & Data Handling
+- **Database & Authentication:** Supabase (PostgreSQL with RLS policies configured)
+- **Data Fetching:** TanStack React Query v5
+- **Global State:** Zustand
+- **Market Data/Parsing:** PapaParse (CSV), Yahoo Finance API
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ⚙️ Getting Started
 
-## Deploy on Vercel
+### Prerequisites
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+You need [Node.js](https://nodejs.org/) installed along with a package manager like `npm`, `yarn`, or `pnpm`. You also need a [Supabase](https://supabase.com/) project to host the database and authentication.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/ziczaczack/TradeJournal.git
+   cd my-trading-journal
+   ```
+
+2. Install dependencies
+   ```bash
+   npm install
+   ```
+
+3. Configure Environment Variables
+   Copy `.env.local.example` to `.env.local` and fill in your Supabase and Groq API keys.
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   GROQ_API_KEY=your_groq_api_key
+   ```
+
+4. Run the Development Server
+   ```bash
+   npm run dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application in action.
+
+## 🗄️ Database Setup (Supabase)
+
+This project relies on a specific schema containing tables such as `trades`, `accounts`, `playbooks`, `checklists`, and `analytics`. Refer to the SQL files in `supabase/migrations/` to initialize your database correctly.
+
+## 🛡️ License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 🤝 Contact
+
+Your Name - [ziczaczack@gmail.com](mailto:ziczaczack@gmail.com)
+
+Project Link: [https://github.com/ziczaczack/TradeJournal](https://github.com/ziczaczack/TradeJournal)

@@ -23,11 +23,29 @@ export interface EconomicEventWithTimestamp extends EconomicEvent {
 }
 
 // ============================================
+// Feature Flag
+// ============================================
+
+/**
+ * Economic Calendar is currently disabled.
+ *
+ * The previous data provider (FinancialModelingPrep) required a paid plan for
+ * the economic_calendar endpoint, and the only free/keyless source available
+ * (faireconomy/Forex Factory) only serves the current week — which can't satisfy
+ * the monthly calendar view or the historical "events around a trade" feature.
+ *
+ * The integration code is intentionally left in place. To re-enable, flip this
+ * flag to `true` and point fetchEconomicCalendar at a provider that supports
+ * arbitrary historical date ranges.
+ */
+export const ECONOMIC_CALENDAR_ENABLED = false;
+
+// ============================================
 // Data Fetching
 // ============================================
 
 /**
- * Fetch economic calendar events from FinancialModelingPrep API
+ * Fetch economic calendar events.
  * @param startDate - Start date in YYYY-MM-DD format
  * @param endDate - End date in YYYY-MM-DD format
  */
@@ -35,6 +53,11 @@ export async function fetchEconomicCalendar(
     startDate: string,
     endDate: string
 ): Promise<EconomicEvent[]> {
+    // Feature disabled — return no events without any network call.
+    if (!ECONOMIC_CALENDAR_ENABLED) {
+        return [];
+    }
+
     try {
         const url = `/api/economic-calendar?from=${startDate}&to=${endDate}`;
         const response = await fetch(url);
@@ -108,6 +131,7 @@ export function useEconomicCalendar(year: number, month: number) {
     return useQuery({
         queryKey: ['economicCalendar', startDate, endDate],
         queryFn: () => fetchEconomicCalendar(startDate, endDate),
+        enabled: ECONOMIC_CALENDAR_ENABLED,
         staleTime: 30 * 60 * 1000, // 30 minutes
         gcTime: 60 * 60 * 1000,    // 1 hour garbage collection
         refetchOnWindowFocus: false,
@@ -121,7 +145,7 @@ export function useEconomicCalendar(year: number, month: number) {
  */
 export function useEventsAroundTrade(entryTime: string | null | undefined, windowHours: number = 1) {
     // Calculate date range for the query
-    const enabled = Boolean(entryTime);
+    const enabled = ECONOMIC_CALENDAR_ENABLED && Boolean(entryTime);
     let startDate = '';
     let endDate = '';
 

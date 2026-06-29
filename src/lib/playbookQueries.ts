@@ -14,6 +14,7 @@ export interface PlaybookSetup {
 }
 
 export interface PlaybookSetupCreate {
+    user_id: string;
     name: string;
     description?: string;
     timeframe?: string;
@@ -23,6 +24,7 @@ export interface PlaybookSetupCreate {
 }
 
 export interface PlaybookSetupUpdate {
+    user_id?: string;
     name?: string;
     description?: string;
     timeframe?: string;
@@ -52,14 +54,30 @@ export async function fetchPlaybookSetups(): Promise<PlaybookSetup[]> {
  * Create a new playbook setup
  */
 export async function createPlaybookSetup(setup: PlaybookSetupCreate): Promise<PlaybookSetup> {
-    const { data, error } = await getSupabase()
+    const supabase = getSupabase();
+    
+    // Resolve user_id directly from session as a foolproof fallback
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.user) {
+        console.error('Session error:', sessionError);
+        throw new Error('You must be logged in to create a setup.');
+    }
+
+    const setupPayload = {
+        ...setup,
+        user_id: setup.user_id || session.user.id
+    };
+
+    console.log('Inserting playbook setup with payload:', setupPayload);
+
+    const { data, error } = await supabase
         .from('playbook_setups')
-        .insert(setup)
+        .insert(setupPayload)
         .select()
         .single();
 
     if (error) {
-        console.error('Error creating playbook setup:', error);
+        console.error('Error creating playbook setup. DB Error:', error);
         throw error;
     }
 

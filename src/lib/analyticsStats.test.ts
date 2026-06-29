@@ -37,6 +37,7 @@ describe('calculateAnalyticsStats', () => {
         // equity: 100 -> 60 -> 30 -> 80; peak 100, deepest trough 30 => drawdown 70
         const stats = calculateAnalyticsStats(trades);
         expect(stats.maxDrawdown).toBe(70);
+        // The drawdown of $70 against the high-water mark of $100 yields 70% (70 / 100 × 100). The numeric equality with the dollar value is a coincidence of this test data.
         expect(stats.maxDrawdownPercent).toBe(70);
     });
 

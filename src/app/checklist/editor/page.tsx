@@ -7,7 +7,7 @@ import { Settings2 } from 'lucide-react';
 
 export default function ChecklistEditorPage() {
     return (
-        <DashboardLayout showAIPanel={false}>
+        <DashboardLayout>
             <div className="max-w-3xl mx-auto">
                 {/* Page Header */}
                 <motion.div

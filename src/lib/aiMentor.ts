@@ -21,11 +21,6 @@ export interface EmotionWarning {
     severity: 'high' | 'medium' | 'low';
 }
 
-export interface AskMentorResult {
-    answer: string;
-    context?: string;
-}
-
 export interface TradeDataForAI {
     date: string;
     symbol: string;
@@ -35,14 +30,6 @@ export interface TradeDataForAI {
     notes: string;
     duration: string;
     isWin: boolean;
-}
-
-export interface EconomicEventForAI {
-    time: string;           // UTC time
-    country: string;        // Currency code
-    event: string;          // Event name
-    impact: string;         // High/Medium/Low
-    relativeToTrade: string; // e.g., "-15min", "+2h"
 }
 
 // ============================================
@@ -70,20 +57,6 @@ const MENTOR_SYSTEM_PROMPT = `你是一位资深的 ICT/SMC 交易教练。请�
 4. **时间规律**: 交易时长与收益的关系
 
 请使用 Markdown 格式输出，包含清晰的标题和要点。`;
-
-const ASK_MENTOR_SYSTEM_PROMPT = `你是一位资深的 ICT/SMC 交易教练，正在回答交易者关于他们交易表现的问题。
-
-请基于提供的交易数据给出具体、可操作的建议。你的回答应该：
-1. 直接回应问题
-2. 引用具体的交易数据作为依据
-3. 给出实际可行的改进建议
-4. 保持专业但具有启发性的语气
-5. 如果提供了财经日历数据，分析交易时机与重大新闻的关系：
-   - 在重要数据发布（如CPI、NFP、利率决议）前入场可能是赌博行为
-   - 在重大新闻后立即追涨杀跌可能过于冒险
-   - 评估交易者是否有意识地规避或利用新闻事件
-
-使用 Markdown 格式输出。`;
 
 // ============================================
 // Data Serialization
@@ -337,82 +310,6 @@ ${emotionWarnings.length > 0
     } catch (error) {
         console.error('Error generating AI review:', error);
         throw new Error(`AI 分析失败: ${error instanceof Error ? error.message : 'Unknown error'} `);
-    }
-}
-
-// ============================================
-// Ask Mentor
-// ============================================
-
-/**
- * Ask a follow-up question to the AI mentor
- */
-export async function askMentor(
-    question: string,
-    trades: Trade[],
-    specificDate?: string,
-    economicEvents?: EconomicEventForAI[]
-): Promise<AskMentorResult> {
-    const groq = getGroqClient();
-
-    // Filter trades by date if specified
-    let relevantTrades = trades;
-    if (specificDate) {
-        relevantTrades = trades.filter((t) => {
-            const tradeDate = t.exit_time || t.entry_time;
-            return tradeDate?.startsWith(specificDate);
-        });
-    }
-
-    const serializedTrades = serializeTradesForAI(relevantTrades);
-    const summary = generateTradeSummary(relevantTrades);
-
-    // Build economic events section if provided
-    const economicEventsSection = economicEvents && economicEvents.length > 0
-        ? `
-## 相关财经日历事件
-以下是交易入场前后±1小时内的重要经济事件：
-\`\`\`json
-${JSON.stringify(economicEvents, null, 2)}
-\`\`\`
-`
-        : '';
-
-    const userMessage = `
-## 交易背景
-${summary}
-
-${specificDate ? `## 指定日期: ${specificDate}` : ''}
-${economicEventsSection}
-## 交易数据
-    \`\`\`json
-${JSON.stringify(serializedTrades.slice(0, 20), null, 2)}
-\`\`\`
-
-## 用户问题
-${question}
-    `.trim();
-
-    try {
-        const completion = await groq.chat.completions.create({
-            model: 'llama-3.3-70b-versatile',
-            messages: [
-                { role: 'system', content: ASK_MENTOR_SYSTEM_PROMPT },
-                { role: 'user', content: userMessage },
-            ],
-            temperature: 0.7,
-            max_tokens: 1024,
-        });
-
-        const answer = completion.choices[0]?.message?.content || '无法生成回答，请稍后重试。';
-
-        return {
-            answer,
-            context: specificDate || undefined,
-        };
-    } catch (error) {
-        console.error('Error asking mentor:', error);
-        throw new Error(`AI 回答失败: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
 }
 

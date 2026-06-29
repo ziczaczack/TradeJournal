@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Trade } from '@/lib/tradeQueries';
 import { EmotionWarning } from '@/lib/aiMentor';
 import { useAIMentorStore } from '@/stores/aiMentorStore';
+import { getSupabase } from '@/lib/supabase';
 
 interface AIMentorInsightsProps {
     trades: Trade[];
@@ -40,9 +41,19 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
         setStatus('analyzing');
 
         try {
+            // Forward the user's access token so the server route can scope the
+            // query to this user under RLS (sessions are stored client-side).
+            const { data: { session } } = await getSupabase().auth.getSession();
+            if (!session?.access_token) {
+                throw new Error('You must be signed in to generate a review.');
+            }
+
             const response = await fetch('/api/ai-mentor/review', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${session.access_token}`,
+                },
                 body: JSON.stringify({ limit: 20 }),
             });
 

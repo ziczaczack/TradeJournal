@@ -570,7 +570,7 @@ export default function BacktestPage() {
     };
 
     return (
-        <DashboardLayout showAIPanel={false}>
+        <DashboardLayout>
             <div className="max-w-5xl mx-auto">
                 {/* Page Header */}
                 <motion.div

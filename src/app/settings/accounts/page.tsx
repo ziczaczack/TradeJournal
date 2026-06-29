@@ -151,7 +151,7 @@ export default function AccountSettingsPage() {
     };
 
     return (
-        <DashboardLayout showAIPanel={false}>
+        <DashboardLayout>
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <motion.div

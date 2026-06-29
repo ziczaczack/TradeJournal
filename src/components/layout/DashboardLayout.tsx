@@ -10,7 +10,6 @@ import {
     History,
     Calendar,
     BarChart3,
-    Bot,
     TrendingUp,
     LogOut,
     UserCircle,
@@ -26,7 +25,6 @@ import { ClipboardCheck } from 'lucide-react';
 
 interface DashboardLayoutProps {
     children: ReactNode;
-    showAIPanel?: boolean;
 }
 
 const navItems = [
@@ -39,7 +37,7 @@ const navItems = [
     { href: '/playbook', label: 'Playbook', icon: BookOpen },
 ];
 
-export function DashboardLayout({ children, showAIPanel = true }: DashboardLayoutProps) {
+export function DashboardLayout({ children }: DashboardLayoutProps) {
     const pathname = usePathname();
     const router = useRouter();
     const [user, setUser] = useState<User | null>(null);
@@ -173,7 +171,7 @@ export function DashboardLayout({ children, showAIPanel = true }: DashboardLayou
 
             {/* Main Content Area */}
             <div className="pt-16 min-h-screen">
-                <div className={`max-w-[1600px] mx-auto ${showAIPanel ? 'lg:pr-80' : ''}`}>
+                <div className="max-w-[1600px] mx-auto">
                     {/* Page Content with Fade Animation */}
                     <AnimatePresence mode="wait">
                         <motion.main
@@ -188,48 +186,6 @@ export function DashboardLayout({ children, showAIPanel = true }: DashboardLayou
                         </motion.main>
                     </AnimatePresence>
                 </div>
-
-                {/* AI Mentor Floating Panel */}
-                {showAIPanel && (
-                    <aside className="hidden lg:block fixed top-20 right-4 bottom-4 w-72">
-                        <div className="glass-card h-full p-4 flex flex-col">
-                            {/* Panel Header */}
-                            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-zinc-800">
-                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center animate-pulse-glow">
-                                    <Bot className="w-4 h-4 text-white" />
-                                </div>
-                                <div>
-                                    <h3 className="text-sm font-semibold text-white">AI Mentor</h3>
-                                    <p className="text-[10px] text-zinc-500">Always analyzing</p>
-                                </div>
-                            </div>
-
-                            {/* Panel Content Placeholder */}
-                            <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
-                                <div className="w-12 h-12 rounded-full bg-zinc-800/50 flex items-center justify-center mb-4">
-                                    <Bot className="w-6 h-6 text-zinc-500" />
-                                </div>
-                                <p className="text-sm text-zinc-400 mb-2">
-                                    Your AI Trading Coach
-                                </p>
-                                <p className="text-xs text-zinc-500">
-                                    Import trades to get personalized insights and improvement tips.
-                                </p>
-                            </div>
-
-                            {/* Panel Footer */}
-                            <div className="pt-4 border-t border-zinc-800">
-                                <Button
-                                    variant="outline"
-                                    className="w-full btn-scale bg-zinc-800/50 border-zinc-700 hover:bg-zinc-700/50 text-zinc-300"
-                                >
-                                    <Bot className="w-4 h-4 mr-2" />
-                                    Ask AI Mentor
-                                </Button>
-                            </div>
-                        </div>
-                    </aside>
-                )}
             </div>
         </div>
     );

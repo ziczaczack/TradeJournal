@@ -8,7 +8,7 @@ import { ClipboardCheck } from 'lucide-react';
 
 export default function ChecklistPage() {
     return (
-        <DashboardLayout showAIPanel={false}>
+        <DashboardLayout>
             <div className="max-w-6xl mx-auto px-4">
                 {/* Page Header */}
                 <motion.div

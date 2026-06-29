@@ -137,7 +137,7 @@ export default function PlaybookPage() {
     };
 
     return (
-        <DashboardLayout showAIPanel={false}>
+        <DashboardLayout>
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">

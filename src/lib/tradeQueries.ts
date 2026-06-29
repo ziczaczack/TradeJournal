@@ -1,3 +1,4 @@
+import { SupabaseClient } from '@supabase/supabase-js';
 import { getSupabase } from './supabase';
 import { startOfMonth, endOfMonth, format } from 'date-fns';
 
@@ -41,12 +42,19 @@ export interface TradeUpdate {
 }
 
 /**
- * Fetch all trades with optional filters
+ * Fetch all trades with optional filters.
+ *
+ * Pass an explicit `client` (e.g. a token-bound client from getSupabaseForToken)
+ * when calling from a server route handler, so RLS scopes the query to the
+ * authenticated user. Defaults to the browser anon client for client-side calls.
  */
-export async function fetchTrades(filters?: TradeFilters): Promise<Trade[]> {
+export async function fetchTrades(
+    filters?: TradeFilters,
+    client: SupabaseClient = getSupabase()
+): Promise<Trade[]> {
     // Optimized query: only fetch fields needed for list views
     // notes and screenshot_url are excluded to reduce payload
-    let query = getSupabase()
+    let query = client
         .from('trading_journal')
         .select('id, account_id, symbol, pnl, buy_price, sell_price, quantity, entry_time, exit_time, duration, trade_id, setup_type, is_valid_setup, psychology_tag, rating')
         .order('entry_time', { ascending: false });

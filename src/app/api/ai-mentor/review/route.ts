@@ -4,6 +4,7 @@ import { fetchTrades } from '@/lib/tradeQueries';
 import { getSupabaseForToken } from '@/lib/supabaseServer';
 
 export interface ReviewRequestBody {
+    accountId?: string;
     tradeIds?: string[];
     dateRange?: {
         start: string;
@@ -37,10 +38,11 @@ export async function POST(request: NextRequest) {
         }
 
         const body: ReviewRequestBody = await request.json();
-        const { limit = 10 } = body;
+        const { limit = 10, accountId } = body;
 
-        // Fetch trades scoped to the authenticated user (RLS enforced via token client)
-        let trades = await fetchTrades(undefined, supabase);
+        // Fetch trades scoped to the authenticated user (RLS enforced via token client),
+        // and to the selected account so the review matches the on-screen analytics.
+        let trades = await fetchTrades(accountId ? { accountId } : undefined, supabase);
 
         // Apply date range filter if provided
         if (body.dateRange?.start && body.dateRange?.end) {

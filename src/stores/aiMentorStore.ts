@@ -14,13 +14,17 @@ interface AIMentorState {
     // 用于判断缓存是否有效的交易数量
     analyzedTradeCount: number;
 
+    // 缓存对应的账户 ID — 用于在切换账户时判断复盘是否过期
+    analyzedAccountId: string | null;
+
     // Actions
     setStatus: (status: AIMentorStatus) => void;
     setInsights: (
         insights: string,
         recommendations: string[],
         emotionWarnings: EmotionWarning[],
-        tradeCount: number
+        tradeCount: number,
+        accountId: string | null
     ) => void;
     setError: (error: string) => void;
     reset: () => void;
@@ -37,11 +41,12 @@ export const useAIMentorStore = create<AIMentorState>((set, get) => ({
     emotionWarnings: [],
     error: null,
     analyzedTradeCount: 0,
+    analyzedAccountId: null,
 
     // Actions
     setStatus: (status) => set({ status }),
 
-    setInsights: (insights, recommendations, emotionWarnings, tradeCount) =>
+    setInsights: (insights, recommendations, emotionWarnings, tradeCount, accountId) =>
         set({
             insights,
             recommendations,
@@ -49,6 +54,7 @@ export const useAIMentorStore = create<AIMentorState>((set, get) => ({
             status: 'completed',
             error: null,
             analyzedTradeCount: tradeCount,
+            analyzedAccountId: accountId,
         }),
 
     setError: (error) => set({ status: 'error', error }),
@@ -61,6 +67,7 @@ export const useAIMentorStore = create<AIMentorState>((set, get) => ({
             emotionWarnings: [],
             error: null,
             analyzedTradeCount: 0,
+            analyzedAccountId: null,
         }),
 
     needsReanalysis: (currentTradeCount) => {

@@ -8,6 +8,11 @@ import { Trade } from '@/lib/tradeQueries';
 import { EmotionWarning } from '@/lib/aiMentor';
 import { useAIMentorStore } from '@/stores/aiMentorStore';
 import { getSupabase } from '@/lib/supabase';
+import { useAccount } from '@/components/providers/AccountContext';
+
+// The review summarizes only the most recent N trades of the selected account.
+// Kept in sync between the request and the on-screen label.
+const REVIEW_TRADE_LIMIT = 20;
 
 interface AIMentorInsightsProps {
     trades: Trade[];
@@ -25,7 +30,11 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
         setInsights,
         setError,
         needsReanalysis,
+        reset,
+        analyzedAccountId,
     } = useAIMentorStore();
+
+    const { currentAccount } = useAccount();
 
     const isLoading = status === 'analyzing';
 
@@ -36,6 +45,14 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
             console.log('Trade count changed significantly, consider re-analyzing');
         }
     }, [trades.length, status, needsReanalysis]);
+
+    // 切换账户时清除上一个账户的复盘缓存，避免在错误的账户下显示过期结果。
+    // 与已保存的 analyzedAccountId 比较，因此在组件重新挂载后仍然有效。
+    useEffect(() => {
+        if (status === 'completed' && analyzedAccountId !== (currentAccount?.id ?? null)) {
+            reset();
+        }
+    }, [currentAccount?.id, status, analyzedAccountId, reset]);
 
     const generateReview = useCallback(async () => {
         setStatus('analyzing');
@@ -54,7 +71,7 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${session.access_token}`,
                 },
-                body: JSON.stringify({ limit: 20 }),
+                body: JSON.stringify({ limit: REVIEW_TRADE_LIMIT, accountId: currentAccount?.id }),
             });
 
             const result = await response.json();
@@ -67,13 +84,14 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
                 result.data.insights,
                 result.data.recommendations || [],
                 result.data.emotionWarnings || [],
-                trades.length
+                trades.length,
+                currentAccount?.id ?? null
             );
         } catch (err) {
             console.error('Error generating review:', err);
             setError(err instanceof Error ? err.message : 'AI 分析请求失败');
         }
-    }, [setStatus, setInsights, setError, trades.length]);
+    }, [setStatus, setInsights, setError, trades.length, currentAccount?.id]);
 
     const getSeverityColor = (severity: 'high' | 'medium' | 'low') => {
         switch (severity) {
@@ -140,6 +158,10 @@ export function AIMentorInsights({ trades }: AIMentorInsightsProps) {
                 </div>
                 <p className="text-sm text-slate-400">
                     基于 ICT/SMC 交易方法论的 AI 交易教练，分析您的交易数据并提供专业建议
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                    仅分析当前账户最近 {Math.min(REVIEW_TRADE_LIMIT, trades.length)} 笔交易
+                    {trades.length > REVIEW_TRADE_LIMIT && `（共 ${trades.length} 笔）`}
                 </p>
             </CardHeader>
             <CardContent className="space-y-6">

@@ -60,23 +60,18 @@ export function AccountProvider({ children }: AccountProviderProps) {
 
     // Load accounts and set current account
     const loadAccounts = useCallback(async (userId: string) => {
-        console.log('[AccountContext] loadAccounts called for user:', userId);
         try {
             setIsLoading(true);
             setError(null);
 
             // Ensure user has at least one account
-            console.log('[AccountContext] Calling ensureDefaultAccount...');
             await ensureDefaultAccount(userId);
 
             // Fetch all accounts
-            console.log('[AccountContext] Fetching accounts...');
             const userAccounts = await fetchAccounts();
-            console.log('[AccountContext] Fetched accounts:', userAccounts.length);
             setAccounts(userAccounts);
 
             if (userAccounts.length === 0) {
-                console.log('[AccountContext] No accounts found, setting currentAccount to null');
                 setCurrentAccountState(null);
                 return;
             }
@@ -94,27 +89,22 @@ export function AccountProvider({ children }: AccountProviderProps) {
                 selectedAccount = userAccounts.find(a => a.is_default) || userAccounts[0];
             }
 
-            console.log('[AccountContext] Setting currentAccount:', selectedAccount?.account_name);
             setCurrentAccountState(selectedAccount);
         } catch (err) {
             console.error('[AccountContext] Error loading accounts:', err);
             setError(err instanceof Error ? err.message : 'Failed to load accounts');
         } finally {
-            console.log('[AccountContext] Setting isLoading to false');
             setIsLoading(false);
         }
     }, []);
 
     // Listen for auth state changes
     useEffect(() => {
-        console.log('[AccountContext] useEffect running - checking auth');
         supabase.auth.getUser().then(({ data: { user } }) => {
-            console.log('[AccountContext] getUser result:', user?.id || 'no user');
             setUser(user);
             if (user) {
                 loadAccounts(user.id);
             } else {
-                console.log('[AccountContext] No user, setting isLoading to false');
                 setAccounts([]);
                 setCurrentAccountState(null);
                 setIsLoading(false);
@@ -125,7 +115,6 @@ export function AccountProvider({ children }: AccountProviderProps) {
         });
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            console.log('[AccountContext] Auth state change:', _event);
             const newUser = session?.user ?? null;
             setUser(newUser);
             if (newUser) {

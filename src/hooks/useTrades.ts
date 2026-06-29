@@ -28,13 +28,6 @@ export function useTrades(filters?: TradeFilters) {
 export function useTradesForCurrentAccount(additionalFilters?: Omit<TradeFilters, 'accountId'>) {
     const { currentAccount, isLoading: accountLoading } = useAccount();
 
-    // Debug: log the state
-    console.log('[useTradesForCurrentAccount] State:', {
-        accountLoading,
-        currentAccountId: currentAccount?.id,
-        currentAccountName: currentAccount?.account_name,
-    });
-
     const accountId = currentAccount?.id;
 
     const filters: TradeFilters = {
@@ -46,8 +39,6 @@ export function useTradesForCurrentAccount(additionalFilters?: Omit<TradeFilters
     // 1. Account is not loading
     // 2. We have a valid account ID
     const isEnabled = !accountLoading && !!accountId;
-
-    console.log('[useTradesForCurrentAccount] Query enabled:', isEnabled);
 
     return useQuery({
         queryKey: tradeQueryKeys.list(filters),

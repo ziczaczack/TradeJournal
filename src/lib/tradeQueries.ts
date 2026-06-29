@@ -44,13 +44,6 @@ export interface TradeUpdate {
  * Fetch all trades with optional filters
  */
 export async function fetchTrades(filters?: TradeFilters): Promise<Trade[]> {
-    // Debug logging
-    console.log('[fetchTrades] Called with filters:', {
-        accountId: filters?.accountId,
-        symbol: filters?.symbol,
-        setupType: filters?.setupType,
-    });
-
     // Optimized query: only fetch fields needed for list views
     // notes and screenshot_url are excluded to reduce payload
     let query = getSupabase()
@@ -60,10 +53,7 @@ export async function fetchTrades(filters?: TradeFilters): Promise<Trade[]> {
 
     // Filter by account if provided
     if (filters?.accountId) {
-        console.log('[fetchTrades] Filtering by account_id:', filters.accountId);
         query = query.eq('account_id', filters.accountId);
-    } else {
-        console.log('[fetchTrades] WARNING: No accountId filter - will return all trades!');
     }
 
     if (filters?.symbol) {
@@ -81,7 +71,6 @@ export async function fetchTrades(filters?: TradeFilters): Promise<Trade[]> {
         throw error;
     }
 
-    console.log('[fetchTrades] Returned', data?.length || 0, 'trades');
     return (data as Trade[]) || [];
 }
 

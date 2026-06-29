@@ -51,7 +51,7 @@ You need [Node.js](https://nodejs.org/) installed along with a package manager l
 1. Clone the repository
    ```bash
    git clone https://github.com/ziczaczack/TradeJournal.git
-   cd my-trading-journal
+   cd TradeJournal
    ```
 
 2. Install dependencies
@@ -84,6 +84,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## 🤝 Contact
 
-Your Name - [ziczaczack@gmail.com](mailto:ziczaczack@gmail.com)
+ziczaczack - [ziczaczack@gmail.com](mailto:ziczaczack@gmail.com)
 
 Project Link: [https://github.com/ziczaczack/TradeJournal](https://github.com/ziczaczack/TradeJournal)

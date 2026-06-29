@@ -68,8 +68,6 @@ export async function createPlaybookSetup(setup: PlaybookSetupCreate): Promise<P
         user_id: setup.user_id || session.user.id
     };
 
-    console.log('Inserting playbook setup with payload:', setupPayload);
-
     const { data, error } = await supabase
         .from('playbook_setups')
         .insert(setupPayload)

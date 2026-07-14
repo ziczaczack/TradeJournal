@@ -14,7 +14,7 @@ export interface PlaybookSetup {
 }
 
 export interface PlaybookSetupCreate {
-    user_id: string;
+    user_id?: string;
     name: string;
     description?: string;
     timeframe?: string;

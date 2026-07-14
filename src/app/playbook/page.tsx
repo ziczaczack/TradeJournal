@@ -78,7 +78,6 @@ export default function PlaybookPage() {
         }
 
         const setupData = {
-            user_id: currentAccount.user_id,
             name: name.trim(),
             description: description.trim() || undefined,
             timeframe: timeframe.trim() || undefined,

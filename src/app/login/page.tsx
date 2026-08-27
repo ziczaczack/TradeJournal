@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getSupabase } from '@/lib/supabase';
+import { validatePassword, MIN_PASSWORD_LENGTH } from '@/lib/authRecovery';
 import { Button } from '@/components/ui/button';
-import { LogIn, UserPlus, Mail, Lock, ArrowRight, Loader2, TrendingUp } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -41,6 +42,11 @@ export default function LoginPage() {
                 if (error) throw error;
                 router.push('/');
             } else {
+                const validationError = validatePassword(password);
+                if (validationError) {
+                    setError(validationError);
+                    return;
+                }
                 const { error } = await supabase.auth.signUp({
                     email,
                     password,
@@ -51,8 +57,10 @@ export default function LoginPage() {
                 if (error) throw error;
                 setMessage('Check your email for the confirmation link!');
             }
-        } catch (err: any) {
-            setError(err.message || 'An error occurred during authentication');
+        } catch (err) {
+            setError(
+                err instanceof Error ? err.message : 'An error occurred during authentication'
+            );
         } finally {
             setLoading(false);
         }
@@ -111,9 +119,19 @@ export default function LoginPage() {
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider ml-1">
-                                Password
-                            </label>
+                            <div className="flex items-center justify-between ml-1">
+                                <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
+                                    Password
+                                </label>
+                                {isLogin && (
+                                    <Link
+                                        href="/forgot-password"
+                                        className="text-xs text-zinc-500 hover:text-blue-400 transition-colors"
+                                    >
+                                        Forgot password?
+                                    </Link>
+                                )}
+                            </div>
                             <div className="relative group">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-blue-400 transition-colors" />
                                 <input
@@ -125,6 +143,11 @@ export default function LoginPage() {
                                     placeholder="••••••••"
                                 />
                             </div>
+                            {!isLogin && (
+                                <p className="text-[11px] text-zinc-500 ml-1">
+                                    At least {MIN_PASSWORD_LENGTH} characters.
+                                </p>
+                            )}
                         </div>
 
                         <AnimatePresence mode="wait">

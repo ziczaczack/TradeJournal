@@ -111,9 +111,12 @@ export function TradeDetailSheet({
         loadSetups();
     }, []);
 
-    // Reset form once the full trade row is loaded
+    // Reset the form from the saved row each time the sheet opens or the trade
+    // changes — not only when the data changes — so edits abandoned by closing
+    // without saving can't come back and be saved on the next Save.
+    const loadedTrade = fullTrade && fullTrade.id === trade?.id ? fullTrade : null;
     useEffect(() => {
-        if (fullTrade) {
+        if (isOpen && fullTrade && fullTrade.id === trade?.id) {
             setSetupType(fullTrade.setup_type || '__none__');
             setIsValidSetup(
                 fullTrade.is_valid_setup === true
@@ -131,7 +134,7 @@ export function TradeDetailSheet({
                 reviewed: fullTrade.mistakes_reviewed ?? false,
             });
         }
-    }, [fullTrade]);
+    }, [fullTrade, isOpen, trade?.id]);
 
     const handleSave = async () => {
         if (!trade) return;
@@ -393,7 +396,7 @@ export function TradeDetailSheet({
                         </Button>
                         <Button
                             onClick={handleSave}
-                            disabled={isSaving || !fullTrade}
+                            disabled={isSaving || !loadedTrade}
                             className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 shadow-lg shadow-blue-500/20 transition-all duration-200 btn-scale"
                         >
                             {isSaving ? (

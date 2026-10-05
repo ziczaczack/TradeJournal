@@ -78,6 +78,11 @@ export function TradeListItem({
                             {trade.setup_type}
                         </span>
                     )}
+                    {(trade.mistake_tag_ids?.length ?? 0) > 0 && (
+                        <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-rose-500/10 text-rose-400 shrink-0">
+                            {trade.mistake_tag_ids!.length} mistake{trade.mistake_tag_ids!.length > 1 ? 's' : ''}
+                        </span>
+                    )}
                 </div>
                 <div className="flex items-center gap-3 text-xs text-zinc-500">
                     <span className="flex items-center gap-1">

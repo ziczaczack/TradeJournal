@@ -22,6 +22,9 @@ import { Badge } from '@/components/ui/badge';
 import { Trade, updateTrade, fetchTradeById } from '@/lib/tradeQueries';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { tradeQueryKeys } from '@/hooks/useTrades';
+import { MistakePicker } from '@/components/dashboard/MistakePicker';
+import { fetchMistakeTags, mistakeTagsQueryKey } from '@/lib/mistakeTagQueries';
+import type { MistakeState } from '@/lib/mistakeStats';
 import { ScreenshotUploader } from '@/components/ScreenshotUploader';
 import { formatPnL } from '@/lib/tradeStats';
 import { PlaybookSetup, fetchPlaybookSetups } from '@/lib/playbookQueries';
@@ -88,6 +91,12 @@ export function TradeDetailSheet({
     const [isSaving, setIsSaving] = useState(false);
     const [playbookSetups, setPlaybookSetups] = useState<PlaybookSetup[]>([]);
     const [shareOpen, setShareOpen] = useState(false);
+    const [mistakeState, setMistakeState] = useState<MistakeState>({ tagIds: [], reviewed: false });
+    const { data: mistakeTags = [], isError: mistakeTagsError } = useQuery({
+        queryKey: mistakeTagsQueryKey,
+        queryFn: () => fetchMistakeTags(),
+        enabled: isOpen,
+    });
 
     // Fetch setups from playbook
     useEffect(() => {
@@ -117,6 +126,10 @@ export function TradeDetailSheet({
             setRating(fullTrade.rating || 0);
             setNotes(fullTrade.notes || '');
             setScreenshotUrl(fullTrade.screenshot_url || '');
+            setMistakeState({
+                tagIds: fullTrade.mistake_tag_ids ?? [],
+                reviewed: fullTrade.mistakes_reviewed ?? false,
+            });
         }
     }, [fullTrade]);
 
@@ -133,10 +146,13 @@ export function TradeDetailSheet({
                 rating: rating > 0 ? rating : null,
                 notes: notes || null,
                 screenshot_url: screenshotUrl || null,
+                mistake_tag_ids: mistakeState.tagIds,
+                mistakes_reviewed: mistakeState.reviewed,
             });
 
             if (updated) {
                 queryClient.setQueryData(tradeQueryKeys.detail(updated.id), updated);
+                queryClient.invalidateQueries({ queryKey: tradeQueryKeys.all });
                 onUpdate(updated);
                 onClose();
             }
@@ -303,6 +319,14 @@ export function TradeDetailSheet({
                                 </SelectContent>
                             </Select>
                         </div>
+
+                        {/* Mistakes */}
+                        <MistakePicker
+                            tags={mistakeTags}
+                            state={mistakeState}
+                            onChange={setMistakeState}
+                            loadError={mistakeTagsError}
+                        />
 
                         {/* Rating */}
                         <div className="space-y-2">

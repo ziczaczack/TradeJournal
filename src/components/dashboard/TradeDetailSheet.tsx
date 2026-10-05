@@ -368,6 +368,7 @@ export function TradeDetailSheet({
                     </div>
                 </div>
                 <ShareDialog
+                    key={trade.id}
                     open={shareOpen}
                     onOpenChange={setShareOpen}
                     source={{

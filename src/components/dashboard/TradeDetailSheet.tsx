@@ -25,6 +25,8 @@ import { tradeQueryKeys } from '@/hooks/useTrades';
 import { MistakePicker } from '@/components/dashboard/MistakePicker';
 import { fetchMistakeTags, mistakeTagsQueryKey } from '@/lib/mistakeTagQueries';
 import type { MistakeState } from '@/lib/mistakeStats';
+import { TradeWriteUp } from '@/components/dashboard/TradeWriteUp';
+import { ReviewAnswers, ReviewTemplate, writeUpToSave } from '@/lib/tradeReview';
 import { ScreenshotUploader } from '@/components/ScreenshotUploader';
 import { formatPnL } from '@/lib/tradeStats';
 import { PlaybookSetup, fetchPlaybookSetups } from '@/lib/playbookQueries';
@@ -92,6 +94,8 @@ export function TradeDetailSheet({
     const [playbookSetups, setPlaybookSetups] = useState<PlaybookSetup[]>([]);
     const [shareOpen, setShareOpen] = useState(false);
     const [mistakeState, setMistakeState] = useState<MistakeState>({ tagIds: [], reviewed: false });
+    const [reviewTemplate, setReviewTemplate] = useState<ReviewTemplate | null>(null);
+    const [reviewAnswers, setReviewAnswers] = useState<ReviewAnswers>({});
     const { data: mistakeTags = [], isError: mistakeTagsError } = useQuery({
         queryKey: mistakeTagsQueryKey,
         queryFn: () => fetchMistakeTags(),
@@ -133,6 +137,8 @@ export function TradeDetailSheet({
                 tagIds: fullTrade.mistake_tag_ids ?? [],
                 reviewed: fullTrade.mistakes_reviewed ?? false,
             });
+            setReviewTemplate(fullTrade.review_template ?? null);
+            setReviewAnswers(fullTrade.review_answers ?? {});
         }
     }, [fullTrade, isOpen, trade?.id]);
 
@@ -151,6 +157,7 @@ export function TradeDetailSheet({
                 screenshot_url: screenshotUrl || null,
                 mistake_tag_ids: mistakeState.tagIds,
                 mistakes_reviewed: mistakeState.reviewed,
+                ...writeUpToSave(reviewTemplate, reviewAnswers),
             });
 
             if (updated) {
@@ -377,6 +384,17 @@ export function TradeDetailSheet({
                             tradeId={trade.id}
                             currentUrl={screenshotUrl || null}
                             onUploadComplete={(url) => setScreenshotUrl(url)}
+                        />
+
+                        {/* Write-up */}
+                        <TradeWriteUp
+                            template={reviewTemplate}
+                            answers={reviewAnswers}
+                            hasScreenshot={!!screenshotUrl}
+                            onChange={(template, answers) => {
+                                setReviewTemplate(template);
+                                setReviewAnswers(answers);
+                            }}
                         />
                     </div>
 

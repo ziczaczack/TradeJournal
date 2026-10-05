@@ -57,7 +57,7 @@ export function MistakePicker({ tags, state, onChange, loadError }: MistakePicke
                 </div>
             )}
             {!state.reviewed && !loadError && (
-                <p className="text-xs text-zinc-500">Not reviewed — pick the mistakes you made, or &quot;No mistakes&quot;.</p>
+                <p className="text-xs text-muted-foreground">Not reviewed — pick the mistakes you made, or &quot;No mistakes&quot;.</p>
             )}
         </div>
     );

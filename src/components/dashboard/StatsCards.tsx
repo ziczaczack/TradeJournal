@@ -88,7 +88,7 @@ export function StatsCards({ stats, isLoading }: StatsCardsProps) {
                                 />
                             )}
                             {card.subtitle && (
-                                <p className="text-xs text-zinc-500 mt-1">
+                                <p className="text-xs text-muted-foreground mt-1">
                                     {card.subtitle}
                                 </p>
                             )}

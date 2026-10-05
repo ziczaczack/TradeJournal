@@ -237,12 +237,12 @@ export function TradingChart({
                         <div className="flex items-center gap-2">
                             <span className="text-white font-bold tracking-wide">{symbol}</span>
                             {meta && (
-                                <span className="text-[9px] font-mono text-zinc-600 bg-zinc-800 px-1.5 py-0.5 rounded">
+                                <span className="text-[9px] font-mono text-muted-foreground bg-zinc-800 px-1.5 py-0.5 rounded">
                                     {meta.interval}
                                 </span>
                             )}
                         </div>
-                        <div className="flex items-center gap-3 text-[10px] text-zinc-500 mt-0.5">
+                        <div className="flex items-center gap-3 text-[10px] text-muted-foreground mt-0.5">
                             {entryPrice && (
                                 <span>
                                     <span className="text-blue-400">▲ Entry</span> ${entryPrice.toFixed(2)}
@@ -267,7 +267,7 @@ export function TradingChart({
                             variant="ghost"
                             size="icon"
                             onClick={fetchAndRender}
-                            className="w-7 h-7 text-zinc-500 hover:text-white"
+                            className="w-7 h-7 text-muted-foreground hover:text-white"
                         >
                             <RefreshCw className="w-3.5 h-3.5" />
                         </Button>
@@ -280,7 +280,7 @@ export function TradingChart({
                 <div className="flex items-center justify-center h-[360px] bg-[#0A0A0F]">
                     <div className="text-center">
                         <Loader2 className="w-7 h-7 text-blue-500 animate-spin mx-auto mb-3" />
-                        <p className="text-zinc-500 text-sm">Loading chart data...</p>
+                        <p className="text-muted-foreground text-sm">Loading chart data...</p>
                         <p className="text-zinc-700 text-xs mt-1">{symbol}</p>
                     </div>
                 </div>
@@ -289,9 +289,9 @@ export function TradingChart({
             {status === 'error' && (
                 <div className="flex items-center justify-center h-[360px] bg-[#0A0A0F]">
                     <div className="text-center px-6">
-                        <AlertCircle className="w-8 h-8 text-zinc-600 mx-auto mb-3" />
+                        <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
                         <p className="text-zinc-400 text-sm font-medium mb-1">Chart unavailable</p>
-                        <p className="text-zinc-600 text-xs mb-4 max-w-xs">{errorMsg}</p>
+                        <p className="text-muted-foreground text-xs mb-4 max-w-xs">{errorMsg}</p>
                         <Button
                             variant="outline"
                             size="sm"

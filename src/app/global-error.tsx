@@ -41,7 +41,7 @@ export default function GlobalError({
                         </button>
                     </div>
                     {error.digest && (
-                        <p className="text-zinc-600 text-xs">Error reference: {error.digest}</p>
+                        <p className="text-muted-foreground text-xs">Error reference: {error.digest}</p>
                     )}
                 </main>
             </body>

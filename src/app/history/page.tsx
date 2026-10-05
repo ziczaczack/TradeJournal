@@ -147,7 +147,7 @@ export default function HistoryPage() {
                     className="text-center py-20"
                 >
                     <div className="w-16 h-16 rounded-2xl bg-zinc-800/50 flex items-center justify-center mx-auto mb-4">
-                        <ListFilter className="w-8 h-8 text-zinc-500" />
+                        <ListFilter className="w-8 h-8 text-muted-foreground" />
                     </div>
                     <h3 className="text-xl font-medium text-white mb-2">No trades yet</h3>
                     <p className="text-zinc-400 mb-6">

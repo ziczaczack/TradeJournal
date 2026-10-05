@@ -163,14 +163,14 @@ export function ShareDialog({ open, onOpenChange, source }: ShareDialogProps) {
                     <DialogTitle className="text-white">
                         Share {source.kind === 'trade' ? 'trade' : 'setup'}
                     </DialogTitle>
-                    <DialogDescription className="text-zinc-500">
+                    <DialogDescription className="text-muted-foreground">
                         Only what you see on the card is shared. Account name and size are never included.
                     </DialogDescription>
                 </DialogHeader>
 
                 {/* Options */}
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-xs text-zinc-500 mr-1">Show result as</span>
+                    <span className="text-xs text-muted-foreground mr-1">Show result as</span>
                     {modes.map(m => (
                         <Button
                             key={m}
@@ -231,7 +231,7 @@ export function ShareDialog({ open, onOpenChange, source }: ShareDialogProps) {
                 {/* Existing links */}
                 {links.length > 0 && (
                     <div className="space-y-2">
-                        <p className="text-xs text-zinc-500 uppercase tracking-wider">Active links</p>
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider">Active links</p>
                         {links.map(link => (
                             <div key={link.id} className="flex items-center gap-2 rounded-md border border-zinc-800 px-3 py-2">
                                 <span className="flex-1 truncate font-mono text-xs text-zinc-300">{shareUrl(link.token)}</span>

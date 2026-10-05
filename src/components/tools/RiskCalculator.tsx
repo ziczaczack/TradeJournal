@@ -88,7 +88,7 @@ export function RiskCalculator({ isCompact = false }: { isCompact?: boolean }) {
                 </div>
                 <div>
                     <h3 className="text-xl font-bold text-white tracking-tight">Risk Calculator</h3>
-                    <p className="text-sm text-zinc-500">Calculate position size before entry</p>
+                    <p className="text-sm text-muted-foreground">Calculate position size before entry</p>
                 </div>
             </div>
 
@@ -98,7 +98,7 @@ export function RiskCalculator({ isCompact = false }: { isCompact?: boolean }) {
                     <div className="space-y-2">
                         <label className="text-zinc-400 text-xs uppercase tracking-wider block">Account Balance</label>
                         <div className="relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
                             <Input
                                 type="number"
                                 value={balance}
@@ -133,7 +133,7 @@ export function RiskCalculator({ isCompact = false }: { isCompact?: boolean }) {
                                 placeholder="0.00"
                                 value={entryPrice}
                                 onChange={(e) => setEntryPrice(e.target.value)}
-                                className="bg-zinc-900/50 border-zinc-700 focus:border-blue-500/50"
+                                className="bg-zinc-900/50 border-zinc-700 focus:border-ring"
                             />
                         </div>
                         <div className="space-y-2">
@@ -152,7 +152,7 @@ export function RiskCalculator({ isCompact = false }: { isCompact?: boolean }) {
                         <select
                             value={assetType}
                             onChange={(e) => setAssetType(e.target.value)}
-                            className="w-full bg-zinc-900/50 border border-zinc-700 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                            className="w-full bg-zinc-900/50 border border-zinc-700 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-ring"
                         >
                             {Object.keys(ASSET_PRESETS).map(key => (
                                 <option key={key} value={key}>{key}</option>
@@ -163,7 +163,7 @@ export function RiskCalculator({ isCompact = false }: { isCompact?: boolean }) {
 
                 {/* Right Side: Results */}
                 <div className="flex flex-col gap-4">
-                    <div className={`flex-1 rounded-2xl border p-6 flex flex-col justify-center items-center relative overflow-hidden ${calculations ? severityColor : 'bg-zinc-800/20 border-zinc-800 text-zinc-600'}`}>
+                    <div className={`flex-1 rounded-2xl border p-6 flex flex-col justify-center items-center relative overflow-hidden ${calculations ? severityColor : 'bg-zinc-800/20 border-zinc-800 text-muted-foreground'}`}>
                         {calculations ? (
                             <>
                                 <motion.div
@@ -195,13 +195,13 @@ export function RiskCalculator({ isCompact = false }: { isCompact?: boolean }) {
 
                     <div className="grid grid-cols-2 gap-3">
                         <div className="glass-card p-4 border-zinc-800 text-center">
-                            <p className="text-[10px] text-zinc-500 uppercase mb-1">Total Risk</p>
+                            <p className="text-[10px] text-muted-foreground uppercase mb-1">Total Risk</p>
                             <p className="text-lg font-bold text-white tabular-nums">
                                 ${calculations ? calculations.actualRisk.toLocaleString() : '0'}
                             </p>
                         </div>
                         <div className="glass-card p-4 border-zinc-800 text-center">
-                            <p className="text-[10px] text-zinc-500 uppercase mb-1">Stop Distance</p>
+                            <p className="text-[10px] text-muted-foreground uppercase mb-1">Stop Distance</p>
                             <p className="text-lg font-bold text-white tabular-nums">
                                 {calculations ? calculations.distance.toFixed(2) : '0'}
                             </p>

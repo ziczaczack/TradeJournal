@@ -27,7 +27,7 @@ export function TradeWriteUp({ template, answers, hasScreenshot, onChange }: Tra
             <div className="flex items-center justify-between">
                 <label className="text-sm text-zinc-400 font-medium">
                     Write-up{' '}
-                    <span className="text-xs text-zinc-500">
+                    <span className="text-xs text-muted-foreground">
                         {template ? `${progress.done}/${progress.total}` : 'not written'}
                     </span>
                 </label>
@@ -58,7 +58,7 @@ export function TradeWriteUp({ template, answers, hasScreenshot, onChange }: Tra
             ))}
 
             {def.includesChart && (
-                <p className={`text-xs ${hasScreenshot ? 'text-emerald-400' : 'text-zinc-500'}`}>
+                <p className={`text-xs ${hasScreenshot ? 'text-emerald-400' : 'text-muted-foreground'}`}>
                     Entry chart: {hasScreenshot
                         ? 'screenshot attached.'
                         : 'upload your chart above, marking entry, target and stop.'}

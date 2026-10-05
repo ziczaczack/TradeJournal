@@ -60,7 +60,7 @@ export function EmptyState({
             <div className="relative mb-6">
                 <div className="absolute inset-0 bg-gradient-to-br from-zinc-500/10 to-zinc-700/10 rounded-2xl blur-xl" />
                 <div className="relative w-20 h-20 rounded-2xl bg-zinc-800/30 backdrop-blur-sm border border-zinc-700/30 flex items-center justify-center">
-                    <Icon className="w-10 h-10 text-zinc-500/70" strokeWidth={1.5} />
+                    <Icon className="w-10 h-10 text-muted-foreground/70" strokeWidth={1.5} />
                 </div>
             </div>
 
@@ -70,7 +70,7 @@ export function EmptyState({
             </h3>
 
             {/* Description */}
-            <p className="text-sm text-zinc-500 max-w-xs mb-6">
+            <p className="text-sm text-muted-foreground max-w-xs mb-6">
                 {description}
             </p>
 

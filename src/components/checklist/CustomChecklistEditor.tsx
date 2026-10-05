@@ -64,12 +64,12 @@ function DraggableItem({ template, onEdit, onDelete }: DraggableItemProps) {
             className="group"
         >
             <div className="flex items-center gap-3 p-3 bg-zinc-800/50 border border-zinc-700/50 rounded-lg hover:border-zinc-600 transition-colors">
-                <div className="cursor-grab active:cursor-grabbing text-zinc-500 hover:text-zinc-300">
+                <div className="cursor-grab active:cursor-grabbing text-muted-foreground hover:text-zinc-300">
                     <GripVertical className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
                     <p className="text-sm text-zinc-200">{template.item_text}</p>
-                    <p className="text-xs text-zinc-500">{info.icon} {info.label}</p>
+                    <p className="text-xs text-muted-foreground">{info.icon} {info.label}</p>
                 </div>
                 <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
@@ -428,11 +428,11 @@ export function CustomChecklistEditor() {
                         <div className="flex items-center gap-2 mb-4">
                             <span className="text-xl">{info.icon}</span>
                             <h3 className="font-semibold text-white">{info.label}</h3>
-                            <span className="text-xs text-zinc-500">({items.length} items)</span>
+                            <span className="text-xs text-muted-foreground">({items.length} items)</span>
                         </div>
 
                         {items.length === 0 ? (
-                            <p className="text-sm text-zinc-500 text-center py-4">
+                            <p className="text-sm text-muted-foreground text-center py-4">
                                 No items in this category. Click "Add Item" to create one.
                             </p>
                         ) : (

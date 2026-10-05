@@ -232,7 +232,7 @@ export default function CalendarPage() {
                                 {daySummary && (
                                     <div className="mt-4 pt-4 border-t border-zinc-800">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-sm text-zinc-500">
+                                            <span className="text-sm text-muted-foreground">
                                                 {daySummary.count} trade{daySummary.count !== 1 ? 's' : ''}
                                             </span>
                                             <span

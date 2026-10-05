@@ -270,7 +270,7 @@ export default function AccountSettingsPage() {
                     ) : accounts.length === 0 ? (
                         <Card className="bg-zinc-900/50 border-zinc-700/50">
                             <CardContent className="py-12 text-center">
-                                <Building2 className="w-12 h-12 text-zinc-600 mx-auto mb-4" />
+                                <Building2 className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                                 <h3 className="text-lg font-medium text-white mb-2">
                                     No Accounts Yet
                                 </h3>
@@ -316,7 +316,7 @@ export default function AccountSettingsPage() {
                                                     </p>
                                                 )}
                                                 <div className="flex items-center gap-4 text-sm">
-                                                    <span className="text-zinc-500 flex items-center gap-1">
+                                                    <span className="text-muted-foreground flex items-center gap-1">
                                                         <DollarSign className="w-3 h-3" />
                                                         Initial: ${account.initial_balance.toLocaleString()}
                                                     </span>

@@ -194,7 +194,7 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
                                 <p className="text-lg font-medium text-zinc-700 dark:text-zinc-200">
                                     Drag & drop your CSV file here
                                 </p>
-                                <p className="text-sm text-zinc-500">
+                                <p className="text-sm text-muted-foreground">
                                     or click to browse
                                 </p>
                             </div>
@@ -261,7 +261,7 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
                                                     <div className="flex flex-col items-start">
                                                         <span>{account.account_name}</span>
                                                         {account.broker_name && (
-                                                            <span className="text-xs text-zinc-500">
+                                                            <span className="text-xs text-muted-foreground">
                                                                 {account.broker_name}
                                                             </span>
                                                         )}
@@ -319,15 +319,15 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
                         <div className="grid grid-cols-3 gap-4 text-center">
                             <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4">
                                 <p className="text-2xl font-bold">{parseResult.metadata.totalRows}</p>
-                                <p className="text-sm text-zinc-500">Total Rows</p>
+                                <p className="text-sm text-muted-foreground">Total Rows</p>
                             </div>
                             <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
                                 <p className="text-2xl font-bold text-green-600">{uploadResult.insertedCount}</p>
-                                <p className="text-sm text-zinc-500">Inserted</p>
+                                <p className="text-sm text-muted-foreground">Inserted</p>
                             </div>
                             <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
                                 <p className="text-2xl font-bold text-yellow-600">{uploadResult.skippedCount}</p>
-                                <p className="text-sm text-zinc-500">Skipped (duplicates)</p>
+                                <p className="text-sm text-muted-foreground">Skipped (duplicates)</p>
                             </div>
                         </div>
 
@@ -359,7 +359,7 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
                         <div className="text-center">
                             <div className="text-5xl mb-4">❌</div>
                             <p className="text-xl font-bold text-red-600">Import Failed</p>
-                            <p className="text-zinc-600 dark:text-zinc-400 mt-2">{errorMessage}</p>
+                            <p className="text-muted-foreground dark:text-zinc-400 mt-2">{errorMessage}</p>
                         </div>
                         <Button onClick={resetState} className="w-full" variant="outline">
                             Try Again

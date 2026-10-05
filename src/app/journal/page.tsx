@@ -101,7 +101,7 @@ function JournalContent() {
     };
 
     if (!day) {
-        return <p className="text-sm text-zinc-500">Loading…</p>;
+        return <p className="text-sm text-muted-foreground">Loading…</p>;
     }
 
     return (
@@ -143,7 +143,7 @@ function JournalContent() {
                     ['Written up', `${summary.writtenUp} of ${summary.count}`],
                 ].map(([label, value]) => (
                     <div key={label} className="glass-card p-3 rounded-xl border border-zinc-800/50">
-                        <p className="text-xs uppercase tracking-wider text-zinc-500">{label}</p>
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground">{label}</p>
                         <p className="text-lg font-semibold text-white">{value}</p>
                     </div>
                 ))}
@@ -154,7 +154,7 @@ function JournalContent() {
                 {noteQuery.isError ? (
                     <p className="text-sm text-rose-400">Couldn&apos;t load your note for this day.</p>
                 ) : noteQuery.data === undefined || !userQuery.data ? (
-                    <p className="text-sm text-zinc-500">Loading note…</p>
+                    <p className="text-sm text-muted-foreground">Loading note…</p>
                 ) : (
                     <DayNoteEditor
                         key={day}
@@ -175,9 +175,9 @@ function JournalContent() {
                         <Button size="sm" variant="outline" onClick={() => tradesQuery.refetch()}>Retry</Button>
                     </div>
                 )}
-                {tradesQuery.isLoading && <p className="text-sm text-zinc-500">Loading trades…</p>}
+                {tradesQuery.isLoading && <p className="text-sm text-muted-foreground">Loading trades…</p>}
                 {tradesQuery.isSuccess && trades.length === 0 && (
-                    <p className="text-sm text-zinc-500">No trades on this day.</p>
+                    <p className="text-sm text-muted-foreground">No trades on this day.</p>
                 )}
                 {trades.map(trade => {
                     const template = trade.review_template ?? null;
@@ -194,9 +194,9 @@ function JournalContent() {
                                     className="flex flex-1 items-center gap-3 text-left"
                                     aria-expanded={isOpen}
                                 >
-                                    <ChevronDown className={`w-4 h-4 text-zinc-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                                     <span className="font-semibold text-white">{trade.symbol}</span>
-                                    <span className="text-xs text-zinc-500">{formatTime(trade.entry_time)}</span>
+                                    <span className="text-xs text-muted-foreground">{formatTime(trade.entry_time)}</span>
                                     <span className={`font-mono text-sm ${pnl.isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>{pnl.text}</span>
                                     <span className="text-xs text-zinc-400">
                                         {template ? `${REVIEW_TEMPLATES[template].label} ${progress.done}/${progress.total}` : 'Not written'}
@@ -208,10 +208,10 @@ function JournalContent() {
                             </div>
                             {isOpen && (
                                 <div className="border-t border-zinc-800/60 px-4 py-3 space-y-3">
-                                    {!template && <p className="text-sm text-zinc-500">No write-up yet.</p>}
+                                    {!template && <p className="text-sm text-muted-foreground">No write-up yet.</p>}
                                     {template && REVIEW_TEMPLATES[template].questions.map(q => (
                                         <div key={q.id}>
-                                            <p className="text-xs text-zinc-500">{q.label}</p>
+                                            <p className="text-xs text-muted-foreground">{q.label}</p>
                                             <p className="text-sm text-zinc-200 whitespace-pre-wrap">{answers[q.id] || '—'}</p>
                                         </div>
                                     ))}
@@ -241,7 +241,7 @@ export default function JournalPage() {
         <DashboardLayout>
             <div className="max-w-4xl mx-auto px-4">
                 {/* useSearchParams needs a Suspense boundary in the App Router */}
-                <Suspense fallback={<p className="text-sm text-zinc-500">Loading…</p>}>
+                <Suspense fallback={<p className="text-sm text-muted-foreground">Loading…</p>}>
                     <JournalContent />
                 </Suspense>
             </div>

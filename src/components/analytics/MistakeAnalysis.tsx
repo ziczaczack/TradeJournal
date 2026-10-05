@@ -25,7 +25,7 @@ export function MistakeAnalysis({ trades }: { trades: Trade[] }) {
     );
 
     const costColor = (cost: number | null) =>
-        cost === null ? 'text-zinc-500' : cost > 0 ? 'text-rose-400' : 'text-emerald-400';
+        cost === null ? 'text-muted-foreground' : cost > 0 ? 'text-rose-400' : 'text-emerald-400';
 
     return (
         <Card className="glass-card border-zinc-800/50">
@@ -81,7 +81,7 @@ export function MistakeAnalysis({ trades }: { trades: Trade[] }) {
                                     <span className="text-base font-normal text-zinc-400">{PERIOD_LABEL[period]}</span>
                                 </p>
                             )}
-                            <p className="text-xs text-zinc-500 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                                 {analysis.mistakeTradeCount} mistake trade{analysis.mistakeTradeCount === 1 ? '' : 's'} vs{' '}
                                 {analysis.cleanCount} clean
                                 {analysis.cleanAvgPnl !== null && ` (avg ${formatCurrency(analysis.cleanAvgPnl)})`}
@@ -93,7 +93,7 @@ export function MistakeAnalysis({ trades }: { trades: Trade[] }) {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="text-left text-xs uppercase tracking-wider text-zinc-500">
+                                        <tr className="text-left text-xs uppercase tracking-wider text-muted-foreground">
                                             <th className="py-2 pr-4 font-medium">Mistake</th>
                                             <th className="py-2 pr-4 font-medium text-right">Trades</th>
                                             <th className="py-2 pr-4 font-medium text-right">Win rate</th>
@@ -105,7 +105,7 @@ export function MistakeAnalysis({ trades }: { trades: Trade[] }) {
                                     <tbody>
                                         {analysis.rows.map(row => (
                                             <tr key={row.tagId} className="border-t border-zinc-800/60">
-                                                <td className={`py-2 pr-4 ${row.isHidden ? 'text-zinc-500' : 'text-zinc-200'}`}>
+                                                <td className={`py-2 pr-4 ${row.isHidden ? 'text-muted-foreground' : 'text-zinc-200'}`}>
                                                     {row.name}{row.isHidden && ' (hidden)'}
                                                 </td>
                                                 <td className="py-2 pr-4 text-right text-zinc-300">{row.count}</td>
@@ -119,7 +119,7 @@ export function MistakeAnalysis({ trades }: { trades: Trade[] }) {
                                         ))}
                                     </tbody>
                                 </table>
-                                <p className="text-xs text-zinc-500 mt-2">
+                                <p className="text-xs text-muted-foreground mt-2">
                                     A trade with several mistakes counts toward each one, so rows can add up to more than the total.
                                 </p>
                             </div>

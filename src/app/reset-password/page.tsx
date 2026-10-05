@@ -166,13 +166,13 @@ export default function ResetPasswordPage() {
                         New Password
                     </label>
                     <div className="relative group">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-blue-400 transition-colors" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-blue-400 transition-colors" />
                         <input
                             type="password"
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-zinc-600 outline-none transition-all"
+                            className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-ring focus:ring-1 focus:ring-ring rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-muted-foreground outline-none transition-all"
                             placeholder="••••••••"
                         />
                     </div>
@@ -183,13 +183,13 @@ export default function ResetPasswordPage() {
                         Confirm Password
                     </label>
                     <div className="relative group">
-                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-blue-400 transition-colors" />
+                        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-blue-400 transition-colors" />
                         <input
                             type="password"
                             required
                             value={confirmation}
                             onChange={(e) => setConfirmation(e.target.value)}
-                            className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-zinc-600 outline-none transition-all"
+                            className="w-full bg-zinc-900/50 border border-zinc-800 focus:border-ring focus:ring-1 focus:ring-ring rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-muted-foreground outline-none transition-all"
                             placeholder="••••••••"
                         />
                     </div>

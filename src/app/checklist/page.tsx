@@ -51,7 +51,7 @@ export default function ChecklistPage() {
                         className="lg:sticky lg:top-24"
                     >
                         <RiskCalculator isCompact />
-                        <div className="mt-4 p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 text-zinc-500 text-xs italic">
+                        <div className="mt-4 p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 text-muted-foreground text-xs italic">
                             Tip: Professional traders rarely risk more than 1-2% of their total equity on a single trade.
                         </div>
                     </motion.div>

@@ -20,7 +20,7 @@ interface SetupPerformanceChartProps {
 export function SetupPerformanceChart({ data }: SetupPerformanceChartProps) {
     if (data.length === 0) {
         return (
-            <div className="flex items-center justify-center h-[300px] text-zinc-500">
+            <div className="flex items-center justify-center h-[300px] text-muted-foreground">
                 No setup data available
             </div>
         );

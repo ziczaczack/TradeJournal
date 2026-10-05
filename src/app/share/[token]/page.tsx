@@ -63,7 +63,7 @@ export default async function SharePage({ params }: Props) {
                 height={630}
                 className="w-full max-w-3xl h-auto rounded-xl border border-zinc-800"
             />
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-muted-foreground">
                 Shared from{' '}
                 <Link href="/" className="text-zinc-300 hover:underline">My Trading Journal</Link>
             </p>

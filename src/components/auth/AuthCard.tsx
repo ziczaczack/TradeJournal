@@ -36,7 +36,7 @@ export function AuthCard({ title, subtitle, children, footer }: AuthCardProps) {
                             </div>
                             <div className="text-left">
                                 <h1 className="text-xl font-bold text-white tracking-tight">Trading Journal</h1>
-                                <p className="text-[10px] text-zinc-500 uppercase tracking-widest">Pro Terminal</p>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Pro Terminal</p>
                             </div>
                         </Link>
                         <h2 className="text-2xl font-bold text-white mb-2">{title}</h2>

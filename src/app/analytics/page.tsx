@@ -230,7 +230,7 @@ export default function AnalyticsPage() {
                                     <div className="text-2xl font-bold text-rose-400">
                                         {formatCurrency(-stats.maxDrawdown)}
                                     </div>
-                                    <p className="text-xs text-zinc-500 mt-1">
+                                    <p className="text-xs text-muted-foreground mt-1">
                                         {formatPercent(stats.maxDrawdownPercent)} from peak
                                     </p>
                                 </CardContent>
@@ -248,7 +248,7 @@ export default function AnalyticsPage() {
                                     <div className={`text-2xl font-bold ${stats.averageRRR >= 1 ? 'text-emerald-400' : 'text-amber-400'}`}>
                                         {stats.averageRRR.toFixed(2)}
                                     </div>
-                                    <p className="text-xs text-zinc-500 mt-1">
+                                    <p className="text-xs text-muted-foreground mt-1">
                                         Risk to Reward Ratio
                                     </p>
                                 </CardContent>
@@ -471,7 +471,7 @@ export default function AnalyticsPage() {
                     className="text-center py-20"
                 >
                     <div className="w-16 h-16 rounded-2xl bg-zinc-800/50 flex items-center justify-center mx-auto mb-4">
-                        <BarChart3 className="w-8 h-8 text-zinc-500" />
+                        <BarChart3 className="w-8 h-8 text-muted-foreground" />
                     </div>
                     <h3 className="text-xl font-medium text-white mb-2">No trades yet</h3>
                     <p className="text-zinc-400 mb-6">

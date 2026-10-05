@@ -100,7 +100,7 @@ export function TradeList({
                     </SelectContent>
                 </Select>
 
-                <div className="ml-auto text-sm text-zinc-500">
+                <div className="ml-auto text-sm text-muted-foreground">
                     Showing {filteredTrades.length} of {trades.length} trades
                     {shouldVirtualize && (
                         <span className="ml-2 text-blue-400">(virtualized)</span>
@@ -110,7 +110,7 @@ export function TradeList({
 
             {/* Trade List */}
             {filteredTrades.length === 0 ? (
-                <div className="text-center py-12 text-zinc-500">
+                <div className="text-center py-12 text-muted-foreground">
                     <p>No trades found</p>
                 </div>
             ) : shouldVirtualize ? (

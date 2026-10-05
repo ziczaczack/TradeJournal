@@ -213,7 +213,7 @@ export function TradeDetailSheet({
                             {pnlFormatted.text}
                         </span>
                     </SheetTitle>
-                    <SheetDescription className="text-zinc-500">
+                    <SheetDescription className="text-muted-foreground">
                         Review and annotate this trade
                     </SheetDescription>
                 </SheetHeader>
@@ -222,27 +222,27 @@ export function TradeDetailSheet({
                     {/* Read-only Trade Info */}
                     <div className="grid grid-cols-2 gap-4 p-4 bg-zinc-900/50 rounded-xl border border-zinc-800/50">
                         <div>
-                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Entry</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">Entry</p>
                             <p className="text-sm text-zinc-200 font-medium">{formatTime(trade.entry_time)}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Exit</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">Exit</p>
                             <p className="text-sm text-zinc-200 font-medium">{formatTime(trade.exit_time)}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Quantity</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">Quantity</p>
                             <p className="text-sm text-zinc-200 font-medium font-mono">{trade.quantity || '-'}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Duration</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">Duration</p>
                             <p className="text-sm text-zinc-200 font-medium">{trade.duration || '-'}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Buy Price</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">Buy Price</p>
                             <p className="text-sm text-zinc-200 font-medium font-mono">${trade.buy_price?.toFixed(2) || '-'}</p>
                         </div>
                         <div>
-                            <p className="text-xs text-zinc-500 uppercase tracking-wider">Sell Price</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider">Sell Price</p>
                             <p className="text-sm text-zinc-200 font-medium font-mono">${trade.sell_price?.toFixed(2) || '-'}</p>
                         </div>
                     </div>
@@ -252,7 +252,7 @@ export function TradeDetailSheet({
                         Re-enable when a compatible data source is available.
                     {trade.symbol && trade.entry_time && (
                         <div>
-                            <p className="text-xs text-zinc-500 uppercase tracking-wider mb-2">Chart</p>
+                            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">Chart</p>
                             <TradingChart
                                 symbol={trade.symbol}
                                 entryTime={trade.entry_time}
@@ -364,7 +364,7 @@ export function TradeDetailSheet({
                                     <button
                                         type="button"
                                         onClick={() => setRating(0)}
-                                        className="text-xs text-zinc-500 hover:text-zinc-400 ml-3 transition-colors"
+                                        className="text-xs text-muted-foreground hover:text-zinc-400 ml-3 transition-colors"
                                     >
                                         Clear
                                     </button>
@@ -379,7 +379,7 @@ export function TradeDetailSheet({
                                 value={notes}
                                 onChange={(e) => setNotes(e.target.value)}
                                 placeholder="What did you learn from this trade?"
-                                className="bg-zinc-900/50 border-zinc-700/50 min-h-[100px] focus:ring-blue-500/30 focus:border-zinc-600 placeholder:text-zinc-600 resize-none"
+                                className="bg-zinc-900/50 border-zinc-700/50 min-h-[100px] focus:ring-blue-500/30 focus:border-zinc-600 placeholder:text-muted-foreground resize-none"
                             />
                         </div>
 

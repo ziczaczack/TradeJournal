@@ -120,7 +120,7 @@ function CategoryAccordion({
                     </div>
                     <div className="text-left">
                         <h3 className="font-semibold text-white">{info.label}</h3>
-                        <p className="text-xs text-zinc-500">
+                        <p className="text-xs text-muted-foreground">
                             {checkedCount} / {templates.length} completed
                         </p>
                     </div>
@@ -151,7 +151,7 @@ function CategoryAccordion({
                     >
                         <div className="p-4 space-y-2">
                             {templates.length === 0 ? (
-                                <p className="text-sm text-zinc-500 text-center py-4">
+                                <p className="text-sm text-muted-foreground text-center py-4">
                                     No items in this category
                                 </p>
                             ) : (

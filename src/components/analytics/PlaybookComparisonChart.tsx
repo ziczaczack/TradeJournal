@@ -45,7 +45,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                     </span>
                 </div>
                 <div className="flex justify-between gap-6">
-                    <span className="text-zinc-500">Trades</span>
+                    <span className="text-muted-foreground">Trades</span>
                     <span className="text-zinc-300">{trades}</span>
                 </div>
             </div>
@@ -56,10 +56,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 export function PlaybookComparisonChart({ data }: PlaybookComparisonChartProps) {
     if (data.length === 0) {
         return (
-            <div className="flex items-center justify-center h-48 text-zinc-500 text-sm text-center px-8">
+            <div className="flex items-center justify-center h-48 text-muted-foreground text-sm text-center px-8">
                 No Playbook setups found, or no live trades match your setup names yet.
                 <br />
-                <span className="text-zinc-600 text-xs mt-1 block">
+                <span className="text-muted-foreground text-xs mt-1 block">
                     Define setups in The Playbook, then tag your trades with matching setup types.
                 </span>
             </div>

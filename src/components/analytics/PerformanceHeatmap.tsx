@@ -53,7 +53,7 @@ export function PerformanceHeatmap({ data }: PerformanceHeatmapProps) {
 
     if (data.length === 0) {
         return (
-            <div className="flex items-center justify-center h-48 text-zinc-500 text-sm">
+            <div className="flex items-center justify-center h-48 text-muted-foreground text-sm">
                 Not enough data — trade at least a few days to populate the heatmap.
             </div>
         );
@@ -67,7 +67,7 @@ export function PerformanceHeatmap({ data }: PerformanceHeatmapProps) {
     return (
         <div className="relative">
             {/* Legend */}
-            <div className="flex items-center gap-3 mb-4 text-xs text-zinc-500">
+            <div className="flex items-center gap-3 mb-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
                     <div className="w-3 h-3 rounded-sm bg-rose-500/80" />
                     Losing slot
@@ -91,7 +91,7 @@ export function PerformanceHeatmap({ data }: PerformanceHeatmapProps) {
                         {HOUR_LABELS.map((label, h) => (
                             <div
                                 key={h}
-                                className="text-[9px] text-zinc-600 text-center flex-1"
+                                className="text-[9px] text-muted-foreground text-center flex-1"
                                 style={{ minWidth: '18px' }}
                             >
                                 {h % 3 === 0 ? label : ''}
@@ -102,7 +102,7 @@ export function PerformanceHeatmap({ data }: PerformanceHeatmapProps) {
                     {/* Day rows */}
                     {DAY_LABELS.map((dayLabel, d) => (
                         <div key={d} className="flex items-center mb-0.5">
-                            <div className="text-[10px] text-zinc-500 w-9 text-right pr-2 shrink-0">
+                            <div className="text-[10px] text-muted-foreground w-9 text-right pr-2 shrink-0">
                                 {dayLabel}
                             </div>
                             {Array.from({ length: 24 }, (_, h) => {

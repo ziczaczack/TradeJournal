@@ -52,7 +52,7 @@ export function RelatedEconomicEvents({
                     </span>
                     Economic Context
                 </h3>
-                <div className="flex items-center gap-2 text-zinc-500 text-sm py-3">
+                <div className="flex items-center gap-2 text-muted-foreground text-sm py-3">
                     <AlertCircle className="w-4 h-4" />
                     Unable to load economic events
                 </div>
@@ -70,14 +70,14 @@ export function RelatedEconomicEvents({
                 </span>
                 Economic Context
                 {events.length > 0 && (
-                    <span className="ml-auto text-xs text-zinc-500 font-normal">
+                    <span className="ml-auto text-xs text-muted-foreground font-normal">
                         ±{windowHours}h window
                     </span>
                 )}
             </h3>
 
             {events.length === 0 ? (
-                <div className="text-zinc-500 text-sm py-3 text-center bg-zinc-900/30 rounded-lg">
+                <div className="text-muted-foreground text-sm py-3 text-center bg-zinc-900/30 rounded-lg">
                     No major economic events around this trade
                 </div>
             ) : (
@@ -110,7 +110,7 @@ export function RelatedEconomicEvents({
                                     <span className="text-xs font-medium text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">
                                         {event.country}
                                     </span>
-                                    <span className="text-xs text-zinc-500 font-mono">
+                                    <span className="text-xs text-muted-foreground font-mono">
                                         {event.time} UTC
                                     </span>
                                     <span
@@ -130,17 +130,17 @@ export function RelatedEconomicEvents({
                                 {(event.actual || event.forecast) && (
                                     <div className="flex items-center gap-3 mt-1.5 text-xs">
                                         {event.forecast && (
-                                            <span className="text-zinc-500">
+                                            <span className="text-muted-foreground">
                                                 Forecast: <span className="text-zinc-400">{event.forecast}</span>
                                             </span>
                                         )}
                                         {event.actual && (
-                                            <span className="text-zinc-500">
+                                            <span className="text-muted-foreground">
                                                 Actual: <span className="text-emerald-400">{event.actual}</span>
                                             </span>
                                         )}
                                         {event.previous && (
-                                            <span className="text-zinc-500">
+                                            <span className="text-muted-foreground">
                                                 Previous: <span className="text-zinc-400">{event.previous}</span>
                                             </span>
                                         )}

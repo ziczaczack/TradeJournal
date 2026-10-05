@@ -207,14 +207,14 @@ export function ScreenshotUploader({
                         className="hidden"
                     />
                     <div className="space-y-2">
-                        <div className="flex justify-center gap-2 text-zinc-500">
+                        <div className="flex justify-center gap-2 text-muted-foreground">
                             <Upload className="w-5 h-5" />
                             <Clipboard className="w-5 h-5" />
                         </div>
                         <p className="text-sm text-zinc-400">
                             Click to upload or <kbd className="px-1.5 py-0.5 bg-zinc-700 rounded text-xs">Ctrl+V</kbd> to paste
                         </p>
-                        <p className="text-xs text-zinc-500">
+                        <p className="text-xs text-muted-foreground">
                             PNG, JPG up to 10MB
                         </p>
                     </div>

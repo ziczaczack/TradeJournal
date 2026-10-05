@@ -66,7 +66,7 @@ export function AccountSwitcher() {
                             <div className="flex flex-col items-start">
                                 <span className="font-medium">{account.account_name}</span>
                                 {account.broker_name && (
-                                    <span className="text-xs text-zinc-500">
+                                    <span className="text-xs text-muted-foreground">
                                         {account.broker_name}
                                     </span>
                                 )}

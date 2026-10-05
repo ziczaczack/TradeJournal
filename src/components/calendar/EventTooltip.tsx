@@ -45,7 +45,7 @@ export function EventTooltip({ events, children }: EventTooltipProps) {
 
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-1.5">
-                                        <span className="text-zinc-500 font-mono text-[10px]">
+                                        <span className="text-muted-foreground font-mono text-[10px]">
                                             {event.time}
                                         </span>
                                         <span className="font-semibold text-blue-400 text-[10px]">
@@ -60,7 +60,7 @@ export function EventTooltip({ events, children }: EventTooltipProps) {
                         ))}
 
                         {events.length > 5 && (
-                            <div className="text-[10px] text-zinc-500 text-center pt-1 border-t border-zinc-800">
+                            <div className="text-[10px] text-muted-foreground text-center pt-1 border-t border-zinc-800">
                                 +{events.length - 5} more events
                             </div>
                         )}

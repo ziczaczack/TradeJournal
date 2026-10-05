@@ -166,7 +166,7 @@ export default function PlaybookPage() {
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-8 border-emerald-500/20 max-w-4xl mx-auto">
                         <div className="flex items-center justify-between mb-8 border-b border-zinc-800 pb-4">
                             <h2 className="text-xl font-bold text-white">{selectedSetup ? 'Edit Setup Model' : 'Define New Setup Model'}</h2>
-                            <Button variant="ghost" size="icon" onClick={resetForm} className="text-zinc-500 hover:text-white">
+                            <Button variant="ghost" size="icon" onClick={resetForm} className="text-muted-foreground hover:text-white">
                                 <X className="w-5 h-5" />
                             </Button>
                         </div>
@@ -175,7 +175,7 @@ export default function PlaybookPage() {
                             {/* Left Column: Basic Info */}
                             <div className="space-y-6">
                                 <div>
-                                    <label className="text-zinc-500 text-xs uppercase tracking-wider block mb-2">Setup Name *</label>
+                                    <label className="text-muted-foreground text-xs uppercase tracking-wider block mb-2">Setup Name *</label>
                                     <Input
                                         placeholder="e.g. Silver Bullet / Unicorn"
                                         value={name}
@@ -185,7 +185,7 @@ export default function PlaybookPage() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="text-zinc-500 text-xs uppercase tracking-wider block mb-2">Timeframe</label>
+                                        <label className="text-muted-foreground text-xs uppercase tracking-wider block mb-2">Timeframe</label>
                                         <Input
                                             placeholder="5m / 1h / Daily"
                                             value={timeframe}
@@ -194,7 +194,7 @@ export default function PlaybookPage() {
                                         />
                                     </div>
                                     <div>
-                                        <label className="text-zinc-500 text-xs uppercase tracking-wider block mb-2">Target WR%</label>
+                                        <label className="text-muted-foreground text-xs uppercase tracking-wider block mb-2">Target WR%</label>
                                         <Input
                                             type="number"
                                             placeholder="65"
@@ -205,7 +205,7 @@ export default function PlaybookPage() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="text-zinc-500 text-xs uppercase tracking-wider block mb-2">Description</label>
+                                    <label className="text-muted-foreground text-xs uppercase tracking-wider block mb-2">Description</label>
                                     <Textarea
                                         placeholder="General context, psychological notes, etc."
                                         value={description}
@@ -215,7 +215,7 @@ export default function PlaybookPage() {
                                 </div>
 
                                 <div className="pt-4">
-                                    <label className="text-zinc-500 text-xs uppercase tracking-wider block mb-2 flex items-center gap-2">
+                                    <label className="text-muted-foreground text-xs uppercase tracking-wider block mb-2 flex items-center gap-2">
                                         <ImageIcon className="w-3 h-3" />
                                         Example Screenshot (Perfect Model)
                                     </label>
@@ -231,7 +231,7 @@ export default function PlaybookPage() {
                             {/* Right Column: Rules */}
                             <div className="space-y-6 p-6 bg-zinc-900/30 rounded-2xl border border-zinc-800/50">
                                 <div className="flex items-center justify-between mb-2">
-                                    <label className="text-zinc-500 text-xs uppercase tracking-wider flex items-center gap-2">
+                                    <label className="text-muted-foreground text-xs uppercase tracking-wider flex items-center gap-2">
                                         <ListChecks className="w-4 h-4 text-emerald-400" />
                                         Confluence Rules
                                     </label>
@@ -248,7 +248,7 @@ export default function PlaybookPage() {
                                                 onChange={(e) => handleRuleChange(idx, e.target.value)}
                                                 className="bg-zinc-900/80 border-zinc-700 text-sm"
                                             />
-                                            <Button variant="ghost" size="icon" onClick={() => handleRemoveRule(idx)} className="h-10 w-10 text-zinc-600 hover:text-rose-400">
+                                            <Button variant="ghost" size="icon" onClick={() => handleRemoveRule(idx)} className="h-10 w-10 text-muted-foreground hover:text-rose-400">
                                                 <X className="w-4 h-4" />
                                             </Button>
                                         </div>
@@ -275,7 +275,7 @@ export default function PlaybookPage() {
                             <div className="col-span-full py-20 text-center glass-card">
                                 <BookOpen className="w-16 h-16 mx-auto text-zinc-700 mb-4 opacity-20" />
                                 <h3 className="text-xl font-medium text-white mb-2">Your Playbook is empty</h3>
-                                <p className="text-zinc-500 mb-6">Start building your edge by defining your first trading setup.</p>
+                                <p className="text-muted-foreground mb-6">Start building your edge by defining your first trading setup.</p>
                                 <Button onClick={() => setShowForm(true)} className="bg-emerald-600 hover:bg-emerald-500">
                                     Create My First Setup
                                 </Button>
@@ -318,7 +318,7 @@ export default function PlaybookPage() {
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => setShareSetup(setup)}
-                                                    className="w-8 h-8 text-zinc-500 hover:text-white"
+                                                    className="w-8 h-8 text-muted-foreground hover:text-white"
                                                     aria-label="Share setup"
                                                 >
                                                     <Share2 className="w-4 h-4" />
@@ -327,7 +327,7 @@ export default function PlaybookPage() {
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => handleEdit(setup)}
-                                                    className="w-8 h-8 text-zinc-500 hover:text-white"
+                                                    className="w-8 h-8 text-muted-foreground hover:text-white"
                                                 >
                                                     <ChevronRight className="w-4 h-4" />
                                                 </Button>
@@ -335,14 +335,14 @@ export default function PlaybookPage() {
                                                     variant="ghost"
                                                     size="icon"
                                                     onClick={() => handleDelete(setup.id)}
-                                                    className="w-8 h-8 text-zinc-500 hover:text-rose-400"
+                                                    className="w-8 h-8 text-muted-foreground hover:text-rose-400"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </Button>
                                             </div>
                                         </div>
                                         {setup.description && (
-                                            <p className="text-xs text-zinc-500 line-clamp-2 mb-4 italic">"{setup.description}"</p>
+                                            <p className="text-xs text-muted-foreground line-clamp-2 mb-4 italic">"{setup.description}"</p>
                                         )}
                                         <div className="mt-auto space-y-1.5">
                                             {setup.rules.slice(0, 3).map((rule, idx) => (
@@ -352,7 +352,7 @@ export default function PlaybookPage() {
                                                 </div>
                                             ))}
                                             {setup.rules.length > 3 && (
-                                                <p className="text-[9px] text-zinc-600 pl-3">+{setup.rules.length - 3} more rules</p>
+                                                <p className="text-[9px] text-muted-foreground pl-3">+{setup.rules.length - 3} more rules</p>
                                             )}
                                         </div>
                                     </div>

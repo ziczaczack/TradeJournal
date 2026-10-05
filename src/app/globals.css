@@ -78,7 +78,7 @@
 
   /* Muted */
   --muted: oklch(0.2 0.005 285);
-  --muted-foreground: oklch(0.6 0 0);
+  --muted-foreground: oklch(0.65 0.015 286);
 
   /* Accent */
   --accent: oklch(0.18 0.005 285);
@@ -90,7 +90,7 @@
   /* Borders - Zinc-800 */
   --border: oklch(0.25 0.005 285);
   --input: oklch(0.2 0.005 285);
-  --ring: oklch(0.55 0.15 250);
+  --ring: oklch(0.65 0.15 250);
 
   /* Charts - Vibrant colors */
   --chart-1: oklch(0.7 0.18 160);
@@ -112,12 +112,12 @@
   --sidebar-accent: oklch(0.18 0.005 285);
   --sidebar-accent-foreground: oklch(0.95 0 0);
   --sidebar-border: oklch(0.25 0.005 285);
-  --sidebar-ring: oklch(0.55 0.15 250);
+  --sidebar-ring: oklch(0.65 0.15 250);
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
   }
 
   body {

@@ -92,12 +92,12 @@ export default function MistakeTagsPage() {
                 </>
             ) : (
                 <>
-                    <span className={`flex-1 text-sm ${tag.is_hidden ? 'text-zinc-500' : 'text-zinc-200'}`}>{tag.name}</span>
+                    <span className={`flex-1 text-sm ${tag.is_hidden ? 'text-muted-foreground' : 'text-zinc-200'}`}>{tag.name}</span>
                     <Button
                         size="icon"
                         variant="ghost"
                         onClick={() => { setEditingId(tag.id); setEditName(tag.name); setError(null); }}
-                        className="text-zinc-500 hover:text-white"
+                        className="text-muted-foreground hover:text-white"
                         aria-label={`Rename ${tag.name}`}
                     >
                         <Pencil className="w-4 h-4" />
@@ -107,7 +107,7 @@ export default function MistakeTagsPage() {
                         variant="ghost"
                         disabled={busy}
                         onClick={() => run(() => setMistakeTagHidden(tag.id, !tag.is_hidden))}
-                        className="text-zinc-500 hover:text-white"
+                        className="text-muted-foreground hover:text-white"
                         aria-label={tag.is_hidden ? `Show ${tag.name}` : `Hide ${tag.name}`}
                     >
                         {tag.is_hidden ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -150,13 +150,13 @@ export default function MistakeTagsPage() {
 
                 {error && <p className="text-sm text-rose-400">{error}</p>}
                 {isError && <p className="text-sm text-rose-400">Couldn&apos;t load mistake tags.</p>}
-                {isLoading && <p className="text-sm text-zinc-500">Loading…</p>}
+                {isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
 
                 <div className="space-y-2">{visible.map(renderRow)}</div>
 
                 {hidden.length > 0 && (
                     <div className="space-y-2">
-                        <p className="text-xs uppercase tracking-wider text-zinc-500">Hidden</p>
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground">Hidden</p>
                         {hidden.map(renderRow)}
                     </div>
                 )}

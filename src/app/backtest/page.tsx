@@ -73,7 +73,7 @@ function SessionList({
             <div className="flex items-center justify-between">
                 <div>
                     <h2 className="text-2xl font-bold text-white">Backtest Sessions</h2>
-                    <p className="text-zinc-500 text-sm">Create strategy-specific backtest sessions</p>
+                    <p className="text-muted-foreground text-sm">Create strategy-specific backtest sessions</p>
                 </div>
                 <Button
                     onClick={() => setShowForm(!showForm)}
@@ -107,7 +107,7 @@ function SessionList({
                                 <div>
                                     <label className="text-zinc-400 text-xs uppercase tracking-wider block mb-2">Initial Balance</label>
                                     <div className="relative">
-                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">$</span>
+                                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
                                         <Input
                                             type="number"
                                             value={balance}
@@ -141,9 +141,9 @@ function SessionList({
             {/* Session Cards */}
             {sessions.length === 0 && !showForm ? (
                 <div className="glass-card p-12 text-center">
-                    <FlaskConical className="w-12 h-12 mx-auto text-zinc-600 mb-4" />
+                    <FlaskConical className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                     <h3 className="text-lg font-semibold text-white mb-2">No Backtest Sessions Yet</h3>
-                    <p className="text-zinc-500 text-sm">Create your first session to start logging backtested trades.</p>
+                    <p className="text-muted-foreground text-sm">Create your first session to start logging backtested trades.</p>
                 </div>
             ) : (
                 <div className="grid gap-4 md:grid-cols-2">
@@ -162,9 +162,9 @@ function SessionList({
                                         {session.name}
                                     </h3>
                                     {session.description && (
-                                        <p className="text-zinc-500 text-sm mt-1 line-clamp-2">{session.description}</p>
+                                        <p className="text-muted-foreground text-sm mt-1 line-clamp-2">{session.description}</p>
                                     )}
-                                    <div className="flex items-center gap-4 mt-3 text-xs text-zinc-500">
+                                    <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
                                         <span>Balance: ${session.initial_balance.toLocaleString()}</span>
                                         <span>{new Date(session.created_at).toLocaleDateString()}</span>
                                     </div>
@@ -173,12 +173,12 @@ function SessionList({
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="text-zinc-600 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                                        className="text-muted-foreground hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity"
                                         onClick={(e) => { e.stopPropagation(); onDelete(session.id); }}
                                     >
                                         <Trash2 className="w-4 h-4" />
                                     </Button>
-                                    <ChevronRight className="w-5 h-5 text-zinc-600 group-hover:text-blue-400 transition-colors" />
+                                    <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-blue-400 transition-colors" />
                                 </div>
                             </div>
                         </motion.div>
@@ -311,7 +311,7 @@ function SessionDetail({
                 </Button>
                 <div>
                     <h2 className="text-2xl font-bold text-white">{session.name}</h2>
-                    {session.description && <p className="text-zinc-500 text-sm">{session.description}</p>}
+                    {session.description && <p className="text-muted-foreground text-sm">{session.description}</p>}
                 </div>
             </div>
 
@@ -320,8 +320,8 @@ function SessionDetail({
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="glass-card p-4 text-center">
                         <div className="flex items,center justify-center gap-2 mb-1">
-                            <TrendingUp className="w-4 h-4 text-zinc-500" />
-                            <span className="text-[10px] text-zinc-500 uppercase">Total PnL</span>
+                            <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground uppercase">Total PnL</span>
                         </div>
                         <p className={`text-2xl font-black tabular-nums ${stats.totalPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                             ${stats.totalPnl.toLocaleString()}
@@ -329,18 +329,18 @@ function SessionDetail({
                     </div>
                     <div className="glass-card p-4 text-center">
                         <div className="flex items-center justify-center gap-2 mb-1">
-                            <Target className="w-4 h-4 text-zinc-500" />
-                            <span className="text-[10px] text-zinc-500 uppercase">Win Rate</span>
+                            <Target className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground uppercase">Win Rate</span>
                         </div>
                         <p className={`text-2xl font-black tabular-nums ${stats.winRate >= 50 ? 'text-emerald-400' : 'text-rose-400'}`}>
                             {stats.winRate.toFixed(1)}%
                         </p>
-                        <p className="text-[10px] text-zinc-600">{stats.wins}W / {stats.losses}L / {stats.totalTrades}T</p>
+                        <p className="text-[10px] text-muted-foreground">{stats.wins}W / {stats.losses}L / {stats.totalTrades}T</p>
                     </div>
                     <div className="glass-card p-4 text-center">
                         <div className="flex items-center justify-center gap-2 mb-1">
-                            <Activity className="w-4 h-4 text-zinc-500" />
-                            <span className="text-[10px] text-zinc-500 uppercase">Profit Factor</span>
+                            <Activity className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground uppercase">Profit Factor</span>
                         </div>
                         <p className={`text-2xl font-black tabular-nums ${stats.profitFactor >= 1 ? 'text-emerald-400' : 'text-rose-400'}`}>
                             {stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2)}
@@ -348,8 +348,8 @@ function SessionDetail({
                     </div>
                     <div className="glass-card p-4 text-center">
                         <div className="flex items-center justify-center gap-2 mb-1">
-                            <Trophy className="w-4 h-4 text-zinc-500" />
-                            <span className="text-[10px] text-zinc-500 uppercase">Expectancy</span>
+                            <Trophy className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-[10px] text-muted-foreground uppercase">Expectancy</span>
                         </div>
                         <p className={`text-2xl font-black tabular-nums ${stats.expectancy >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
                             ${stats.expectancy.toFixed(2)}
@@ -390,7 +390,7 @@ function SessionDetail({
                 <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">⚡ Quick Trade Entry</h3>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3 items-end">
                     <div>
-                        <label className="text-zinc-500 text-xs block mb-1">Symbol</label>
+                        <label className="text-muted-foreground text-xs block mb-1">Symbol</label>
                         <Input
                             placeholder="NQ"
                             value={symbol}
@@ -399,7 +399,7 @@ function SessionDetail({
                         />
                     </div>
                     <div>
-                        <label className="text-zinc-500 text-xs block mb-1">PnL ($) *</label>
+                        <label className="text-muted-foreground text-xs block mb-1">PnL ($) *</label>
                         <Input
                             type="number"
                             placeholder="150"
@@ -409,7 +409,7 @@ function SessionDetail({
                         />
                     </div>
                     <div>
-                        <label className="text-zinc-500 text-xs block mb-1">RRR</label>
+                        <label className="text-muted-foreground text-xs block mb-1">RRR</label>
                         <Input
                             type="number"
                             placeholder="2.5"
@@ -420,11 +420,11 @@ function SessionDetail({
                         />
                     </div>
                     <div>
-                        <label className="text-zinc-500 text-xs block mb-1">Result</label>
+                        <label className="text-muted-foreground text-xs block mb-1">Result</label>
                         <select
                             value={result}
                             onChange={(e) => setResult(e.target.value as 'win' | 'loss' | 'breakeven')}
-                            className="w-full bg-zinc-900/50 border border-zinc-700 rounded-md px-3 py-2 text-sm text-white h-10 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                            className="w-full bg-zinc-900/50 border border-zinc-700 rounded-md px-3 py-2 text-sm text-white h-10 focus:outline-none focus:ring-2 focus:ring-ring"
                         >
                             <option value="win">✅ Win</option>
                             <option value="loss">❌ Loss</option>
@@ -432,11 +432,11 @@ function SessionDetail({
                         </select>
                     </div>
                     <div>
-                        <label className="text-zinc-500 text-xs block mb-1">Setup</label>
+                        <label className="text-muted-foreground text-xs block mb-1">Setup</label>
                         <select
                             value={selectedSetupId || ''}
                             onChange={(e) => setSelectedSetupId(e.target.value || null)}
-                            className="w-full bg-zinc-900/50 border border-zinc-700 rounded-md px-3 py-2 text-sm text-white h-10 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                            className="w-full bg-zinc-900/50 border border-zinc-700 rounded-md px-3 py-2 text-sm text-white h-10 focus:outline-none focus:ring-2 focus:ring-ring"
                         >
                             <option value="">None</option>
                             {playbookSetups.map(s => (
@@ -469,12 +469,12 @@ function SessionDetail({
                     </h3>
                 </div>
                 {isLoading ? (
-                    <div className="p-8 text-center text-zinc-500">
+                    <div className="p-8 text-center text-muted-foreground">
                         <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2" />
                         Loading trades...
                     </div>
                 ) : trades.length === 0 ? (
-                    <div className="p-8 text-center text-zinc-500">
+                    <div className="p-8 text-center text-muted-foreground">
                         <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-30" />
                         <p className="text-sm">No trades yet. Use the form above to add entries.</p>
                     </div>
@@ -488,7 +488,7 @@ function SessionDetail({
                                 transition={{ delay: i * 0.02 }}
                                 className="flex items-center gap-4 px-4 py-3 hover:bg-zinc-800/30 group"
                             >
-                                <span className="text-xs text-zinc-600 w-8 text-center tabular-nums">#{i + 1}</span>
+                                <span className="text-xs text-muted-foreground w-8 text-center tabular-nums">#{i + 1}</span>
                                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase border ${resultColors[trade.result]}`}>
                                     {trade.result}
                                 </span>
@@ -497,7 +497,7 @@ function SessionDetail({
                                     {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toLocaleString()}
                                 </span>
                                 {trade.rrr && (
-                                    <span className="text-xs text-zinc-500">RRR: {trade.rrr}</span>
+                                    <span className="text-xs text-muted-foreground">RRR: {trade.rrr}</span>
                                 )}
                                 {trade.screenshot_url && (
                                     <div className="w-8 h-8 rounded border border-zinc-700 overflow-hidden bg-zinc-900 flex-shrink-0 cursor-pointer hover:border-blue-500 transition-colors"
@@ -592,8 +592,8 @@ export default function BacktestPage() {
                 {/* Content */}
                 {isLoading ? (
                     <div className="glass-card p-12 text-center">
-                        <Loader2 className="w-8 h-8 animate-spin mx-auto text-zinc-500 mb-2" />
-                        <p className="text-zinc-500">Loading sessions...</p>
+                        <Loader2 className="w-8 h-8 animate-spin mx-auto text-muted-foreground mb-2" />
+                        <p className="text-muted-foreground">Loading sessions...</p>
                     </div>
                 ) : selectedSession ? (
                     <SessionDetail session={selectedSession} onBack={() => setSelectedSession(null)} />

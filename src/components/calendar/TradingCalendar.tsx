@@ -132,7 +132,7 @@ export function TradingCalendar({
                 {weekDays.map((day) => (
                     <div
                         key={day}
-                        className="text-center text-xs font-medium text-zinc-500 py-2 uppercase tracking-wider"
+                        className="text-center text-xs font-medium text-muted-foreground py-2 uppercase tracking-wider"
                     >
                         {day}
                     </div>

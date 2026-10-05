@@ -75,7 +75,7 @@ export function AnalyticsStatsCards({ stats, isLoading }: AnalyticsStatsCardsPro
                         <div className={`text-2xl font-bold ${card.colorClass}`}>
                             {formatValue(card.value, card.format)}
                         </div>
-                        <p className="text-xs text-zinc-500 mt-1">
+                        <p className="text-xs text-muted-foreground mt-1">
                             {card.subtitle}
                         </p>
                     </CardContent>

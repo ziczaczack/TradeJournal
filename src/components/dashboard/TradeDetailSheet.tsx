@@ -91,6 +91,7 @@ export function TradeDetailSheet({
     const [notes, setNotes] = useState<string>('');
     const [screenshotUrl, setScreenshotUrl] = useState<string>('');
     const [isSaving, setIsSaving] = useState(false);
+    const [saveError, setSaveError] = useState<string | null>(null);
     const [playbookSetups, setPlaybookSetups] = useState<PlaybookSetup[]>([]);
     const [shareOpen, setShareOpen] = useState(false);
     const [mistakeState, setMistakeState] = useState<MistakeState>({ tagIds: [], reviewed: false });
@@ -139,12 +140,14 @@ export function TradeDetailSheet({
             });
             setReviewTemplate(fullTrade.review_template ?? null);
             setReviewAnswers(fullTrade.review_answers ?? {});
+            setSaveError(null);
         }
     }, [fullTrade, isOpen, trade?.id]);
 
     const handleSave = async () => {
         if (!trade) return;
 
+        setSaveError(null);
         setIsSaving(true);
         try {
             const updated = await updateTrade(trade.id, {
@@ -168,6 +171,8 @@ export function TradeDetailSheet({
             }
         } catch (error) {
             console.error('Failed to update trade:', error);
+            // Keep the sheet open with everything typed, and say so.
+            setSaveError('Couldn’t save this review. Your changes are still here — try again.');
         } finally {
             setIsSaving(false);
         }
@@ -397,6 +402,8 @@ export function TradeDetailSheet({
                             }}
                         />
                     </div>
+
+                    {saveError && <p className="text-sm text-rose-400">{saveError}</p>}
 
                     {fullTradeError && (
                         <p className="text-sm text-rose-400">Couldn&apos;t load this trade&apos;s details. Close and reopen to try again.</p>

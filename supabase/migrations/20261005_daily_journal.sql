@@ -17,13 +17,17 @@ BEGIN
             ADD CONSTRAINT trading_journal_review_template_check
             CHECK (review_template IS NULL OR review_template IN ('full', 'basic'));
     END IF;
-    IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'trading_journal_review_answers_size_check') THEN
-        ALTER TABLE public.trading_journal
-            ADD CONSTRAINT trading_journal_review_answers_size_check
-            CHECK (octet_length(review_answers::text) <= 20000);
-    END IF;
 END;
 $$;
+
+-- Byte limit on stored answers. Sized for 2,000-character answers in 3-byte
+-- scripts (e.g. Chinese): 8 answers x 2,000 x 3 bytes is about 48 KB. Dropped and
+-- re-added so re-running upgrades an earlier, smaller limit.
+ALTER TABLE public.trading_journal
+    DROP CONSTRAINT IF EXISTS trading_journal_review_answers_size_check;
+ALTER TABLE public.trading_journal
+    ADD CONSTRAINT trading_journal_review_answers_size_check
+    CHECK (octet_length(review_answers::text) <= 64000);
 
 CREATE TABLE IF NOT EXISTS public.daily_notes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -8,6 +8,8 @@ import {
     defaultJournalDay,
     localDayBounds,
     MAX_ANSWER_LENGTH,
+    MAX_REVIEW_BYTES,
+    reviewAnswersBytes,
     parseDayKey,
     REVIEW_TEMPLATES,
     reviewProgress,
@@ -137,5 +139,14 @@ describe('summarizeDay', () => {
 
     it('handles an empty day', () => {
         expect(summarizeDay([])).toEqual({ count: 0, netPnl: 0, winRate: 0, mistakeCount: 0, writtenUp: 0 });
+    });
+});
+
+describe('review answers size', () => {
+    it('fits the largest write-up the form allows, even in 3-byte scripts like Chinese', () => {
+        const ids = [...REVIEW_TEMPLATES.full.questions, ...REVIEW_TEMPLATES.basic.questions].map(q => q.id);
+        const maximal = Object.fromEntries(ids.map(id => [id, '漢'.repeat(MAX_ANSWER_LENGTH - 1) + '\n']));
+        expect(reviewAnswersBytes(maximal)).toBeGreaterThan(20000);
+        expect(reviewAnswersBytes(maximal)).toBeLessThan(MAX_REVIEW_BYTES);
     });
 });

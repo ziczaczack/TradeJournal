@@ -36,6 +36,14 @@ export const REVIEW_TEMPLATES: Record<
 
 export const MAX_ANSWER_LENGTH = 2000;
 export const MAX_DAY_NOTE_LENGTH = 5000;
+// Stored answers are checked in bytes (DB constraint is 64000). maxLength counts
+// characters, and CJK characters take 3 bytes in UTF-8, so this must comfortably
+// exceed every answer at MAX_ANSWER_LENGTH (8 × 2000 × 3 ≈ 48 KB).
+export const MAX_REVIEW_BYTES = 60000;
+
+export function reviewAnswersBytes(answers: ReviewAnswers): number {
+    return new TextEncoder().encode(JSON.stringify(answers)).length;
+}
 
 const KNOWN_IDS = new Set(
     Object.values(REVIEW_TEMPLATES).flatMap(t => t.questions.map(q => q.id))

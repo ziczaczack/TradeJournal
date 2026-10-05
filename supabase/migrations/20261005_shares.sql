@@ -55,3 +55,35 @@ $$;
 
 REVOKE ALL ON FUNCTION public.get_share(TEXT) FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.get_share(TEXT) TO anon, authenticated;
+
+-- Revoke a source's links when the trade or setup is deleted (including via
+-- account deletion cascading to trades); otherwise the owner could no longer
+-- reach those links to revoke them.
+CREATE OR REPLACE FUNCTION public.revoke_shares_for_deleted_source()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+    UPDATE public.shares
+    SET revoked_at = NOW()
+    WHERE kind = TG_ARGV[0]
+      AND source_id = OLD.id
+      AND user_id = OLD.user_id
+      AND revoked_at IS NULL;
+    RETURN OLD;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trigger_revoke_trade_shares ON public.trading_journal;
+CREATE TRIGGER trigger_revoke_trade_shares
+    AFTER DELETE ON public.trading_journal
+    FOR EACH ROW
+    EXECUTE FUNCTION public.revoke_shares_for_deleted_source('trade');
+
+DROP TRIGGER IF EXISTS trigger_revoke_playbook_shares ON public.playbook_setups;
+CREATE TRIGGER trigger_revoke_playbook_shares
+    AFTER DELETE ON public.playbook_setups
+    FOR EACH ROW
+    EXECUTE FUNCTION public.revoke_shares_for_deleted_source('playbook');

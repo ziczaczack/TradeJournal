@@ -80,7 +80,7 @@ export default function Home() {
               <div className="max-w-md mx-auto">
                 <h3 className="text-2xl font-bold text-white mb-3">Begin Your Journey</h3>
                 <p className="text-zinc-400 mb-8 leading-relaxed">
-                  Join a community of disciplined traders. Sign in to securely upload, track, and analyze your performance with AI insights.
+                  Join a community of disciplined traders. Sign in to securely upload, track, and analyze your performance.
                 </p>
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                   <Link href="/login" className="w-full sm:w-auto">
@@ -152,7 +152,7 @@ export default function Home() {
         transition={{ duration: 0.5, delay: 0.3 }}
         className="mt-16 text-center"
       >
-        <p className="text-zinc-500 mb-4">Already have trades imported?</p>
+        <p className="text-muted-foreground mb-4">Already have trades imported?</p>
         <Link href="/history">
           <Button className="bg-blue-600 hover:bg-blue-700 btn-scale">
             View Trade History

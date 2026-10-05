@@ -146,3 +146,20 @@ export function supabaseImageHost(): string {
         return '';
     }
 }
+
+const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+const JPEG_SIGNATURE = [0xff, 0xd8, 0xff];
+
+const startsWith = (bytes: Uint8Array, signature: number[]) =>
+    bytes.length >= signature.length && signature.every((b, i) => bytes[i] === b);
+
+/**
+ * The card renderer (Satori) can only draw PNG and JPEG. Check the file's
+ * signature rather than its declared content type, since a failed client-side
+ * compression can upload WebP/HEIC labelled as image/png.
+ */
+export function renderableImageType(bytes: Uint8Array): 'image/png' | 'image/jpeg' | null {
+    if (startsWith(bytes, PNG_SIGNATURE)) return 'image/png';
+    if (startsWith(bytes, JPEG_SIGNATURE)) return 'image/jpeg';
+    return null;
+}

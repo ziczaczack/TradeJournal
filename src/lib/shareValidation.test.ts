@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateSharedCard } from './shareValidation';
+import { renderableImageType, validateSharedCard } from './shareValidation';
 
 const HOST = 'abc.supabase.co';
 
@@ -82,5 +82,21 @@ describe('validateSharedCard', () => {
         expect(validateSharedCard(withShot('http://169.254.169.254/latest'), HOST).ok).toBe(false);
         expect(validateSharedCard(withShot('not a url'), HOST).ok).toBe(false);
         expect(validateSharedCard(withShot(`https://${HOST}/a.png`), '').ok).toBe(false);
+    });
+});
+
+describe('renderableImageType', () => {
+    const bytes = (...b: number[]) => new Uint8Array([...b, 0, 0, 0, 0]);
+
+    it('recognizes PNG and JPEG by their signatures', () => {
+        expect(renderableImageType(bytes(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a))).toBe('image/png');
+        expect(renderableImageType(bytes(0xff, 0xd8, 0xff))).toBe('image/jpeg');
+    });
+
+    it('rejects formats the card renderer cannot draw, whatever the declared content type', () => {
+        expect(renderableImageType(new TextEncoder().encode('RIFF\0\0\0\0WEBPVP8 '))).toBeNull();
+        expect(renderableImageType(new TextEncoder().encode('\0\0\0\x18ftypheic'))).toBeNull();
+        expect(renderableImageType(new TextEncoder().encode('<svg xmlns='))).toBeNull();
+        expect(renderableImageType(new Uint8Array())).toBeNull();
     });
 });

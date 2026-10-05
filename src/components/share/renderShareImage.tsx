@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import type { SharedCard } from '@/lib/sharePayload';
+import { renderableImageType } from '@/lib/shareValidation';
 import { ShareCard, SHARE_CARD_HEIGHT, SHARE_CARD_WIDTH } from './ShareCard';
 
 const MAX_SCREENSHOT_BYTES = 4 * 1024 * 1024;
@@ -9,10 +10,11 @@ const MAX_SCREENSHOT_BYTES = 4 * 1024 * 1024;
 async function toDataUrl(url: string): Promise<string | undefined> {
     try {
         const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
-        const type = res.headers.get('content-type') ?? '';
-        if (!res.ok || !type.startsWith('image/')) return undefined;
+        if (!res.ok) return undefined;
         const buffer = Buffer.from(await res.arrayBuffer());
         if (buffer.length > MAX_SCREENSHOT_BYTES) return undefined;
+        const type = renderableImageType(buffer);
+        if (!type) return undefined;
         return `data:${type};base64,${buffer.toString('base64')}`;
     } catch {
         return undefined;

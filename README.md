@@ -19,6 +19,7 @@ A comprehensive, full-stack trading journaling application designed to help trad
 - **Performance Backtesting**: Test strategies against historical performance and manage backtest logs directly in the app.
 - **Multimedia Journaling**: Upload and store annotated chart screenshots for each executed trade (powered by Supabase Storage and client-side image compression).
 - **Multiple Accounts**: Seamlessly manage and toggle between various trading accounts (e.g., Funded, Evaluations, Personal).
+- **Share Cards**: Share a trade or playbook setup as a PNG or a revocable public link — show results in points, $, or % of account; account details are never included.
 
 > **Note:** An Economic Calendar (red-folder news events) is scaffolded in the codebase but currently **disabled** — it's gated behind the `ECONOMIC_CALENDAR_ENABLED` flag in `src/lib/economicCalendarQueries.ts` pending a data provider that supports historical date ranges.
 
@@ -87,3 +88,5 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ziczaczack - [ziczaczack@gmail.com](mailto:ziczaczack@gmail.com)
 
 Project Link: [https://github.com/ziczaczack/TradeJournal](https://github.com/ziczaczack/TradeJournal)
+
+Check the production on: [https://trade-journal-kappa-cyan.vercel.app](https://trade-journal-kappa-cyan.vercel.app)

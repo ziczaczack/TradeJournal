@@ -69,7 +69,7 @@ export function MonthlyStats({ trades }: MonthlyStatsProps) {
                 <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                     Monthly PnL
                 </p>
-                <p className={`text-2xl font-bold mt-1 ${pnlFormatted.isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                <p className={`text-2xl font-bold mt-1 ${pnlFormatted.isPositive ? 'text-profit' : 'text-loss'}`}>
                     {pnlFormatted.text}
                 </p>
             </Card>
@@ -88,9 +88,9 @@ export function MonthlyStats({ trades }: MonthlyStatsProps) {
                     Trading Days
                 </p>
                 <p className="text-2xl font-bold text-white mt-1">
-                    <span className="text-green-400">{stats.winningDays}</span>
+                    <span className="text-profit">{stats.winningDays}</span>
                     <span className="text-muted-foreground mx-1">/</span>
-                    <span className="text-red-400">{stats.losingDays}</span>
+                    <span className="text-loss">{stats.losingDays}</span>
                     <span className="text-muted-foreground mx-1">/</span>
                     <span>{stats.tradingDays}</span>
                 </p>

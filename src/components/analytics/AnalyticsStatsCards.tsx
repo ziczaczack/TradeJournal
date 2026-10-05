@@ -15,7 +15,7 @@ export function AnalyticsStatsCards({ stats, isLoading }: AnalyticsStatsCardsPro
             value: stats.totalNetPnL,
             format: 'currency' as const,
             icon: '💰',
-            colorClass: stats.totalNetPnL >= 0 ? 'text-green-500' : 'text-red-500',
+            colorClass: stats.totalNetPnL >= 0 ? 'text-profit' : 'text-loss',
             subtitle: `${stats.winningTrades}W / ${stats.losingTrades}L`,
         },
         {
@@ -23,7 +23,7 @@ export function AnalyticsStatsCards({ stats, isLoading }: AnalyticsStatsCardsPro
             value: stats.winRate,
             format: 'percent' as const,
             icon: '🎯',
-            colorClass: stats.winRate >= 50 ? 'text-green-500' : 'text-yellow-500',
+            colorClass: stats.winRate >= 50 ? 'text-profit' : 'text-warning',
             subtitle: `${stats.totalTrades} total trades`,
         },
         {
@@ -31,7 +31,7 @@ export function AnalyticsStatsCards({ stats, isLoading }: AnalyticsStatsCardsPro
             value: stats.profitFactor,
             format: 'ratio' as const,
             icon: '📈',
-            colorClass: stats.profitFactor >= 1.5 ? 'text-green-500' : stats.profitFactor >= 1 ? 'text-yellow-500' : 'text-red-500',
+            colorClass: stats.profitFactor >= 1.5 ? 'text-profit' : stats.profitFactor >= 1 ? 'text-warning' : 'text-loss',
             subtitle: stats.profitFactor >= 1.5 ? 'Excellent' : stats.profitFactor >= 1 ? 'Profitable' : 'Needs improvement',
         },
         {

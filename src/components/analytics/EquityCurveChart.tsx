@@ -12,6 +12,7 @@ import {
     AreaChart,
 } from 'recharts';
 import { EquityCurvePoint, formatCurrency } from '@/lib/analyticsStats';
+import { CHART, PNL } from '@/lib/chartTheme';
 
 interface EquityCurveChartProps {
     data: EquityCurvePoint[];
@@ -33,7 +34,7 @@ export function EquityCurveChart({ data }: EquityCurveChartProps) {
     // Determine if overall positive or negative for coloring
     const finalValue = data[data.length - 1]?.cumulativePnL || 0;
     const isPositive = finalValue >= 0;
-    const strokeColor = isPositive ? '#22c55e' : '#ef4444';
+    const strokeColor = isPositive ? PNL.profit : PNL.loss;
     const gradientId = isPositive ? 'greenGradient' : 'redGradient';
 
     return (
@@ -41,37 +42,37 @@ export function EquityCurveChart({ data }: EquityCurveChartProps) {
             <AreaChart data={data} margin={{ top: 10, right: 30, left: 10, bottom: 0 }}>
                 <defs>
                     <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                        <stop offset="5%" stopColor={PNL.profit} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={PNL.profit} stopOpacity={0} />
                     </linearGradient>
                     <linearGradient id="redGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
+                        <stop offset="5%" stopColor={PNL.loss} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={PNL.loss} stopOpacity={0} />
                     </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
                 <XAxis
                     dataKey="date"
-                    stroke="#9ca3af"
-                    tick={{ fill: '#9ca3af', fontSize: 12 }}
-                    tickLine={{ stroke: '#4b5563' }}
+                    stroke={CHART.axisText}
+                    tick={{ fill: CHART.axisText, fontSize: 12 }}
+                    tickLine={{ stroke: CHART.axisLine }}
                 />
                 <YAxis
-                    stroke="#9ca3af"
-                    tick={{ fill: '#9ca3af', fontSize: 12 }}
-                    tickLine={{ stroke: '#4b5563' }}
+                    stroke={CHART.axisText}
+                    tick={{ fill: CHART.axisText, fontSize: 12 }}
+                    tickLine={{ stroke: CHART.axisLine }}
                     tickFormatter={(value) => `$${value.toLocaleString()}`}
                     domain={[minValue - padding, maxValue + padding]}
                 />
                 <Tooltip
                     contentStyle={{
-                        backgroundColor: '#1e293b',
-                        border: '1px solid #475569',
+                        backgroundColor: CHART.tooltipBg,
+                        border: `1px solid ${CHART.tooltipBorder}`,
                         borderRadius: '8px',
                         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
                     }}
-                    labelStyle={{ color: '#e2e8f0', fontWeight: 'bold' }}
-                    itemStyle={{ color: '#e2e8f0' }}
+                    labelStyle={{ color: CHART.tooltipText, fontWeight: 'bold' }}
+                    itemStyle={{ color: CHART.tooltipText }}
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     formatter={((value: number | undefined, name: string) => {
                         const val = value ?? 0;
@@ -91,7 +92,7 @@ export function EquityCurveChart({ data }: EquityCurveChartProps) {
                     activeDot={{
                         r: 6,
                         fill: strokeColor,
-                        stroke: '#1e293b',
+                        stroke: CHART.tooltipBg,
                         strokeWidth: 2,
                     }}
                 />

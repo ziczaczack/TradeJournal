@@ -36,6 +36,7 @@ import {
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { ScreenshotUploader } from '@/components/ScreenshotUploader';
 import { useAccount } from '@/components/providers/AccountContext';
+import { CHART } from '@/lib/chartTheme';
 
 // ============================================
 // Session List View
@@ -296,8 +297,8 @@ function SessionDetail({
     };
 
     const resultColors = {
-        win: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/30',
-        loss: 'text-rose-400 bg-rose-500/10 border-rose-500/30',
+        win: 'text-profit bg-profit/10 border-profit/30',
+        loss: 'text-loss bg-loss/10 border-loss/30',
         breakeven: 'text-zinc-400 bg-zinc-500/10 border-zinc-500/30',
     };
 
@@ -323,7 +324,7 @@ function SessionDetail({
                             <TrendingUp className="w-4 h-4 text-muted-foreground" />
                             <span className="text-[10px] text-muted-foreground uppercase">Total PnL</span>
                         </div>
-                        <p className={`text-2xl font-black tabular-nums ${stats.totalPnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        <p className={`text-2xl font-black tabular-nums ${stats.totalPnl >= 0 ? 'text-profit' : 'text-loss'}`}>
                             ${stats.totalPnl.toLocaleString()}
                         </p>
                     </div>
@@ -332,7 +333,7 @@ function SessionDetail({
                             <Target className="w-4 h-4 text-muted-foreground" />
                             <span className="text-[10px] text-muted-foreground uppercase">Win Rate</span>
                         </div>
-                        <p className={`text-2xl font-black tabular-nums ${stats.winRate >= 50 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        <p className={`text-2xl font-black tabular-nums ${stats.winRate >= 50 ? 'text-profit' : 'text-loss'}`}>
                             {stats.winRate.toFixed(1)}%
                         </p>
                         <p className="text-[10px] text-muted-foreground">{stats.wins}W / {stats.losses}L / {stats.totalTrades}T</p>
@@ -342,7 +343,7 @@ function SessionDetail({
                             <Activity className="w-4 h-4 text-muted-foreground" />
                             <span className="text-[10px] text-muted-foreground uppercase">Profit Factor</span>
                         </div>
-                        <p className={`text-2xl font-black tabular-nums ${stats.profitFactor >= 1 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        <p className={`text-2xl font-black tabular-nums ${stats.profitFactor >= 1 ? 'text-profit' : 'text-loss'}`}>
                             {stats.profitFactor === Infinity ? '∞' : stats.profitFactor.toFixed(2)}
                         </p>
                     </div>
@@ -351,7 +352,7 @@ function SessionDetail({
                             <Trophy className="w-4 h-4 text-muted-foreground" />
                             <span className="text-[10px] text-muted-foreground uppercase">Expectancy</span>
                         </div>
-                        <p className={`text-2xl font-black tabular-nums ${stats.expectancy >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        <p className={`text-2xl font-black tabular-nums ${stats.expectancy >= 0 ? 'text-profit' : 'text-loss'}`}>
                             ${stats.expectancy.toFixed(2)}
                         </p>
                     </div>
@@ -364,21 +365,21 @@ function SessionDetail({
                     <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Equity Curve</h3>
                     <ResponsiveContainer width="100%" height={240}>
                         <LineChart data={equityData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                            <XAxis dataKey="trade" stroke="#52525b" tick={{ fontSize: 11 }} />
-                            <YAxis stroke="#52525b" tick={{ fontSize: 11 }} tickFormatter={(v: number) => `$${v.toLocaleString()}`} />
+                            <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+                            <XAxis dataKey="trade" stroke={CHART.axisLine} tick={{ fill: CHART.axisText, fontSize: 11 }} />
+                            <YAxis stroke={CHART.axisLine} tick={{ fill: CHART.axisText, fontSize: 11 }} tickFormatter={(v: number) => `$${v.toLocaleString()}`} />
                             <Tooltip
-                                contentStyle={{ backgroundColor: '#18181b', border: '1px solid #3f3f46', borderRadius: '12px', fontSize: '12px' }}
-                                labelStyle={{ color: '#a1a1aa' }}
+                                contentStyle={{ backgroundColor: CHART.tooltipBg, border: `1px solid ${CHART.tooltipBorder}`, borderRadius: '12px', fontSize: '12px' }}
+                                labelStyle={{ color: CHART.axisText }}
                                 formatter={(value: number | undefined) => [`$${(value ?? 0).toLocaleString()}`, 'Equity']}
                             />
                             <Line
                                 type="monotone"
                                 dataKey="equity"
-                                stroke="#3b82f6"
+                                stroke={CHART.accent}
                                 strokeWidth={2}
                                 dot={false}
-                                activeDot={{ r: 4, fill: '#3b82f6' }}
+                                activeDot={{ r: 4, fill: CHART.accent }}
                             />
                         </LineChart>
                     </ResponsiveContainer>
@@ -493,7 +494,7 @@ function SessionDetail({
                                     {trade.result}
                                 </span>
                                 <span className="text-sm text-white font-medium w-16">{trade.symbol || '—'}</span>
-                                <span className={`text-sm font-bold tabular-nums flex-1 ${trade.pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                <span className={`text-sm font-bold tabular-nums flex-1 ${trade.pnl >= 0 ? 'text-profit' : 'text-loss'}`}>
                                     {trade.pnl >= 0 ? '+' : ''}${trade.pnl.toLocaleString()}
                                 </span>
                                 {trade.rrr && (

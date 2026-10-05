@@ -14,6 +14,7 @@ import {
 import { Loader2, AlertCircle, RefreshCw, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/lib/analyticsStats';
+import { CHART, PNL } from '@/lib/chartTheme';
 
 // ============================================
 // Types
@@ -52,14 +53,14 @@ interface TradingChartProps {
 // ============================================
 const CHART_THEME = {
     background: '#0A0A0F',
-    text: '#71717A',
+    text: CHART.axisText,
     grid: '#18181B',
     border: '#27272A',
     crosshair: '#3F3F46',
-    upColor: '#22C55E',
-    downColor: '#EF4444',
-    upWick: '#22C55E',
-    downWick: '#EF4444',
+    upColor: PNL.profit,
+    downColor: PNL.loss,
+    upWick: PNL.profit,
+    downWick: PNL.loss,
     entry: '#3B82F6',   // blue
     exit: '#F59E0B',    // amber
 };
@@ -258,7 +259,7 @@ export function TradingChart({
                 </div>
                 <div className="flex items-center gap-3">
                     {pnl != null && (
-                        <span className={`text-sm font-bold ${isProfit ? 'text-emerald-400' : 'text-rose-400'}`}>
+                        <span className={`text-sm font-bold ${isProfit ? 'text-profit' : 'text-loss'}`}>
                             {isProfit ? '+' : ''}{formatCurrency(pnl)}
                         </span>
                     )}

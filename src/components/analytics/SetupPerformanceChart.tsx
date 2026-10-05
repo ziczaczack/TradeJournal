@@ -12,6 +12,7 @@ import {
     Legend,
 } from 'recharts';
 import { SetupPerformance, formatCurrency, formatPercent } from '@/lib/analyticsStats';
+import { CHART, PNL } from '@/lib/chartTheme';
 
 interface SetupPerformanceChartProps {
     data: SetupPerformance[];
@@ -40,12 +41,12 @@ export function SetupPerformanceChart({ data }: SetupPerformanceChartProps) {
                 data={chartData}
                 margin={{ top: 20, right: 30, left: 10, bottom: 60 }}
             >
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
                 <XAxis
                     dataKey="displayName"
-                    stroke="#9ca3af"
-                    tick={{ fill: '#9ca3af', fontSize: 11 }}
-                    tickLine={{ stroke: '#4b5563' }}
+                    stroke={CHART.axisText}
+                    tick={{ fill: CHART.axisText, fontSize: 11 }}
+                    tickLine={{ stroke: CHART.axisLine }}
                     angle={-45}
                     textAnchor="end"
                     height={80}
@@ -53,28 +54,28 @@ export function SetupPerformanceChart({ data }: SetupPerformanceChartProps) {
                 />
                 <YAxis
                     yAxisId="left"
-                    stroke="#9ca3af"
-                    tick={{ fill: '#9ca3af', fontSize: 12 }}
-                    tickLine={{ stroke: '#4b5563' }}
+                    stroke={CHART.axisText}
+                    tick={{ fill: CHART.axisText, fontSize: 12 }}
+                    tickLine={{ stroke: CHART.axisLine }}
                     tickFormatter={(value) => `$${value}`}
                 />
                 <YAxis
                     yAxisId="right"
                     orientation="right"
-                    stroke="#9ca3af"
-                    tick={{ fill: '#9ca3af', fontSize: 12 }}
-                    tickLine={{ stroke: '#4b5563' }}
+                    stroke={CHART.axisText}
+                    tick={{ fill: CHART.axisText, fontSize: 12 }}
+                    tickLine={{ stroke: CHART.axisLine }}
                     tickFormatter={(value) => `${value}%`}
                     domain={[0, 100]}
                 />
                 <Tooltip
                     contentStyle={{
-                        backgroundColor: '#1e293b',
-                        border: '1px solid #475569',
+                        backgroundColor: CHART.tooltipBg,
+                        border: `1px solid ${CHART.tooltipBorder}`,
                         borderRadius: '8px',
                         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
                     }}
-                    labelStyle={{ color: '#e2e8f0', fontWeight: 'bold' }}
+                    labelStyle={{ color: CHART.tooltipText, fontWeight: 'bold' }}
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     formatter={((value: number | undefined, name: string) => {
                         const val = value ?? 0;
@@ -96,18 +97,19 @@ export function SetupPerformanceChart({ data }: SetupPerformanceChartProps) {
                 />
                 <Legend
                     wrapperStyle={{ paddingTop: '10px' }}
-                    formatter={(value) => <span style={{ color: '#e2e8f0' }}>{value}</span>}
+                    formatter={(value) => <span style={{ color: CHART.tooltipText }}>{value}</span>}
                 />
                 <Bar
                     yAxisId="left"
                     dataKey="netPnL"
                     name="Net PnL"
+                    fill={PNL.profit}
                     radius={[4, 4, 0, 0]}
                 >
                     {chartData.map((entry, index) => (
                         <Cell
                             key={`cell-${index}`}
-                            fill={entry.netPnL >= 0 ? '#22c55e' : '#ef4444'}
+                            fill={entry.netPnL >= 0 ? PNL.profit : PNL.loss}
                         />
                     ))}
                 </Bar>
@@ -115,7 +117,7 @@ export function SetupPerformanceChart({ data }: SetupPerformanceChartProps) {
                     yAxisId="right"
                     dataKey="winRate"
                     name="Win Rate"
-                    fill="#3b82f6"
+                    fill={CHART.accent}
                     radius={[4, 4, 0, 0]}
                     opacity={0.8}
                 />

@@ -9,6 +9,7 @@ import {
     Legend,
 } from 'recharts';
 import { PsychologyBreakdown, formatCurrency } from '@/lib/analyticsStats';
+import { CHART, PNL } from '@/lib/chartTheme';
 
 interface PsychologyImpactChartProps {
     data: PsychologyBreakdown[];
@@ -102,19 +103,19 @@ export function PsychologyImpactChart({ data }: PsychologyImpactChartProps) {
                         <Cell
                             key={`cell-${index}`}
                             fill={entry.color}
-                            stroke="#1e293b"
+                            stroke={CHART.tooltipBg}
                             strokeWidth={2}
                         />
                     ))}
                 </Pie>
                 <Tooltip
                     contentStyle={{
-                        backgroundColor: '#1e293b',
-                        border: '1px solid #475569',
+                        backgroundColor: CHART.tooltipBg,
+                        border: `1px solid ${CHART.tooltipBorder}`,
                         borderRadius: '8px',
                         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
                     }}
-                    labelStyle={{ color: '#e2e8f0', fontWeight: 'bold' }}
+                    labelStyle={{ color: CHART.tooltipText, fontWeight: 'bold' }}
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     formatter={((value: number | undefined, name: string, props: any) => {
                         const item = props?.payload;
@@ -137,11 +138,11 @@ export function PsychologyImpactChart({ data }: PsychologyImpactChartProps) {
                         const item = chartData.find((d) => d.tag === value);
                         if (item) {
                             return (
-                                <span style={{ color: '#e2e8f0' }}>
+                                <span style={{ color: CHART.tooltipText }}>
                                     {value}{' '}
                                     <span
                                         style={{
-                                            color: item.totalPnL >= 0 ? '#22c55e' : '#ef4444',
+                                            color: item.totalPnL >= 0 ? PNL.profit : PNL.loss,
                                             fontSize: '12px',
                                         }}
                                     >
@@ -150,7 +151,7 @@ export function PsychologyImpactChart({ data }: PsychologyImpactChartProps) {
                                 </span>
                             );
                         }
-                        return <span style={{ color: '#e2e8f0' }}>{value}</span>;
+                        return <span style={{ color: CHART.tooltipText }}>{value}</span>;
                     }}
                 />
             </PieChart>

@@ -169,9 +169,9 @@ export function TradingCalendar({
                                     }
                                     ${hasTrades && !isSelected
                                         ? isProfit
-                                            ? 'bg-emerald-500/5 border-l-2 border-l-emerald-500'
+                                            ? 'bg-profit/5 border-l-2 border-l-profit'
                                             : isLoss
-                                                ? 'bg-rose-500/5 border-l-2 border-l-rose-500'
+                                                ? 'bg-loss/5 border-l-2 border-l-loss'
                                                 : 'bg-zinc-800/30'
                                         : 'bg-zinc-900/30'
                                     }
@@ -194,9 +194,9 @@ export function TradingCalendar({
                                                 ? 'text-blue-400'
                                                 : hasTrades
                                                     ? isProfit
-                                                        ? 'text-emerald-400'
+                                                        ? 'text-profit'
                                                         : isLoss
-                                                            ? 'text-rose-400'
+                                                            ? 'text-loss'
                                                             : 'text-white'
                                                     : 'text-zinc-400'
                                         }

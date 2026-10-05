@@ -59,8 +59,8 @@ export function TradeListItem({
                 className={`
                     w-11 h-11 rounded-xl flex items-center justify-center font-bold text-sm
                     ${isProfit
-                        ? 'bg-emerald-500/10 text-emerald-400'
-                        : 'bg-rose-500/10 text-rose-400'
+                        ? 'bg-profit/10 text-profit'
+                        : 'bg-loss/10 text-loss'
                     }
                 `}
             >
@@ -99,9 +99,9 @@ export function TradeListItem({
             <div className="text-right">
                 <div className="flex items-center gap-1 justify-end">
                     {isProfit ? (
-                        <TrendingUp className="w-4 h-4 text-emerald-400" />
+                        <TrendingUp className="w-4 h-4 text-profit" />
                     ) : (
-                        <TrendingDown className="w-4 h-4 text-rose-400" />
+                        <TrendingDown className="w-4 h-4 text-loss" />
                     )}
                     <span
                         className={`

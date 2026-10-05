@@ -13,6 +13,7 @@ import {
     Legend,
     Cell,
 } from 'recharts';
+import { CHART, PNL } from '@/lib/chartTheme';
 
 interface PlaybookComparisonChartProps {
     data: PlaybookComparison[];
@@ -35,12 +36,12 @@ const CustomTooltip = ({ active, payload, label }: any) => {
                     <span className="text-white font-medium">{formatPercent(target)}</span>
                 </div>
                 <div className="flex justify-between gap-6">
-                    <span className="text-emerald-400">Actual WR</span>
+                    <span className="text-profit">Actual WR</span>
                     <span className="text-white font-medium">{formatPercent(actual)}</span>
                 </div>
                 <div className="flex justify-between gap-6 pt-1 border-t border-zinc-700">
                     <span className="text-zinc-400">Delta</span>
-                    <span className={delta >= 0 ? 'text-emerald-400 font-bold' : 'text-rose-400 font-bold'}>
+                    <span className={delta >= 0 ? 'text-profit font-bold' : 'text-loss font-bold'}>
                         {delta >= 0 ? '+' : ''}{formatPercent(delta)}
                     </span>
                 </div>
@@ -75,20 +76,20 @@ export function PlaybookComparisonChart({ data }: PlaybookComparisonChartProps) 
                 barCategoryGap="25%"
                 barGap={4}
             >
-                <CartesianGrid strokeDasharray="3 3" stroke="#27272A" horizontal={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} horizontal={false} />
                 <XAxis
                     type="number"
                     domain={[0, 100]}
                     tickFormatter={(v) => `${v}%`}
-                    stroke="#52525B"
-                    tick={{ fill: '#71717A', fontSize: 11 }}
+                    stroke={CHART.axisLine}
+                    tick={{ fill: CHART.axisText, fontSize: 11 }}
                 />
                 <YAxis
                     type="category"
                     dataKey="setupName"
                     width={110}
-                    stroke="#52525B"
-                    tick={{ fill: '#A1A1AA', fontSize: 11 }}
+                    stroke={CHART.axisLine}
+                    tick={{ fill: CHART.axisText, fontSize: 11 }}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend
@@ -96,11 +97,11 @@ export function PlaybookComparisonChart({ data }: PlaybookComparisonChartProps) 
                         value === 'targetWinRate' ? (
                             <span className="text-xs text-blue-400">Target WR</span>
                         ) : (
-                            <span className="text-xs text-emerald-400">Actual WR</span>
+                            <span className="text-xs text-profit">Actual WR</span>
                         )
                     }
                 />
-                <ReferenceLine x={50} stroke="#52525B" strokeDasharray="4 4" label={{ value: '50%', fill: '#52525B', fontSize: 10 }} />
+                <ReferenceLine x={50} stroke={CHART.axisLine} strokeDasharray="4 4" label={{ value: '50%', fill: CHART.axisText, fontSize: 10 }} />
 
                 {/* Target WR bar (semi-transparent blue) */}
                 <Bar dataKey="targetWinRate" name="targetWinRate" fill="rgba(59,130,246,0.3)" radius={[0, 3, 3, 0]}>
@@ -114,12 +115,13 @@ export function PlaybookComparisonChart({ data }: PlaybookComparisonChartProps) 
                     {data.map((entry, i) => (
                         <Cell
                             key={i}
+                            fillOpacity={entry.tradeCount === 0 ? 1 : 0.85}
                             fill={
                                 entry.tradeCount === 0
-                                    ? '#52525B'
+                                    ? CHART.axisLine
                                     : entry.actualWinRate >= entry.targetWinRate
-                                        ? 'rgba(34,197,94,0.85)'
-                                        : 'rgba(239,68,68,0.85)'
+                                        ? PNL.profit
+                                        : PNL.loss
                             }
                         />
                     ))}

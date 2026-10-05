@@ -222,12 +222,12 @@ export default function AnalyticsPage() {
                                     <CardTitle className="text-sm font-medium text-zinc-400">
                                         Max Drawdown
                                     </CardTitle>
-                                    <div className="p-2 rounded-lg bg-rose-500/10">
-                                        <TrendingDown className="w-4 h-4 text-rose-500" />
+                                    <div className="p-2 rounded-lg bg-loss/10">
+                                        <TrendingDown className="w-4 h-4 text-loss" />
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-2xl font-bold text-rose-400">
+                                    <div className="text-2xl font-bold text-loss">
                                         {formatCurrency(-stats.maxDrawdown)}
                                     </div>
                                     <p className="text-xs text-muted-foreground mt-1">
@@ -245,7 +245,7 @@ export default function AnalyticsPage() {
                                     </div>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className={`text-2xl font-bold ${stats.averageRRR >= 1 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                                    <div className={`text-2xl font-bold ${stats.averageRRR >= 1 ? 'text-profit' : 'text-warning'}`}>
                                         {stats.averageRRR.toFixed(2)}
                                     </div>
                                     <p className="text-xs text-muted-foreground mt-1">
@@ -386,10 +386,10 @@ export default function AnalyticsPage() {
                                                     <tr key={setup.setupType} className="border-b border-zinc-800/50 hover:bg-zinc-800/30 transition-colors">
                                                         <td className="py-3 px-4 text-white font-medium">{setup.setupType}</td>
                                                         <td className="py-3 px-4 text-right text-zinc-300">{setup.totalTrades}</td>
-                                                        <td className={`py-3 px-4 text-right ${setup.winRate >= 50 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                                                        <td className={`py-3 px-4 text-right ${setup.winRate >= 50 ? 'text-profit' : 'text-warning'}`}>
                                                             {formatPercent(setup.winRate)}
                                                         </td>
-                                                        <td className={`py-3 px-4 text-right font-medium ${setup.netPnL >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
+                                                        <td className={`py-3 px-4 text-right font-medium ${setup.netPnL >= 0 ? 'text-profit' : 'text-loss'}`}>
                                                             {formatCurrency(setup.netPnL)}
                                                         </td>
                                                     </tr>

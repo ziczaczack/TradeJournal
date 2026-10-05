@@ -206,8 +206,8 @@ export function TradeDetailSheet({
                         </Badge>
                         <span
                             className={`text-xl font-bold font-mono ${pnlFormatted.isPositive
-                                ? 'text-emerald-400'
-                                : 'text-rose-400'
+                                ? 'text-profit'
+                                : 'text-loss'
                                 }`}
                         >
                             {pnlFormatted.text}

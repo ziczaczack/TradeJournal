@@ -5,6 +5,7 @@ import {
     SharedCard,
     TradeSharePayload,
 } from '@/lib/sharePayload';
+import { PNL } from '@/lib/chartTheme';
 
 // Rendered by next/og (Satori) and in the DOM for the dialog preview, so it
 // must stick to inline styles and flexbox: every element with more than one
@@ -20,8 +21,8 @@ const colors = {
     text: '#fafafa',
     muted: '#a1a1aa',
     faint: '#71717a',
-    win: '#34d399',
-    loss: '#fb7185',
+    win: PNL.profit,
+    loss: PNL.loss,
     accent: '#60a5fa',
 };
 

@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { HeatmapCell, formatCurrency, formatPercent } from '@/lib/analyticsStats';
+import { pnlColor } from '@/lib/chartTheme';
 
 interface PerformanceHeatmapProps {
     data: HeatmapCell[];
@@ -18,13 +19,10 @@ const HOUR_LABELS = Array.from({ length: 24 }, (_, i) => {
 function getColor(avgPnL: number, maxAbsPnL: number): string {
     if (maxAbsPnL === 0) return 'rgba(63,63,70,0.5)';
     const ratio = Math.max(-1, Math.min(1, avgPnL / maxAbsPnL));
-    if (ratio > 0) {
-        // Green scale
-        const intensity = Math.round(ratio * 255);
-        return `rgba(34, ${100 + Math.round(ratio * 97)}, 94, ${0.3 + ratio * 0.7})`;
-    } else if (ratio < 0) {
-        // Red scale
-        return `rgba(239, ${Math.round((1 + ratio) * 68)}, 68, ${0.3 + (-ratio) * 0.7})`;
+    if (ratio !== 0) {
+        // Profit/loss colour, from 30% opacity for small averages to solid for the largest
+        const strength = Math.round(30 + Math.abs(ratio) * 70);
+        return `color-mix(in srgb, ${pnlColor(ratio)} ${strength}%, transparent)`;
     }
     return 'rgba(63,63,70,0.5)';
 }
@@ -69,7 +67,7 @@ export function PerformanceHeatmap({ data }: PerformanceHeatmapProps) {
             {/* Legend */}
             <div className="flex items-center gap-3 mb-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-sm bg-rose-500/80" />
+                    <div className="w-3 h-3 rounded-sm bg-loss/80" />
                     Losing slot
                 </div>
                 <div className="flex items-center gap-1">
@@ -77,7 +75,7 @@ export function PerformanceHeatmap({ data }: PerformanceHeatmapProps) {
                     No data
                 </div>
                 <div className="flex items-center gap-1">
-                    <div className="w-3 h-3 rounded-sm bg-emerald-500/80" />
+                    <div className="w-3 h-3 rounded-sm bg-profit/80" />
                     Winning slot
                 </div>
                 <span className="ml-auto">⭐ = Golden Hour &nbsp; ⚠️ = Danger Zone</span>
@@ -152,19 +150,19 @@ export function PerformanceHeatmap({ data }: PerformanceHeatmapProps) {
                             </div>
                             <div className="flex justify-between gap-4">
                                 <span>Avg PnL</span>
-                                <span className={tooltip.cell.avgPnL >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
+                                <span className={tooltip.cell.avgPnL >= 0 ? 'text-profit' : 'text-loss'}>
                                     {formatCurrency(tooltip.cell.avgPnL)}
                                 </span>
                             </div>
                             <div className="flex justify-between gap-4">
                                 <span>Win Rate</span>
-                                <span className={tooltip.cell.winRate >= 50 ? 'text-emerald-400' : 'text-amber-400'}>
+                                <span className={tooltip.cell.winRate >= 50 ? 'text-profit' : 'text-warning'}>
                                     {formatPercent(tooltip.cell.winRate)}
                                 </span>
                             </div>
                             <div className="flex justify-between gap-4">
                                 <span>Total PnL</span>
-                                <span className={tooltip.cell.totalPnL >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
+                                <span className={tooltip.cell.totalPnL >= 0 ? 'text-profit' : 'text-loss'}>
                                     {formatCurrency(tooltip.cell.totalPnL)}
                                 </span>
                             </div>

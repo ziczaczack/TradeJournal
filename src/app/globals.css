@@ -26,6 +26,9 @@
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
   --color-ring: var(--ring);
+  --color-profit: var(--profit);
+  --color-loss: var(--loss);
+  --color-warning: var(--warning);
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
@@ -92,6 +95,12 @@
   --input: oklch(0.2 0.005 285);
   --ring: oklch(0.65 0.15 250);
 
+  /* Trading semantics: P&L and "weak but not losing" stats.
+     Mirrored in src/lib/chartTheme.ts for charts and share images. */
+  --profit: #34d399;
+  --loss: #fb7185;
+  --warning: #fbbf24;
+
   /* Charts - Vibrant colors */
   --chart-1: oklch(0.7 0.18 160);
   /* Emerald */
@@ -147,12 +156,12 @@
 
   /* Profit Gradient Text */
   .text-gradient-profit {
-    @apply bg-gradient-to-r from-emerald-400 via-green-400 to-emerald-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-profit to-emerald-500 bg-clip-text text-transparent;
   }
 
   /* Loss Gradient Text */
   .text-gradient-loss {
-    @apply bg-gradient-to-r from-rose-400 via-red-400 to-rose-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-loss to-rose-500 bg-clip-text text-transparent;
   }
 
   /* Glow Effect for Selected Items */
@@ -162,11 +171,11 @@
 
   /* Status Indicators */
   .status-profit {
-    @apply border-l-2 border-l-emerald-500;
+    @apply border-l-2 border-l-profit;
   }
 
   .status-loss {
-    @apply border-l-2 border-l-rose-500;
+    @apply border-l-2 border-l-loss;
   }
 
   .status-neutral {
@@ -203,12 +212,12 @@
 
   /* Profit Glow Effect */
   .profit-glow {
-    text-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--profit) 40%, transparent);
   }
 
   /* Loss Glow Effect */
   .loss-glow {
-    text-shadow: 0 0 8px rgba(244, 63, 94, 0.4);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--loss) 40%, transparent);
   }
 
   /* Enhanced Button Hover with Lift */

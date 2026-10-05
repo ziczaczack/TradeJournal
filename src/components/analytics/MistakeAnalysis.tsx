@@ -25,7 +25,7 @@ export function MistakeAnalysis({ trades }: { trades: Trade[] }) {
     );
 
     const costColor = (cost: number | null) =>
-        cost === null ? 'text-muted-foreground' : cost > 0 ? 'text-rose-400' : 'text-emerald-400';
+        cost === null ? 'text-muted-foreground' : cost > 0 ? 'text-loss' : 'text-profit';
 
     return (
         <Card className="glass-card border-zinc-800/50">

@@ -197,7 +197,7 @@ function JournalContent() {
                                     <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${isOpen ? 'rotate-180' : ''}`} />
                                     <span className="font-semibold text-white">{trade.symbol}</span>
                                     <span className="text-xs text-muted-foreground">{formatTime(trade.entry_time)}</span>
-                                    <span className={`font-mono text-sm ${pnl.isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>{pnl.text}</span>
+                                    <span className={`font-mono text-sm ${pnl.isPositive ? 'text-profit' : 'text-loss'}`}>{pnl.text}</span>
                                     <span className="text-xs text-zinc-400">
                                         {template ? `${REVIEW_TEMPLATES[template].label} ${progress.done}/${progress.total}` : 'Not written'}
                                     </span>

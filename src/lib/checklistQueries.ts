@@ -98,30 +98,6 @@ export async function fetchChecklistTemplates(accountId?: string): Promise<Check
 }
 
 /**
- * Fetch all templates (including inactive) for editing
- */
-export async function fetchAllTemplates(accountId?: string): Promise<ChecklistTemplate[]> {
-    let query = getSupabase()
-        .from('checklist_templates')
-        .select('*')
-        .order('category')
-        .order('sort_order');
-
-    if (accountId) {
-        query = query.or(`account_id.eq.${accountId},account_id.is.null`);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-        console.error('Error fetching all templates:', error);
-        throw error;
-    }
-
-    return data as ChecklistTemplate[];
-}
-
-/**
  * Create a new checklist template
  */
 export async function createChecklistTemplate(
@@ -252,14 +228,28 @@ export async function seedDefaultTemplates(userId: string, accountId?: string): 
     }
 }
 
+// In-flight seeding checks, keyed by user + account. The check-then-insert below
+// is not atomic, so overlapping calls (e.g. React StrictMode running effects
+// twice) would each see zero templates and seed the defaults twice.
+const pendingEnsures = new Map<string, Promise<void>>();
+
 /**
  * Check if user has any templates, if not seed defaults
  */
-export async function ensureTemplatesExist(userId: string, accountId?: string): Promise<void> {
-    const templates = await fetchChecklistTemplates(accountId);
-    if (templates.length === 0) {
-        await seedDefaultTemplates(userId, accountId);
-    }
+export function ensureTemplatesExist(userId: string, accountId?: string): Promise<void> {
+    const key = `${userId}:${accountId ?? ''}`;
+    const pending = pendingEnsures.get(key);
+    if (pending) return pending;
+
+    const ensure = (async () => {
+        const templates = await fetchChecklistTemplates(accountId);
+        if (templates.length === 0) {
+            await seedDefaultTemplates(userId, accountId);
+        }
+    })().finally(() => pendingEnsures.delete(key));
+
+    pendingEnsures.set(key, ensure);
+    return ensure;
 }
 
 // ============================================

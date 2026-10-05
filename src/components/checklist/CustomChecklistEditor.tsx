@@ -8,7 +8,7 @@ import {
     ChecklistTemplateCreate,
     CATEGORY_INFO,
     CATEGORY_ORDER,
-    fetchAllTemplates,
+    fetchChecklistTemplates,
     createChecklistTemplate,
     updateChecklistTemplate,
     deleteChecklistTemplate,
@@ -247,7 +247,7 @@ export function CustomChecklistEditor() {
     const loadTemplates = useCallback(async () => {
         try {
             setIsLoading(true);
-            const data = await fetchAllTemplates(currentAccount?.id);
+            const data = await fetchChecklistTemplates(currentAccount?.id);
             setTemplates(data);
         } catch (error) {
             console.error('Error loading templates:', error);

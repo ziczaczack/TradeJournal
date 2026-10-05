@@ -6,6 +6,7 @@ import { useAccount } from '@/components/providers/AccountContext';
 export const tradeQueryKeys = {
     all: ['trades'] as const,
     list: (filters?: TradeFilters) => ['trades', 'list', filters] as const,
+    detail: (id: string) => ['trades', 'detail', id] as const,
     filterOptions: (accountId?: string) => ['trades', 'filterOptions', accountId] as const,
 };
 

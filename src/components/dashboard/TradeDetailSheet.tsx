@@ -19,7 +19,9 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Trade, updateTrade } from '@/lib/tradeQueries';
+import { Trade, updateTrade, fetchTradeById } from '@/lib/tradeQueries';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { tradeQueryKeys } from '@/hooks/useTrades';
 import { ScreenshotUploader } from '@/components/ScreenshotUploader';
 import { formatPnL } from '@/lib/tradeStats';
 import { PlaybookSetup, fetchPlaybookSetups } from '@/lib/playbookQueries';
@@ -68,6 +70,15 @@ export function TradeDetailSheet({
     onClose,
     onUpdate,
 }: TradeDetailSheetProps) {
+    const queryClient = useQueryClient();
+    // List rows omit notes/screenshot_url; load the full row before the form
+    // can be saved, or Save would overwrite them with blanks.
+    const { data: fullTrade, isError: fullTradeError } = useQuery({
+        queryKey: tradeQueryKeys.detail(trade?.id ?? ''),
+        queryFn: () => fetchTradeById(trade!.id),
+        enabled: isOpen && !!trade,
+        staleTime: 0,
+    });
     const [setupType, setSetupType] = useState<string>('__none__');
     const [isValidSetup, setIsValidSetup] = useState<string>('null');
     const [psychologyTag, setPsychologyTag] = useState<string>('__none__');
@@ -91,23 +102,23 @@ export function TradeDetailSheet({
         loadSetups();
     }, []);
 
-    // Reset form when trade changes
+    // Reset form once the full trade row is loaded
     useEffect(() => {
-        if (trade) {
-            setSetupType(trade.setup_type || '__none__');
+        if (fullTrade) {
+            setSetupType(fullTrade.setup_type || '__none__');
             setIsValidSetup(
-                trade.is_valid_setup === true
+                fullTrade.is_valid_setup === true
                     ? 'true'
-                    : trade.is_valid_setup === false
+                    : fullTrade.is_valid_setup === false
                         ? 'false'
                         : 'null'
             );
-            setPsychologyTag(trade.psychology_tag || '__none__');
-            setRating(trade.rating || 0);
-            setNotes(trade.notes || '');
-            setScreenshotUrl(trade.screenshot_url || '');
+            setPsychologyTag(fullTrade.psychology_tag || '__none__');
+            setRating(fullTrade.rating || 0);
+            setNotes(fullTrade.notes || '');
+            setScreenshotUrl(fullTrade.screenshot_url || '');
         }
-    }, [trade]);
+    }, [fullTrade]);
 
     const handleSave = async () => {
         if (!trade) return;
@@ -125,6 +136,7 @@ export function TradeDetailSheet({
             });
 
             if (updated) {
+                queryClient.setQueryData(tradeQueryKeys.detail(updated.id), updated);
                 onUpdate(updated);
                 onClose();
             }
@@ -341,6 +353,10 @@ export function TradeDetailSheet({
                         />
                     </div>
 
+                    {fullTradeError && (
+                        <p className="text-sm text-rose-400">Couldn&apos;t load this trade&apos;s details. Close and reopen to try again.</p>
+                    )}
+
                     {/* Save / Share */}
                     <div className="pt-4 border-t border-zinc-800/50 flex gap-2">
                         <Button
@@ -353,7 +369,7 @@ export function TradeDetailSheet({
                         </Button>
                         <Button
                             onClick={handleSave}
-                            disabled={isSaving}
+                            disabled={isSaving || !fullTrade}
                             className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 shadow-lg shadow-blue-500/20 transition-all duration-200 btn-scale"
                         >
                             {isSaving ? (

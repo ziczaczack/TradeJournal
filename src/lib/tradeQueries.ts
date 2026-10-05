@@ -127,6 +127,29 @@ export async function updateTrade(
 }
 
 /**
+ * Fetch one trade with every column. The list queries omit heavy fields
+ * (notes, screenshot_url), so the review sheet must load the full row before
+ * its form can be saved — otherwise saving would overwrite them with blanks.
+ */
+export async function fetchTradeById(
+    tradeId: string,
+    client: SupabaseClient = getSupabase()
+): Promise<Trade> {
+    const { data, error } = await client
+        .from('trading_journal')
+        .select('*')
+        .eq('id', tradeId)
+        .single();
+
+    if (error) {
+        console.error('Error fetching trade:', error);
+        throw error;
+    }
+
+    return data as Trade;
+}
+
+/**
  * Fetch trades for a specific month (by exit_time)
  * Used by the calendar component for efficient data loading
  * @param accountId - Optional account ID to filter by

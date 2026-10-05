@@ -14,7 +14,8 @@ import {
     LogOut,
     UserCircle,
     FlaskConical,
-    BookOpen
+    BookOpen,
+    NotebookPen
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getSupabase } from '@/lib/supabase';
@@ -32,6 +33,7 @@ const navItems = [
     { href: '/', label: 'Import', icon: Upload },
     { href: '/checklist', label: 'Checklist', icon: ClipboardCheck },
     { href: '/history', label: 'History', icon: History },
+    { href: '/journal', label: 'Journal', icon: NotebookPen },
     { href: '/calendar', label: 'Calendar', icon: Calendar },
     { href: '/analytics', label: 'Analytics', icon: BarChart3 },
     { href: '/backtest', label: 'Backtest', icon: FlaskConical },

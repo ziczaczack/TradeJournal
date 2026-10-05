@@ -15,6 +15,7 @@ import { fetchTradesByMonth, Trade } from '@/lib/tradeQueries';
 import { formatPnL } from '@/lib/tradeStats';
 import { useAccount } from '@/components/providers/AccountContext';
 import { CalendarDays, X } from 'lucide-react';
+import Link from 'next/link';
 
 export default function CalendarPage() {
     const { currentAccount, isLoading: accountLoading } = useAccount();
@@ -184,15 +185,23 @@ export default function CalendarPage() {
                                         </h3>
                                     </div>
                                     {selectedDate && (
-                                        <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={() => setSelectedDate(null)}
-                                            className="text-zinc-400 hover:text-white hover:bg-zinc-800/50"
-                                        >
-                                            <X className="w-4 h-4 mr-1" />
-                                            Clear
-                                        </Button>
+                                        <div className="flex items-center gap-2">
+                                            <Link
+                                                href={`/journal?date=${format(selectedDate, 'yyyy-MM-dd')}`}
+                                                className="text-sm text-blue-400 hover:underline"
+                                            >
+                                                Open daily journal →
+                                            </Link>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => setSelectedDate(null)}
+                                                className="text-zinc-400 hover:text-white hover:bg-zinc-800/50"
+                                            >
+                                                <X className="w-4 h-4 mr-1" />
+                                                Clear
+                                            </Button>
+                                        </div>
                                     )}
                                 </div>
 

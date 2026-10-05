@@ -12,6 +12,7 @@ import { DayNoteEditor } from '@/components/journal/DayNoteEditor';
 import { useAccount } from '@/components/providers/AccountContext';
 import { useTradesForCurrentAccount } from '@/hooks/useTrades';
 import { fetchDailyNote, fetchTradesForDay, journalQueryKeys } from '@/lib/journalQueries';
+import { getSupabase } from '@/lib/supabase';
 import type { Trade } from '@/lib/tradeQueries';
 import { formatPnL } from '@/lib/tradeStats';
 import { formatCurrency } from '@/lib/analyticsStats';
@@ -71,6 +72,13 @@ function JournalContent() {
         queryKey: journalQueryKeys.note(day ?? ''),
         queryFn: () => fetchDailyNote(day!),
         enabled: !!day,
+        staleTime: Infinity,
+    });
+
+    // Drafts are stored per user; cleared with the rest of the cache on sign-out.
+    const userQuery = useQuery({
+        queryKey: ['authUserId'],
+        queryFn: async () => (await getSupabase().auth.getUser()).data.user?.id ?? null,
         staleTime: Infinity,
     });
 
@@ -145,10 +153,16 @@ function JournalContent() {
             <div className="glass-card p-4 rounded-xl border border-zinc-800/50">
                 {noteQuery.isError ? (
                     <p className="text-sm text-rose-400">Couldn&apos;t load your note for this day.</p>
-                ) : noteQuery.data === undefined ? (
+                ) : noteQuery.data === undefined || !userQuery.data ? (
                     <p className="text-sm text-zinc-500">Loading note…</p>
                 ) : (
-                    <DayNoteEditor key={day} day={day} initialNote={noteQuery.data} onDirtyChange={setNoteDirty} />
+                    <DayNoteEditor
+                        key={day}
+                        userId={userQuery.data}
+                        day={day}
+                        initialNote={noteQuery.data}
+                        onDirtyChange={setNoteDirty}
+                    />
                 )}
             </div>
 

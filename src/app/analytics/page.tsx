@@ -27,6 +27,7 @@ import {
 } from '@/lib/analyticsStats';
 import { fetchPlaybookSetups } from '@/lib/playbookQueries';
 import { TrendingDown, Scale, LineChart, BarChart3, Brain, TableProperties, Loader2, Download, Grid3X3, BookOpen } from 'lucide-react';
+import { MistakeAnalysis } from '@/components/analytics/MistakeAnalysis';
 
 // 空状态默认值
 const DEFAULT_STATS = {
@@ -342,6 +343,15 @@ export default function AnalyticsPage() {
                             </Card>
                         </motion.div>
                     </div>
+
+                    {/* Mistakes */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-8"
+                    >
+                        <MistakeAnalysis trades={trades} />
+                    </motion.div>
 
                     {/* Performance Summary Table */}
                     {setupPerformanceData.length > 0 && (

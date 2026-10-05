@@ -20,6 +20,7 @@ import { useState, useEffect } from 'react';
 import { getSupabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import { AccountSwitcher } from '@/components/AccountSwitcher';
 import { ClipboardCheck } from 'lucide-react';
 
@@ -40,6 +41,7 @@ const navItems = [
 export function DashboardLayout({ children }: DashboardLayoutProps) {
     const pathname = usePathname();
     const router = useRouter();
+    const queryClient = useQueryClient();
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -62,6 +64,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
     const handleSignOut = async () => {
         await supabase.auth.signOut();
+        // Drop every cached query (trades, mistake tags, ...) so the next user
+        // signing in on this tab never sees this user's data.
+        queryClient.clear();
         router.push('/login');
     };
 

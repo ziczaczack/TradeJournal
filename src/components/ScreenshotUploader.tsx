@@ -178,7 +178,7 @@ export function ScreenshotUploader({
 
     return (
         <div ref={containerRef} className="space-y-2">
-            <label className="text-sm text-slate-400 flex items-center gap-2">
+            <label className="text-sm text-zinc-400 flex items-center gap-2">
                 <ImagePlus className="w-4 h-4" />
                 Screenshot
             </label>
@@ -195,7 +195,7 @@ export function ScreenshotUploader({
                         transition-all duration-200
                         ${isDragOver
                             ? 'border-blue-500 bg-blue-500/10'
-                            : 'border-slate-600 hover:border-slate-500 hover:bg-slate-800/50'
+                            : 'border-zinc-600 hover:border-zinc-500 hover:bg-zinc-800/50'
                         }
                     `}
                 >
@@ -207,14 +207,14 @@ export function ScreenshotUploader({
                         className="hidden"
                     />
                     <div className="space-y-2">
-                        <div className="flex justify-center gap-2 text-slate-500">
+                        <div className="flex justify-center gap-2 text-zinc-500">
                             <Upload className="w-5 h-5" />
                             <Clipboard className="w-5 h-5" />
                         </div>
-                        <p className="text-sm text-slate-400">
-                            Click to upload or <kbd className="px-1.5 py-0.5 bg-slate-700 rounded text-xs">Ctrl+V</kbd> to paste
+                        <p className="text-sm text-zinc-400">
+                            Click to upload or <kbd className="px-1.5 py-0.5 bg-zinc-700 rounded text-xs">Ctrl+V</kbd> to paste
                         </p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-zinc-500">
                             PNG, JPG up to 10MB
                         </p>
                     </div>
@@ -224,7 +224,7 @@ export function ScreenshotUploader({
             {/* Upload Progress */}
             {isUploading && (
                 <div className="space-y-3 py-4">
-                    <div className="flex items-center justify-center gap-2 text-sm text-slate-400">
+                    <div className="flex items-center justify-center gap-2 text-sm text-zinc-400">
                         <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full" />
                         {state === 'compressing'
                             ? 'Compressing image...'
@@ -253,7 +253,7 @@ export function ScreenshotUploader({
             {previewUrl && !isUploading && state !== 'error' && (
                 <div className="relative group">
                     <div
-                        className="rounded-lg overflow-hidden border border-slate-700 cursor-pointer transition-all hover:border-blue-500"
+                        className="rounded-lg overflow-hidden border border-zinc-700 cursor-pointer transition-all hover:border-blue-500"
                         onClick={() => setIsLightboxOpen(true)}
                     >
                         <img
@@ -286,7 +286,7 @@ export function ScreenshotUploader({
 
             {/* Lightbox Dialog */}
             <Dialog open={isLightboxOpen} onOpenChange={setIsLightboxOpen}>
-                <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-slate-900 border-slate-700">
+                <DialogContent className="max-w-4xl max-h-[90vh] p-2 bg-zinc-900 border-zinc-700">
                     <DialogTitle className="sr-only">Screenshot Preview</DialogTitle>
                     <DialogDescription className="sr-only">
                         Full size preview of the trade screenshot

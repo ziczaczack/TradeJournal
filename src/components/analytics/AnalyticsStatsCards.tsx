@@ -64,9 +64,9 @@ export function AnalyticsStatsCards({ stats, isLoading }: AnalyticsStatsCardsPro
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {cards.map((card) => (
-                <Card key={card.title} className="bg-slate-800/50 border-slate-700/50 hover:bg-slate-800/70 transition-colors">
+                <Card key={card.title} className="bg-zinc-800/50 border-zinc-700/50 hover:bg-zinc-800/70 transition-colors">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium text-slate-400">
+                        <CardTitle className="text-sm font-medium text-zinc-400">
                             {card.title}
                         </CardTitle>
                         <span className="text-2xl">{card.icon}</span>
@@ -75,7 +75,7 @@ export function AnalyticsStatsCards({ stats, isLoading }: AnalyticsStatsCardsPro
                         <div className={`text-2xl font-bold ${card.colorClass}`}>
                             {formatValue(card.value, card.format)}
                         </div>
-                        <p className="text-xs text-slate-500 mt-1">
+                        <p className="text-xs text-zinc-500 mt-1">
                             {card.subtitle}
                         </p>
                     </CardContent>

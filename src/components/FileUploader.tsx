@@ -177,7 +177,7 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
               transition-all duration-200 ease-in-out
               ${isDragOver
                                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20'
-                                : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                                : 'border-zinc-300 hover:border-zinc-400 dark:border-zinc-600 dark:hover:border-zinc-500'
                             }
             `}
                     >
@@ -191,14 +191,14 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
                         <div className="space-y-4">
                             <div className="text-5xl">📤</div>
                             <div>
-                                <p className="text-lg font-medium text-gray-700 dark:text-gray-200">
+                                <p className="text-lg font-medium text-zinc-700 dark:text-zinc-200">
                                     Drag & drop your CSV file here
                                 </p>
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-zinc-500">
                                     or click to browse
                                 </p>
                             </div>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-zinc-400">
                                 Supports Tradovate Performance Report format (max 10MB)
                             </p>
                         </div>
@@ -317,17 +317,17 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
                         </div>
 
                         <div className="grid grid-cols-3 gap-4 text-center">
-                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
+                            <div className="bg-zinc-50 dark:bg-zinc-800 rounded-lg p-4">
                                 <p className="text-2xl font-bold">{parseResult.metadata.totalRows}</p>
-                                <p className="text-sm text-gray-500">Total Rows</p>
+                                <p className="text-sm text-zinc-500">Total Rows</p>
                             </div>
                             <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
                                 <p className="text-2xl font-bold text-green-600">{uploadResult.insertedCount}</p>
-                                <p className="text-sm text-gray-500">Inserted</p>
+                                <p className="text-sm text-zinc-500">Inserted</p>
                             </div>
                             <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
                                 <p className="text-2xl font-bold text-yellow-600">{uploadResult.skippedCount}</p>
-                                <p className="text-sm text-gray-500">Skipped (duplicates)</p>
+                                <p className="text-sm text-zinc-500">Skipped (duplicates)</p>
                             </div>
                         </div>
 
@@ -359,7 +359,7 @@ export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
                         <div className="text-center">
                             <div className="text-5xl mb-4">❌</div>
                             <p className="text-xl font-bold text-red-600">Import Failed</p>
-                            <p className="text-gray-600 dark:text-gray-400 mt-2">{errorMessage}</p>
+                            <p className="text-zinc-600 dark:text-zinc-400 mt-2">{errorMessage}</p>
                         </div>
                         <Button onClick={resetState} className="w-full" variant="outline">
                             Try Again

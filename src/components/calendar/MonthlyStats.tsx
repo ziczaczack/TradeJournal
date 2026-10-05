@@ -65,8 +65,8 @@ export function MonthlyStats({ trades }: MonthlyStatsProps) {
 
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <Card className="bg-slate-800/30 border-slate-700/50 p-4">
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Card className="bg-zinc-800/30 border-zinc-700/50 p-4">
+                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">
                     Monthly PnL
                 </p>
                 <p className={`text-2xl font-bold mt-1 ${pnlFormatted.isPositive ? 'text-green-400' : 'text-red-400'}`}>
@@ -74,8 +74,8 @@ export function MonthlyStats({ trades }: MonthlyStatsProps) {
                 </p>
             </Card>
 
-            <Card className="bg-slate-800/30 border-slate-700/50 p-4">
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Card className="bg-zinc-800/30 border-zinc-700/50 p-4">
+                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">
                     Win Rate (Days)
                 </p>
                 <p className="text-2xl font-bold text-white mt-1">
@@ -83,21 +83,21 @@ export function MonthlyStats({ trades }: MonthlyStatsProps) {
                 </p>
             </Card>
 
-            <Card className="bg-slate-800/30 border-slate-700/50 p-4">
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Card className="bg-zinc-800/30 border-zinc-700/50 p-4">
+                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">
                     Trading Days
                 </p>
                 <p className="text-2xl font-bold text-white mt-1">
                     <span className="text-green-400">{stats.winningDays}</span>
-                    <span className="text-slate-500 mx-1">/</span>
+                    <span className="text-zinc-500 mx-1">/</span>
                     <span className="text-red-400">{stats.losingDays}</span>
-                    <span className="text-slate-500 mx-1">/</span>
+                    <span className="text-zinc-500 mx-1">/</span>
                     <span>{stats.tradingDays}</span>
                 </p>
             </Card>
 
-            <Card className="bg-slate-800/30 border-slate-700/50 p-4">
-                <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">
+            <Card className="bg-zinc-800/30 border-zinc-700/50 p-4">
+                <p className="text-xs font-medium text-zinc-500 uppercase tracking-wide">
                     Total Trades
                 </p>
                 <p className="text-2xl font-bold text-white mt-1">

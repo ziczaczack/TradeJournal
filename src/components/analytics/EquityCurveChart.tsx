@@ -20,7 +20,7 @@ interface EquityCurveChartProps {
 export function EquityCurveChart({ data }: EquityCurveChartProps) {
     if (data.length === 0) {
         return (
-            <div className="flex items-center justify-center h-[300px] text-slate-500">
+            <div className="flex items-center justify-center h-[300px] text-zinc-500">
                 No trade data available
             </div>
         );

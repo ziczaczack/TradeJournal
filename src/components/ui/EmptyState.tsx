@@ -16,23 +16,23 @@ interface EmptyStateProps {
 // Encouraging messages for different contexts
 export const EMPTY_STATE_MESSAGES = {
     noTradesDay: {
-        title: '今日无交易',
-        description: '休息也是一种策略。保持耐心，等待最佳时机。',
+        title: 'No trades today',
+        description: 'Sitting out is a strategy too. Stay patient and wait for your setup.',
         icon: Coffee,
     },
     noTradesMonth: {
-        title: '本月暂无交易记录',
-        description: '这可能是新的开始，或是策略性休整期。',
+        title: 'No trades this month',
+        description: 'This could be a fresh start, or a deliberate break.',
         icon: Calendar,
     },
     noData: {
-        title: '暂无数据',
-        description: '开始导入交易记录，追踪你的交易表现。',
+        title: 'No data yet',
+        description: 'Import your trades to start tracking your performance.',
         icon: TrendingUp,
     },
     noAnalytics: {
-        title: '数据不足',
-        description: '需要更多交易记录才能生成分析报告。',
+        title: 'Not enough data',
+        description: 'More trades are needed to build an analytics report.',
         icon: BarChart3,
     },
 } as const;

@@ -6,14 +6,13 @@
 ![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 
-A comprehensive, full-stack trading journaling application designed to help traders track performance, maintain discipline, and analyze their edge. Built thoughtfully with modern web technologies, this platform goes beyond simple logging by offering AI-powered mentoring, detailed analytics, automated CSV imports, and setup playbooks.
+A comprehensive, full-stack trading journaling application designed to help traders track performance, maintain discipline, and analyze their edge. Built thoughtfully with modern web technologies, this platform goes beyond simple logging by offering daily journaling, detailed analytics, automated CSV imports, and setup playbooks.
 
 ## 🚀 Features
 
 - **Automated Trade Imports**: Easily import execution data from Tradovate via CSV parsing.
 - **Advanced Analytics Dashboard**: Gain deep insights into your trading performance with win rates, profit/loss tracking, and expectancy metrics visualized through interactive charts (Recharts & Lightweight Charts).
 - **Interactive Trading Calendar**: Review day-to-day performance at a glance with a visual calendar heat map.
-- **AI Trading Mentor**: Integrated Groq AI to act as a virtual trading coach, reviewing performance and providing data-driven feedback on your journaling.
 - **Playbooks & Setups**: Document your 'A+' setups with strict rules, conditions, and visual chart tracking.
 - **Pre-Trade Checklists**: Enforce discipline before taking a trade to protect psychological capital.
 - **Performance Backtesting**: Test strategies against historical performance and manage backtest logs directly in the app.
@@ -61,11 +60,10 @@ You need [Node.js](https://nodejs.org/) installed along with a package manager l
    ```
 
 3. Configure Environment Variables
-   Copy `.env.local.example` to `.env.local` and fill in your Supabase and Groq API keys.
+   Copy `.env.local.example` to `.env.local` and fill in your Supabase keys.
    ```env
    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   GROQ_API_KEY=your_groq_api_key
    ```
 
 4. Run the Development Server

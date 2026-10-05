@@ -10,7 +10,6 @@ import { AnalyticsStatsCards } from '@/components/analytics/AnalyticsStatsCards'
 import { EquityCurveChart } from '@/components/analytics/EquityCurveChart';
 import { SetupPerformanceChart } from '@/components/analytics/SetupPerformanceChart';
 import { PsychologyImpactChart } from '@/components/analytics/PsychologyImpactChart';
-import { AIMentorInsights } from '@/components/analytics/AIMentorInsights';
 import { PerformanceHeatmap } from '@/components/analytics/PerformanceHeatmap';
 import { PlaybookComparisonChart } from '@/components/analytics/PlaybookComparisonChart';
 import { useTradesForCurrentAccount } from '@/hooks/useTrades';
@@ -402,15 +401,6 @@ export default function AnalyticsPage() {
                             </Card>
                         </motion.div>
                     )}
-
-                    {/* AI Mentor Insights Section */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                    >
-                        <AIMentorInsights trades={trades} />
-                    </motion.div>
 
                     {/* Performance Heatmap */}
                     <motion.div

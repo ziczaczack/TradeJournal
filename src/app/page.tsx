@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { FileUploader } from '@/components/FileUploader';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, RefreshCcw, Shield, Sparkles, LogIn } from 'lucide-react';
+import { ArrowRight, RefreshCcw, Shield, BookOpen, LogIn } from 'lucide-react';
 import { getSupabase } from '@/lib/supabase';
 import type { User } from '@supabase/supabase-js';
 
@@ -134,13 +134,13 @@ export default function Home() {
 
         <div className="glass-card p-6 hover-lift">
           <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4">
-            <Sparkles className="w-6 h-6 text-purple-400" />
+            <BookOpen className="w-6 h-6 text-purple-400" />
           </div>
           <h3 className="text-lg font-semibold text-white mb-2">
-            AI-Powered Insights
+            Daily Journaling
           </h3>
           <p className="text-zinc-400 text-sm">
-            Get personalized coaching from your AI Trading Mentor based on your patterns.
+            Write up each trade and each trading day to review your decisions.
           </p>
         </div>
       </motion.div>

@@ -25,6 +25,8 @@ export interface Trade {
     ai_feedback?: Record<string, unknown> | null;
     mistake_tag_ids?: string[];
     mistakes_reviewed?: boolean;
+    review_template?: 'full' | 'basic' | null;
+    review_answers?: Record<string, string>;
 }
 
 
@@ -43,6 +45,8 @@ export interface TradeUpdate {
     rating?: number | null;
     mistake_tag_ids?: string[];
     mistakes_reviewed?: boolean;
+    review_template?: 'full' | 'basic' | null;
+    review_answers?: Record<string, string>;
 }
 
 /**

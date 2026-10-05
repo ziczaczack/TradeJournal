@@ -131,7 +131,9 @@ Rules:
 - **Percent**: `pnl / initial_balance * 100`; the option is disabled when the
   balance is missing or 0.
 - **Playbook stats**: trades with `setup_type === setup.name`; win = `pnl > 0`;
-  `avgResult` null when there are zero trades.
+  `avgResult` null when there are zero trades. Stats use the currently selected
+  account's trades (same scope as Analytics); `percent` uses that account's
+  `initial_balance`; `points` averages only trades with both prices.
 - Never included: account name, account id, user id, email, trade id, setup id.
 
 `validateSharePayload(kind, unknown)` (same module) checks shape and types,

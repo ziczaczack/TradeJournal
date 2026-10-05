@@ -24,6 +24,8 @@ import { ScreenshotUploader } from '@/components/ScreenshotUploader';
 import { formatPnL } from '@/lib/tradeStats';
 import { PlaybookSetup, fetchPlaybookSetups } from '@/lib/playbookQueries';
 import dynamic from 'next/dynamic';
+import { Share2 } from 'lucide-react';
+import { ShareDialog } from '@/components/share/ShareDialog';
 
 // Load chart client-side only (uses browser APIs)
 const TradingChart = dynamic(
@@ -74,6 +76,7 @@ export function TradeDetailSheet({
     const [screenshotUrl, setScreenshotUrl] = useState<string>('');
     const [isSaving, setIsSaving] = useState(false);
     const [playbookSetups, setPlaybookSetups] = useState<PlaybookSetup[]>([]);
+    const [shareOpen, setShareOpen] = useState(false);
 
     // Fetch setups from playbook
     useEffect(() => {
@@ -338,12 +341,20 @@ export function TradeDetailSheet({
                         />
                     </div>
 
-                    {/* Save Button */}
-                    <div className="pt-4 border-t border-zinc-800/50">
+                    {/* Save / Share */}
+                    <div className="pt-4 border-t border-zinc-800/50 flex gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => setShareOpen(true)}
+                            className="border-zinc-700 text-zinc-200"
+                        >
+                            <Share2 className="w-4 h-4 mr-2" />
+                            Share
+                        </Button>
                         <Button
                             onClick={handleSave}
                             disabled={isSaving}
-                            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 shadow-lg shadow-blue-500/20 transition-all duration-200 btn-scale"
+                            className="flex-1 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 shadow-lg shadow-blue-500/20 transition-all duration-200 btn-scale"
                         >
                             {isSaving ? (
                                 <span className="flex items-center gap-2">
@@ -356,6 +367,20 @@ export function TradeDetailSheet({
                         </Button>
                     </div>
                 </div>
+                <ShareDialog
+                    open={shareOpen}
+                    onOpenChange={setShareOpen}
+                    source={{
+                        kind: 'trade',
+                        trade: {
+                            ...trade,
+                            notes: notes || null,
+                            screenshot_url: screenshotUrl || null,
+                            setup_type: setupType === '__none__' ? null : setupType,
+                            rating: rating > 0 ? rating : null,
+                        },
+                    }}
+                />
             </SheetContent>
         </Sheet>
     );

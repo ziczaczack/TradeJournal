@@ -18,7 +18,10 @@ import {
     X,
     MessageSquare,
     Loader2,
+    Share2,
 } from 'lucide-react';
+import { ShareDialog } from '@/components/share/ShareDialog';
+import { useTradesForCurrentAccount } from '@/hooks/useTrades';
 import {
     PlaybookSetup,
     fetchPlaybookSetups,
@@ -36,6 +39,8 @@ export default function PlaybookPage() {
     const [isCreating, setIsCreating] = useState(false);
     const [selectedSetup, setSelectedSetup] = useState<PlaybookSetup | null>(null);
     const [showForm, setShowForm] = useState(false);
+    const [shareSetup, setShareSetup] = useState<PlaybookSetup | null>(null);
+    const { data: accountTrades = [] } = useTradesForCurrentAccount();
 
     // Form state
     const [name, setName] = useState('');
@@ -312,6 +317,15 @@ export default function PlaybookPage() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
+                                                    onClick={() => setShareSetup(setup)}
+                                                    className="w-8 h-8 text-zinc-500 hover:text-white"
+                                                    aria-label="Share setup"
+                                                >
+                                                    <Share2 className="w-4 h-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
                                                     onClick={() => handleEdit(setup)}
                                                     className="w-8 h-8 text-zinc-500 hover:text-white"
                                                 >
@@ -348,6 +362,13 @@ export default function PlaybookPage() {
                     </div>
                 )}
             </div>
+            {shareSetup && (
+                <ShareDialog
+                    open
+                    onOpenChange={(open) => !open && setShareSetup(null)}
+                    source={{ kind: 'playbook', setup: shareSetup, trades: accountTrades }}
+                />
+            )}
         </DashboardLayout>
     );
 }

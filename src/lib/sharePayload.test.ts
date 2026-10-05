@@ -11,7 +11,6 @@ import {
     generateShareToken,
     MAX_NOTES_LENGTH,
     MAX_RULES,
-    MAX_TEXT_LENGTH,
     tradePoints,
 } from './sharePayload';
 
@@ -194,12 +193,23 @@ describe('buildPlaybookSharePayload', () => {
         expect(p.stats).toEqual({ tradeCount: 0, winRate: 0, avgResult: null });
     });
 
-    it('caps rules and long text', () => {
-        const big = { ...setup, description: 'd'.repeat(2000), rules: Array.from({ length: 20 }, () => 'r'.repeat(500)) };
+    it('caps rules and long text to what fits on the 1200x630 card', () => {
+        const big = {
+            ...setup,
+            name: 'n'.repeat(500),
+            description: 'd'.repeat(2000),
+            rules: Array.from({ length: 20 }, () => 'r'.repeat(500)),
+        };
         const p = buildPlaybookSharePayload(big, [], { resultMode: 'usd', includeScreenshot: false }, null);
         expect(p.rules).toHaveLength(MAX_RULES);
-        expect(p.rules[0]).toHaveLength(MAX_TEXT_LENGTH);
-        expect(p.description).toHaveLength(MAX_TEXT_LENGTH);
+        expect(p.name).toHaveLength(60);
+        expect(p.rules[0]).toHaveLength(90);
+        expect(p.description).toHaveLength(140);
+    });
+
+    it('caps a long setup name on trade cards', () => {
+        const p = buildTradeSharePayload(trade({ setup_type: 's'.repeat(500) }), opts, null);
+        expect(p.setupName).toHaveLength(40);
     });
 
     it('drops blank rules and maps a blank timeframe to null', () => {

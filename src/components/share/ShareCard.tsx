@@ -25,6 +25,14 @@ const colors = {
     accent: '#60a5fa',
 };
 
+// One line, cut with an ellipsis — keeps long names/rules from overflowing.
+const oneLine: CSSProperties = {
+    display: 'block',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+};
+
 const frame: CSSProperties = {
     width: SHARE_CARD_WIDTH,
     height: SHARE_CARD_HEIGHT,
@@ -62,7 +70,7 @@ function Stat({ label, value }: { label: string; value: string }) {
             <div style={{ display: 'flex', fontSize: 16, color: colors.faint, textTransform: 'uppercase', letterSpacing: 1 }}>
                 {label}
             </div>
-            <div style={{ display: 'flex', fontSize: 26, color: colors.text, marginTop: 4 }}>{value}</div>
+            <div style={{ ...oneLine, fontSize: 26, color: colors.text, marginTop: 4, paddingRight: 16 }}>{value}</div>
         </div>
     );
 }
@@ -79,6 +87,7 @@ function Badge({ children, color }: { children: ReactNode; color: string }) {
                 borderRadius: 8,
                 padding: '4px 12px',
                 marginLeft: 16,
+                flexShrink: 0,
             }}
         >
             {children}
@@ -112,9 +121,9 @@ function TradeCard({ p }: { p: TradeSharePayload }) {
     return (
         <div style={frame}>
             <div style={{ display: 'flex', flex: 1 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <div style={{ display: 'flex', fontSize: 44, fontWeight: 700 }}>{p.symbol}</div>
+                        <div style={{ ...oneLine, fontSize: 44, fontWeight: 700, flexShrink: 1, minWidth: 0 }}>{p.symbol}</div>
                         <Badge color={p.side === 'long' ? colors.win : colors.loss}>
                             {p.side === 'long' ? 'LONG' : 'SHORT'}
                         </Badge>
@@ -148,27 +157,30 @@ function PlaybookCard({ p }: { p: PlaybookSharePayload }) {
     return (
         <div style={frame}>
             <div style={{ display: 'flex', flex: 1 }}>
-                <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
                     <div style={{ display: 'flex', fontSize: 18, color: colors.accent, textTransform: 'uppercase', letterSpacing: 2 }}>
                         Playbook setup
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', marginTop: 8 }}>
-                        <div style={{ display: 'flex', fontSize: 48, fontWeight: 700 }}>{p.name}</div>
+                        <div style={{ ...oneLine, fontSize: 48, fontWeight: 700, flexShrink: 1, minWidth: 0 }}>{p.name}</div>
                         {p.timeframe && <Badge color={colors.accent}>{p.timeframe}</Badge>}
                     </div>
                     {p.description && (
-                        <div style={{ display: 'flex', fontSize: 22, color: colors.muted, marginTop: 12 }}>{p.description}</div>
+                        <div style={{ display: 'flex', fontSize: 22, color: colors.muted, marginTop: 12, maxHeight: 60, overflow: 'hidden' }}>
+                            {p.description}
+                        </div>
                     )}
-                    <div style={{ display: 'flex', flexDirection: 'column', marginTop: 20 }}>
+                    {/* Shrinks and clips so the stats row always stays on the card */}
+                    <div style={{ display: 'flex', flexDirection: 'column', marginTop: 20, flex: 1, minHeight: 0, overflow: 'hidden' }}>
                         {p.rules.map((rule, i) => (
-                            <div key={i} style={{ display: 'flex', fontSize: 20, color: colors.text, marginBottom: 6 }}>
+                            <div key={i} style={{ ...oneLine, fontSize: 20, color: colors.text, marginBottom: 6, flexShrink: 0 }}>
                                 {`${i + 1}. ${rule}`}
                             </div>
                         ))}
                     </div>
-                    <div style={{ display: 'flex', marginTop: 'auto', paddingTop: 16 }}>
+                    <div style={{ display: 'flex', paddingTop: 16 }}>
                         <Stat label="Trades" value={String(stats.tradeCount)} />
-                        <Stat label="Win rate" value={`${stats.winRate.toFixed(1)}% / ${p.winRateTarget}% target`} />
+                        <Stat label="Win rate / target" value={`${stats.winRate.toFixed(1)}% / ${p.winRateTarget}%`} />
                         <Stat label="Avg result" value={stats.avgResult ? formatShareResult(stats.avgResult) : '—'} />
                     </div>
                 </div>

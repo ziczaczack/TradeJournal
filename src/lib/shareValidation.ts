@@ -1,7 +1,10 @@
 import {
     MAX_NOTES_LENGTH,
     MAX_RULES,
-    MAX_TEXT_LENGTH,
+    MAX_DESCRIPTION_LENGTH,
+    MAX_NAME_LENGTH,
+    MAX_RULE_LENGTH,
+    MAX_SETUP_NAME_LENGTH,
     PlaybookSharePayload,
     ResultMode,
     ShareResult,
@@ -77,7 +80,7 @@ function tradePayload(p: Obj, host: string): TradeSharePayload {
         exitPrice: numOrNull(p.exitPrice, 'exitPrice'),
         entryTime: strOrNull(p.entryTime, 'entryTime', 64),
         duration: strOrNull(p.duration, 'duration', 64),
-        setupName: strOrNull(p.setupName, 'setupName', MAX_TEXT_LENGTH),
+        setupName: strOrNull(p.setupName, 'setupName', MAX_SETUP_NAME_LENGTH),
         rating: numOrNull(p.rating, 'rating'),
         result: result(p.result, 'result'),
     };
@@ -92,10 +95,10 @@ function playbookPayload(p: Obj, host: string): PlaybookSharePayload {
     const stats = obj(p.stats, 'stats');
     const payload: PlaybookSharePayload = {
         v: 1,
-        name: str(p.name, 'name', MAX_TEXT_LENGTH),
+        name: str(p.name, 'name', MAX_NAME_LENGTH),
         timeframe: strOrNull(p.timeframe, 'timeframe', 64),
-        description: strOrNull(p.description, 'description', MAX_TEXT_LENGTH),
-        rules: p.rules.map((rule, i) => str(rule, `rules[${i}]`, MAX_TEXT_LENGTH)),
+        description: strOrNull(p.description, 'description', MAX_DESCRIPTION_LENGTH),
+        rules: p.rules.map((rule, i) => str(rule, `rules[${i}]`, MAX_RULE_LENGTH)),
         winRateTarget: num(p.winRateTarget, 'winRateTarget'),
         stats: {
             tradeCount: num(stats.tradeCount, 'stats.tradeCount'),

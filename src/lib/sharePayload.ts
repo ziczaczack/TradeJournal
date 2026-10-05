@@ -56,7 +56,11 @@ export interface PlaybookShareOptions {
 
 export const MAX_NOTES_LENGTH = 500;
 export const MAX_RULES = 6;
-export const MAX_TEXT_LENGTH = 200;
+// Sized so a maximal card still fits 1200x630 (Satori doesn't clip overflow).
+export const MAX_NAME_LENGTH = 60;
+export const MAX_SETUP_NAME_LENGTH = 40;
+export const MAX_RULE_LENGTH = 90;
+export const MAX_DESCRIPTION_LENGTH = 140;
 
 // ============================================
 // Helpers
@@ -147,7 +151,7 @@ export function buildTradeSharePayload(
         exitPrice: short ? buy : sell,
         entryTime: (short ? trade.exit_time : trade.entry_time) || null,
         duration: trade.duration?.trim() || null,
-        setupName: trade.setup_type?.trim() ? truncate(trade.setup_type.trim(), MAX_TEXT_LENGTH) : null,
+        setupName: trade.setup_type?.trim() ? truncate(trade.setup_type.trim(), MAX_SETUP_NAME_LENGTH) : null,
         rating: trade.rating ?? null,
         result: { mode: options.resultMode, value },
     };
@@ -196,15 +200,15 @@ export function buildPlaybookSharePayload(
 
     const payload: PlaybookSharePayload = {
         v: 1,
-        name: truncate(setup.name, MAX_TEXT_LENGTH),
+        name: truncate(setup.name, MAX_NAME_LENGTH),
         timeframe: setup.timeframe?.trim() || null,
-        description: description ? truncate(description, MAX_TEXT_LENGTH) : null,
+        description: description ? truncate(description, MAX_DESCRIPTION_LENGTH) : null,
         // The playbook form allows blank rule rows; drop them (the validator rejects empty strings).
         rules: setup.rules
             .map(rule => rule.trim())
             .filter(Boolean)
             .slice(0, MAX_RULES)
-            .map(rule => truncate(rule, MAX_TEXT_LENGTH)),
+            .map(rule => truncate(rule, MAX_RULE_LENGTH)),
         winRateTarget: setup.win_rate_target,
         stats: {
             tradeCount: matched.length,

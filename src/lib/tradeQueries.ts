@@ -23,6 +23,8 @@ export interface Trade {
     screenshot_url?: string | null;
     rating?: number | null;
     ai_feedback?: Record<string, unknown> | null;
+    mistake_tag_ids?: string[];
+    mistakes_reviewed?: boolean;
 }
 
 
@@ -39,6 +41,8 @@ export interface TradeUpdate {
     notes?: string | null;
     screenshot_url?: string | null;
     rating?: number | null;
+    mistake_tag_ids?: string[];
+    mistakes_reviewed?: boolean;
 }
 
 /**
@@ -56,7 +60,7 @@ export async function fetchTrades(
     // notes and screenshot_url are excluded to reduce payload
     let query = client
         .from('trading_journal')
-        .select('id, account_id, symbol, pnl, buy_price, sell_price, quantity, entry_time, exit_time, duration, trade_id, setup_type, is_valid_setup, psychology_tag, rating')
+        .select('id, account_id, symbol, pnl, buy_price, sell_price, quantity, entry_time, exit_time, duration, trade_id, setup_type, is_valid_setup, psychology_tag, rating, mistake_tag_ids, mistakes_reviewed')
         .order('entry_time', { ascending: false });
 
     // Filter by account if provided
@@ -166,7 +170,7 @@ export async function fetchTradesByMonth(
     // Optimized query: only fetch fields needed for calendar display
     let query = getSupabase()
         .from('trading_journal')
-        .select('id, account_id, symbol, pnl, entry_time, exit_time, duration, trade_id, setup_type, is_valid_setup, psychology_tag, rating')
+        .select('id, account_id, symbol, pnl, entry_time, exit_time, duration, trade_id, setup_type, is_valid_setup, psychology_tag, rating, mistake_tag_ids, mistakes_reviewed')
         .gte('exit_time', `${monthStart}T00:00:00`)
         .lte('exit_time', `${monthEnd}T23:59:59`)
         .order('exit_time', { ascending: false });

@@ -13,7 +13,6 @@ import {
     Trophy,
     Target,
     TrendingUp,
-    TrendingDown,
     Activity,
     FlaskConical,
     AlertCircle,

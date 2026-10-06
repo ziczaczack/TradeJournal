@@ -12,7 +12,6 @@ import { getSupabase } from '@/lib/supabase';
 import {
     Account,
     fetchAccounts,
-    fetchDefaultAccount,
     ensureDefaultAccount,
 } from '@/lib/accountQueries';
 import type { User } from '@supabase/supabase-js';

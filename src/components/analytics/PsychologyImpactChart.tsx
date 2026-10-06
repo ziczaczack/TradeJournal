@@ -50,7 +50,6 @@ export function PsychologyImpactChart({ data }: PsychologyImpactChartProps) {
         innerRadius,
         outerRadius,
         percent,
-        tag,
     }: {
         cx: number;
         cy: number;
@@ -116,9 +115,8 @@ export function PsychologyImpactChart({ data }: PsychologyImpactChartProps) {
                         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
                     }}
                     labelStyle={{ color: CHART.tooltipText, fontWeight: 'bold' }}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    formatter={((value: number | undefined, name: string, props: any) => {
-                        const item = props?.payload;
+                    formatter={(value, name, props) => {
+                        const item = props?.payload as (typeof chartData)[number] | undefined;
                         if (!item) return [value, name];
                         return [
                             <span key="value" className="flex flex-col">
@@ -127,14 +125,14 @@ export function PsychologyImpactChart({ data }: PsychologyImpactChartProps) {
                             </span>,
                             item.tag,
                         ];
-                    }) as any}
+                    }}
                 />
                 <Legend
                     layout="vertical"
                     align="right"
                     verticalAlign="middle"
                     wrapperStyle={{ paddingLeft: '20px' }}
-                    formatter={(value, entry) => {
+                    formatter={(value) => {
                         const item = chartData.find((d) => d.tag === value);
                         if (item) {
                             return (

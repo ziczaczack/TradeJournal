@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -25,23 +25,19 @@ interface FileUploaderProps {
 type UploadState = 'idle' | 'selecting-account' | 'parsing' | 'uploading' | 'success' | 'error';
 
 export function FileUploader({ userId, onUploadComplete }: FileUploaderProps) {
-    const { accounts, currentAccount, isLoading: accountsLoading } = useAccount();
+    const { accounts, currentAccount } = useAccount();
     const [state, setState] = useState<UploadState>('idle');
     const [progress, setProgress] = useState(0);
     const [parseResult, setParseResult] = useState<ParseResult | null>(null);
     const [uploadResult, setUploadResult] = useState<InsertResult | null>(null);
     const [errorMessage, setErrorMessage] = useState<string>('');
     const [isDragOver, setIsDragOver] = useState(false);
-    const [selectedAccountId, setSelectedAccountId] = useState<string>('');
+    const [pickedAccountId, setSelectedAccountId] = useState<string>('');
     const [pendingFile, setPendingFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Initialize selected account from current account
-    useEffect(() => {
-        if (currentAccount && !selectedAccountId) {
-            setSelectedAccountId(currentAccount.id);
-        }
-    }, [currentAccount, selectedAccountId]);
+    // Default to the current account until the user picks one
+    const selectedAccountId = pickedAccountId || currentAccount?.id || '';
 
     const resetState = () => {
         setState('idle');

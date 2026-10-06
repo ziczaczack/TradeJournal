@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchTrades, fetchFilterOptions, Trade, TradeFilters } from '@/lib/tradeQueries';
+import { fetchTrades, fetchFilterOptions, TradeFilters } from '@/lib/tradeQueries';
 import { useAccount } from '@/components/providers/AccountContext';
 
 // Query keys 常量
@@ -53,7 +53,7 @@ export function useTradesForCurrentAccount(additionalFilters?: Omit<TradeFilters
  * 获取过滤器选项 (symbols, setupTypes)
  */
 export function useFilterOptions() {
-    const { currentAccount, isLoading: accountLoading } = useAccount();
+    const { currentAccount } = useAccount();
 
     return useQuery({
         queryKey: tradeQueryKeys.filterOptions(currentAccount?.id),

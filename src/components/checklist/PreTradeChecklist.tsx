@@ -20,7 +20,6 @@ import {
     ChevronDown,
     ChevronRight,
     Check,
-    X,
     Copy,
     CheckCircle2,
     AlertTriangle,

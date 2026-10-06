@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,6 @@ import {
     Image as ImageIcon,
     ChevronRight,
     X,
-    MessageSquare,
     Loader2,
     Share2,
 } from 'lucide-react';
@@ -342,7 +341,7 @@ export default function PlaybookPage() {
                                             </div>
                                         </div>
                                         {setup.description && (
-                                            <p className="text-xs text-muted-foreground line-clamp-2 mb-4 italic">"{setup.description}"</p>
+                                            <p className="text-xs text-muted-foreground line-clamp-2 mb-4 italic">&ldquo;{setup.description}&rdquo;</p>
                                         )}
                                         <div className="mt-auto space-y-1.5">
                                             {setup.rules.slice(0, 3).map((rule, idx) => (

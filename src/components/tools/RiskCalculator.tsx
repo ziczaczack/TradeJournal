@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useAccount } from '@/components/providers/AccountContext';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
     Calculator,
@@ -40,11 +39,13 @@ export function RiskCalculator({ isCompact = false }: { isCompact?: boolean }) {
     const [assetType, setAssetType] = useState<string>('NQ (Nasdaq)');
 
     // Auto-update balance if account changes
-    useEffect(() => {
+    const [prevAccount, setPrevAccount] = useState(currentAccount);
+    if (currentAccount !== prevAccount) {
+        setPrevAccount(currentAccount);
         if (currentAccount?.initial_balance) {
             setBalance(currentAccount.initial_balance);
         }
-    }, [currentAccount]);
+    }
 
     // Calculations
     const calculations = useMemo(() => {

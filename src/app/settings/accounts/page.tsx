@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -39,7 +39,7 @@ import {
 } from '@/lib/accountQueries';
 
 export default function AccountSettingsPage() {
-    const { accounts, currentAccount, refreshAccounts, isLoading } = useAccount();
+    const { accounts, refreshAccounts, isLoading } = useAccount();
     const [isCreating, setIsCreating] = useState(false);
     const [editingAccount, setEditingAccount] = useState<Account | null>(null);
     const [deletingAccount, setDeletingAccount] = useState<Account | null>(null);
@@ -446,7 +446,7 @@ export default function AccountSettingsPage() {
                         <DialogHeader>
                             <DialogTitle className="text-white">Delete Account</DialogTitle>
                             <DialogDescription className="text-zinc-400">
-                                Are you sure you want to delete "{deletingAccount?.account_name}"?
+                                Are you sure you want to delete &ldquo;{deletingAccount?.account_name}&rdquo;?
                                 This will also delete all trades associated with this account.
                                 This action cannot be undone.
                             </DialogDescription>

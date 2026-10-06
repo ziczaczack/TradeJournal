@@ -1,8 +1,6 @@
 'use client';
 
 import {
-    LineChart,
-    Line,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -73,14 +71,13 @@ export function EquityCurveChart({ data }: EquityCurveChartProps) {
                     }}
                     labelStyle={{ color: CHART.tooltipText, fontWeight: 'bold' }}
                     itemStyle={{ color: CHART.tooltipText }}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    formatter={((value: number | undefined, name: string) => {
-                        const val = value ?? 0;
+                    formatter={(value, name) => {
+                        const val = Number(value ?? 0);
                         if (name === 'cumulativePnL') {
                             return [formatCurrency(val), 'Cumulative PnL'];
                         }
                         return [formatCurrency(val), 'Trade PnL'];
-                    }) as any}
+                    }}
                 />
                 <Area
                     type="monotone"

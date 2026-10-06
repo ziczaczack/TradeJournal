@@ -5,7 +5,6 @@ import { motion, Reorder } from 'framer-motion';
 import {
     ChecklistTemplate,
     ChecklistCategory,
-    ChecklistTemplateCreate,
     CATEGORY_INFO,
     CATEGORY_ORDER,
     fetchChecklistTemplates,
@@ -39,7 +38,6 @@ import {
     Pencil,
     Trash2,
     Save,
-    X,
     ArrowLeft,
 } from 'lucide-react';
 import Link from 'next/link';
@@ -110,15 +108,15 @@ function ItemDialog({ isOpen, onClose, template, onSave, isSaving }: ItemDialogP
     const [itemText, setItemText] = useState('');
     const [category, setCategory] = useState<ChecklistCategory>('setup');
 
-    useEffect(() => {
-        if (template) {
-            setItemText(template.item_text);
-            setCategory(template.category);
-        } else {
-            setItemText('');
-            setCategory('setup');
-        }
-    }, [template, isOpen]);
+    // Reset the form whenever the dialog opens or switches template
+    const [prevOpen, setPrevOpen] = useState(isOpen);
+    const [prevTemplate, setPrevTemplate] = useState(template);
+    if (isOpen !== prevOpen || template !== prevTemplate) {
+        setPrevOpen(isOpen);
+        setPrevTemplate(template);
+        setItemText(template?.item_text ?? '');
+        setCategory(template?.category ?? 'setup');
+    }
 
     const handleSubmit = async () => {
         if (itemText.trim()) {
@@ -206,7 +204,7 @@ function DeleteDialog({ isOpen, onClose, template, onConfirm, isDeleting }: Dele
                 <DialogHeader>
                     <DialogTitle className="text-white">Delete Checklist Item</DialogTitle>
                     <DialogDescription className="text-zinc-400">
-                        Are you sure you want to delete "{template?.item_text}"? This action cannot be undone.
+                        Are you sure you want to delete &ldquo;{template?.item_text}&rdquo;? This action cannot be undone.
                     </DialogDescription>
                 </DialogHeader>
                 <DialogFooter>
@@ -433,7 +431,7 @@ export function CustomChecklistEditor() {
 
                         {items.length === 0 ? (
                             <p className="text-sm text-muted-foreground text-center py-4">
-                                No items in this category. Click "Add Item" to create one.
+                                No items in this category. Click &ldquo;Add Item&rdquo; to create one.
                             </p>
                         ) : (
                             <Reorder.Group

@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo } from 'react';
-import { isSameDay } from 'date-fns';
 import { Card } from '@/components/ui/card';
 import { Trade } from '@/lib/tradeQueries';
 import { formatPnL } from '@/lib/tradeStats';

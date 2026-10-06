@@ -76,9 +76,8 @@ export function SetupPerformanceChart({ data }: SetupPerformanceChartProps) {
                         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.3)',
                     }}
                     labelStyle={{ color: CHART.tooltipText, fontWeight: 'bold' }}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    formatter={((value: number | undefined, name: string) => {
-                        const val = value ?? 0;
+                    formatter={(value, name) => {
+                        const val = Number(value ?? 0);
                         if (name === 'netPnL') {
                             return [formatCurrency(val), 'Net PnL'];
                         }
@@ -86,14 +85,11 @@ export function SetupPerformanceChart({ data }: SetupPerformanceChartProps) {
                             return [formatPercent(val), 'Win Rate'];
                         }
                         return [val, name];
-                    }) as any}
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    labelFormatter={((label: string, payload: any[]) => {
-                        if (payload && payload[0]) {
-                            return payload[0].payload.setupType;
-                        }
-                        return label;
-                    }) as any}
+                    }}
+                    labelFormatter={(label, payload) => {
+                        const row = payload?.[0]?.payload as { setupType?: string } | undefined;
+                        return row?.setupType ?? label;
+                    }}
                 />
                 <Legend
                     wrapperStyle={{ paddingTop: '10px' }}

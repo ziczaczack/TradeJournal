@@ -12,6 +12,7 @@ import {
     ReferenceLine,
     Legend,
     Cell,
+    type TooltipContentProps,
 } from 'recharts';
 import { CHART, PNL } from '@/lib/chartTheme';
 
@@ -19,12 +20,11 @@ interface PlaybookComparisonChartProps {
     data: PlaybookComparison[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label }: Partial<TooltipContentProps<number, string>>) => {
     if (!active || !payload?.length) return null;
-    const target = payload.find((p: any) => p.dataKey === 'targetWinRate')?.value ?? 0;
-    const actual = payload.find((p: any) => p.dataKey === 'actualWinRate')?.value ?? 0;
-    const trades = payload[0]?.payload?.tradeCount ?? 0;
+    const target = Number(payload.find((p) => p.dataKey === 'targetWinRate')?.value ?? 0);
+    const actual = Number(payload.find((p) => p.dataKey === 'actualWinRate')?.value ?? 0);
+    const trades = (payload[0]?.payload as PlaybookComparison | undefined)?.tradeCount ?? 0;
     const delta = actual - target;
 
     return (

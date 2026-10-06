@@ -59,14 +59,14 @@ export interface PlaybookComparison {
 // ============================================
 
 /**
- * 将美元转换为 cents (整数) 以避免浮点误差
+ * Convert dollars to integer cents to avoid floating-point error
  */
 function toCents(dollars: number): number {
     return Math.round(dollars * 100);
 }
 
 /**
- * 将 cents 转换回美元
+ * Convert cents back to dollars
  */
 function toDollars(cents: number): number {
     return cents / 100;
@@ -76,7 +76,7 @@ function toDollars(cents: number): number {
  * Calculate comprehensive analytics statistics from trades
  */
 export function calculateAnalyticsStats(trades: Trade[]): AnalyticsStats {
-    // 边缘情况：空数组
+    // Edge case: no trades
     if (trades.length === 0) {
         return {
             totalNetPnL: 0,
@@ -91,7 +91,7 @@ export function calculateAnalyticsStats(trades: Trade[]): AnalyticsStats {
         };
     }
 
-    // 使用整数(cents)累加避免浮点误差
+    // Sum in integer cents to avoid floating-point error
     const totalNetPnLCents = trades.reduce((sum, t) => sum + toCents(t.pnl || 0), 0);
     const totalNetPnL = toDollars(totalNetPnLCents);
 
@@ -99,10 +99,10 @@ export function calculateAnalyticsStats(trades: Trade[]): AnalyticsStats {
     const winningTrades = trades.filter((t) => t.pnl > 0);
     const losingTrades = trades.filter((t) => t.pnl < 0);
 
-    // Win Rate (边缘情况：单笔交易也能正确计算)
+    // Win Rate (also correct for a single trade)
     const winRate = (winningTrades.length / trades.length) * 100;
 
-    // Profit Factor: Total Profit / |Total Loss| (使用整数累加)
+    // Profit Factor: Total Profit / |Total Loss| (summed in cents)
     const totalProfitCents = winningTrades.reduce((sum, t) => sum + toCents(t.pnl), 0);
     const totalLossCents = Math.abs(losingTrades.reduce((sum, t) => sum + toCents(t.pnl), 0));
     const profitFactor = totalLossCents > 0
@@ -118,7 +118,7 @@ export function calculateAnalyticsStats(trades: Trade[]): AnalyticsStats {
         : 0;
     const averageRRR = avgLossCents > 0 ? avgWinCents / avgLossCents : avgWinCents > 0 ? Infinity : 0;
 
-    // Max Drawdown (使用修复后的算法)
+    // Max Drawdown
     const { maxDrawdown, maxDrawdownPercent } = calculateMaxDrawdown(trades);
 
     return {
@@ -136,16 +136,16 @@ export function calculateAnalyticsStats(trades: Trade[]): AnalyticsStats {
 
 /**
  * Calculate maximum drawdown from trades
- * 修复版本：正确处理初始亏损的情况
+ * Handles accounts that start with a loss
  * 
  * Drawdown = High Water Mark - Current Equity
- * High Water Mark 在每个新高点更新
+ * The high-water mark moves up at each new equity high
  */
 function calculateMaxDrawdown(
     trades: Trade[],
-    startingBalance: number = 0  // 初始资金，默认 0
+    startingBalance: number = 0  // starting balance, defaults to 0
 ): { maxDrawdown: number; maxDrawdownPercent: number } {
-    // 边缘情况：空数组
+    // Edge case: no trades
     if (trades.length === 0) {
         return { maxDrawdown: 0, maxDrawdownPercent: 0 };
     }
@@ -157,32 +157,30 @@ function calculateMaxDrawdown(
         return dateA - dateB;
     });
 
-    let equityCents = toCents(startingBalance);  // 当前权益 (cents)
-    let highWaterMarkCents = equityCents;        // 峰值 (cents)
+    let equityCents = toCents(startingBalance);  // current equity (cents)
+    let highWaterMarkCents = equityCents;        // peak equity (cents)
     let maxDrawdownCents = 0;
     let maxDrawdownPercent = 0;
 
     for (const trade of sortedTrades) {
         equityCents += toCents(trade.pnl || 0);
 
-        // 更新 High Water Mark (只在新高时更新)
+        // Raise the high-water mark only on a new high
         if (equityCents > highWaterMarkCents) {
             highWaterMarkCents = equityCents;
         }
 
-        // 计算当前回撤 (HWM - 当前权益)
+        // Current drawdown = HWM - equity
         const drawdownCents = highWaterMarkCents - equityCents;
 
         if (drawdownCents > maxDrawdownCents) {
             maxDrawdownCents = drawdownCents;
 
-            // 百分比计算：基于 HWM 的绝对值
-            // 即使 HWM 为负（初始亏损情况），也能正确计算
+            // Percent of |HWM|, which still works when HWM is negative (initial losses)
             if (highWaterMarkCents !== 0) {
                 maxDrawdownPercent = (drawdownCents / Math.abs(highWaterMarkCents)) * 100;
             } else {
-                // HWM 为 0 且有回撤，表示从 0 开始亏损
-                // 此时百分比为 100%（全部亏完）
+                // HWM of 0 with a drawdown means losing from zero: report 100%
                 maxDrawdownPercent = 100;
             }
         }
@@ -190,7 +188,7 @@ function calculateMaxDrawdown(
 
     return {
         maxDrawdown: toDollars(maxDrawdownCents),
-        maxDrawdownPercent: Math.min(maxDrawdownPercent, 100),  // 限制最大 100%
+        maxDrawdownPercent: Math.min(maxDrawdownPercent, 100),  // cap at 100%
     };
 }
 
@@ -202,7 +200,7 @@ function calculateMaxDrawdown(
  * Generate equity curve data points sorted by exit_time
  */
 export function generateEquityCurveData(trades: Trade[]): EquityCurvePoint[] {
-    // 边缘情况：空数组
+    // Edge case: no trades
     if (trades.length === 0) {
         return [];
     }
@@ -214,7 +212,7 @@ export function generateEquityCurveData(trades: Trade[]): EquityCurvePoint[] {
         return dateA - dateB;
     });
 
-    let cumulativePnLCents = 0;  // 使用整数累加
+    let cumulativePnLCents = 0;  // summed in cents
     const points: EquityCurvePoint[] = [];
 
     for (const trade of sortedTrades) {
@@ -224,7 +222,7 @@ export function generateEquityCurveData(trades: Trade[]): EquityCurvePoint[] {
         points.push({
             date: exitDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
             exitTime: trade.exit_time || '',
-            cumulativePnL: toDollars(cumulativePnLCents),  // 转回美元
+            cumulativePnL: toDollars(cumulativePnLCents),
             pnl: trade.pnl || 0,
         });
     }
@@ -236,12 +234,12 @@ export function generateEquityCurveData(trades: Trade[]): EquityCurvePoint[] {
  * Generate setup performance breakdown
  */
 export function generateSetupPerformanceData(trades: Trade[]): SetupPerformance[] {
-    // 边缘情况：空数组
+    // Edge case: no trades
     if (trades.length === 0) {
         return [];
     }
 
-    // 使用整数存储 PnL
+    // PnL kept in integer cents
     const setupMap = new Map<string, { wins: number; losses: number; totalPnLCents: number }>();
 
     for (const trade of trades) {
@@ -264,7 +262,7 @@ export function generateSetupPerformanceData(trades: Trade[]): SetupPerformance[
         result.push({
             setupType,
             winRate: total > 0 ? (data.wins / total) * 100 : 0,
-            netPnL: toDollars(data.totalPnLCents),  // 转回美元
+            netPnL: toDollars(data.totalPnLCents),
             totalTrades: total,
             winningTrades: data.wins,
         });
@@ -278,12 +276,12 @@ export function generateSetupPerformanceData(trades: Trade[]): SetupPerformance[
  * Generate psychology tag breakdown
  */
 export function generatePsychologyData(trades: Trade[]): PsychologyBreakdown[] {
-    // 边缘情况：空数组
+    // Edge case: no trades
     if (trades.length === 0) {
         return [];
     }
 
-    // 使用整数存储 PnL
+    // PnL kept in integer cents
     const psychMap = new Map<string, { totalPnLCents: number; count: number }>();
 
     for (const trade of trades) {
@@ -296,7 +294,7 @@ export function generatePsychologyData(trades: Trade[]): PsychologyBreakdown[] {
 
     const result: PsychologyBreakdown[] = [];
     psychMap.forEach((data, tag) => {
-        const totalPnL = toDollars(data.totalPnLCents);  // 转回美元
+        const totalPnL = toDollars(data.totalPnLCents);
         result.push({
             tag,
             totalPnL,

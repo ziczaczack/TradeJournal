@@ -11,8 +11,8 @@ export interface InsertResult {
 const BATCH_SIZE = 100;
 
 /**
- * 验证 userId 是否为有效的 UUID 格式
- * @throws Error 如果 userId 为空或格式无效
+ * Check that userId is a valid UUID
+ * @throws Error if userId is empty or malformed
  */
 function validateUserId(userId: unknown): string {
     if (!userId || typeof userId !== 'string') {
@@ -38,10 +38,10 @@ function validateUserId(userId: unknown): string {
  */
 export async function insertTrades(
     trades: TradingJournalRecord[],
-    userId: string, // 强制要求，不再可选
-    accountId: string // 新增：账户ID
+    userId: string, // required
+    accountId: string
 ): Promise<InsertResult> {
-    // 首先验证 userId - 如果无效将抛出异常
+    // Validate userId first; throws if invalid
     const validatedUserId = validateUserId(userId);
 
     if (!accountId) {
@@ -60,7 +60,7 @@ export async function insertTrades(
     let insertedCount = 0;
     let skippedCount = 0;
 
-    // 每条记录都必须带有有效的 user_id 和 account_id
+    // Every row must carry a valid user_id and account_id
     const tradesForInsert = trades.map((trade) => ({
         ...trade,
         user_id: validatedUserId,

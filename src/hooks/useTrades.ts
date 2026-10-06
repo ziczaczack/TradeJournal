@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchTrades, fetchFilterOptions, TradeFilters } from '@/lib/tradeQueries';
 import { useAccount } from '@/components/providers/AccountContext';
 
-// Query keys 常量
+// Query keys
 export const tradeQueryKeys = {
     all: ['trades'] as const,
     list: (filters?: TradeFilters) => ['trades', 'list', filters] as const,
@@ -11,20 +11,18 @@ export const tradeQueryKeys = {
 };
 
 /**
- * 获取所有交易数据的 Hook
- * 使用 TanStack Query 缓存，避免重复请求
+ * All trades, cached by TanStack Query to avoid duplicate requests
  */
 export function useTrades(filters?: TradeFilters) {
     return useQuery({
         queryKey: tradeQueryKeys.list(filters),
         queryFn: () => fetchTrades(filters),
-        staleTime: 5 * 60 * 1000, // 5 分钟内视为新鲜数据
+        staleTime: 5 * 60 * 1000, // fresh for 5 minutes
     });
 }
 
 /**
- * 获取当前账户的交易数据
- * 自动使用 AccountContext 中的当前账户进行过滤
+ * Trades for the current account from AccountContext
  */
 export function useTradesForCurrentAccount(additionalFilters?: Omit<TradeFilters, 'accountId'>) {
     const { currentAccount, isLoading: accountLoading } = useAccount();
@@ -50,7 +48,7 @@ export function useTradesForCurrentAccount(additionalFilters?: Omit<TradeFilters
 }
 
 /**
- * 获取过滤器选项 (symbols, setupTypes)
+ * Filter options (symbols, setup types)
  */
 export function useFilterOptions() {
     const { currentAccount } = useAccount();
@@ -58,12 +56,12 @@ export function useFilterOptions() {
     return useQuery({
         queryKey: tradeQueryKeys.filterOptions(currentAccount?.id),
         queryFn: fetchFilterOptions,
-        staleTime: 10 * 60 * 1000, // 10 分钟 - 过滤器选项变化较少
+        staleTime: 10 * 60 * 1000, // 10 minutes; filter options rarely change
     });
 }
 
 /**
- * 使交易数据缓存失效 (用于导入新数据后)
+ * Invalidate cached trades (e.g. after an import)
  */
 export function useInvalidateTrades() {
     const queryClient = useQueryClient();

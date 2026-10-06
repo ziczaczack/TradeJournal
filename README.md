@@ -18,6 +18,8 @@ A comprehensive, full-stack trading journaling application designed to help trad
 - **Performance Backtesting**: Test strategies against historical performance and manage backtest logs directly in the app.
 - **Multimedia Journaling**: Upload and store annotated chart screenshots for each executed trade (powered by Supabase Storage and client-side image compression).
 - **Multiple Accounts**: Seamlessly manage and toggle between various trading accounts (e.g., Funded, Evaluations, Personal).
+- **Daily Journal**: Review each trading day on one page — write up every trade in a Full or Basic format built from your own templates, plus a day note. Calendar days link straight to their journal entry.
+- **Mistake Tags**: Tag trades with your own mistakes (e.g. FOMO entry, moved stop) and see in Analytics what each mistake has cost you compared with your clean trades.
 - **Share Cards**: Share a trade or playbook setup as a PNG or a revocable public link — show results in points, $, or % of account; account details are never included.
 
 > **Note:** An Economic Calendar (red-folder news events) is scaffolded in the codebase but currently **disabled** — it's gated behind the `ECONOMIC_CALENDAR_ENABLED` flag in `src/lib/economicCalendarQueries.ts` pending a data provider that supports historical date ranges.
@@ -25,7 +27,7 @@ A comprehensive, full-stack trading journaling application designed to help trad
 ## 🛠️ Tech Stack
 
 ### Core
-- **Framework:** Next.js 15+ (App Router)
+- **Framework:** Next.js 16 (App Router)
 - **Language:** TypeScript
 - **UI Library:** React 19
 
@@ -37,7 +39,7 @@ A comprehensive, full-stack trading journaling application designed to help trad
 ### State & Data Handling
 - **Database & Authentication:** Supabase (PostgreSQL with RLS policies configured)
 - **Data Fetching:** TanStack React Query v5
-- **Global State:** Zustand
+- **Testing:** Vitest, with lint, typecheck, tests and build run in GitHub Actions CI
 - **Market Data/Parsing:** PapaParse (CSV), Yahoo Finance API
 
 ## ⚙️ Getting Started

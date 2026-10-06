@@ -18,7 +18,7 @@ export default function HistoryPage() {
     const [selectedTrade, setSelectedTrade] = useState<Trade | null>(null);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-    // 使用 TanStack Query 获取数据 (自动按账户过滤)
+    // Trades for the current account, cached by TanStack Query
     const { data: trades = [], isLoading: isLoadingTrades, error: tradesError, refetch } = useTradesForCurrentAccount();
     const { data: filterOptions, isLoading: isLoadingFilters } = useFilterOptions();
     const invalidateTrades = useInvalidateTrades();
@@ -26,7 +26,6 @@ export default function HistoryPage() {
     const isLoading = isLoadingTrades || isLoadingFilters;
     const error = tradesError ? 'Failed to load trades. Please check your Supabase connection.' : null;
 
-    // 使用 useMemo 缓存统计计算
     const stats = useMemo<TradeStats | null>(() => {
         if (trades.length === 0) return null;
         return calculateStats(trades);
@@ -41,7 +40,7 @@ export default function HistoryPage() {
     };
 
     const handleUpdateTrade = (updatedTrade: Trade) => {
-        // 使缓存失效，触发重新获取
+        // Invalidate the cache to refetch
         invalidateTrades();
         setSelectedTrade(updatedTrade);
     };

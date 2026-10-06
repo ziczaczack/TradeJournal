@@ -28,7 +28,7 @@ import { fetchPlaybookSetups } from '@/lib/playbookQueries';
 import { TrendingDown, Scale, LineChart, BarChart3, Brain, TableProperties, Loader2, Download, Grid3X3, BookOpen } from 'lucide-react';
 import { MistakeAnalysis } from '@/components/analytics/MistakeAnalysis';
 
-// 空状态默认值
+// Defaults for the empty state
 const DEFAULT_STATS = {
     totalNetPnL: 0,
     winRate: 0,
@@ -42,18 +42,17 @@ const DEFAULT_STATS = {
 };
 
 export default function AnalyticsPage() {
-    // 使用 TanStack Query 获取数据 (自动按账户过滤)
+    // Trades for the current account, cached by TanStack Query
     const { data: trades = [], isLoading, error: queryError } = useTradesForCurrentAccount();
     const error = queryError ? 'Failed to load analytics data. Please check your Supabase connection.' : null;
 
-    // 使用计算降级策略 - 大数据量时延迟计算
+    // Large datasets are computed in a transition so the page stays responsive
     const { result: stats, isComputing: isComputingStats } = useComputeWithDegradation(
         trades,
         calculateAnalyticsStats,
         DEFAULT_STATS
     );
 
-    // 图表数据使用 useMemo 缓存
     const equityCurveData = useMemo(
         () => generateEquityCurveData(trades),
         [trades]
@@ -125,7 +124,7 @@ export default function AnalyticsPage() {
         URL.revokeObjectURL(url);
     }, [trades]);
 
-    // 显示计算中状态
+    // Still computing stats for a large dataset
     const showComputingOverlay = isComputingStats && trades.length > 2000;
 
     return (

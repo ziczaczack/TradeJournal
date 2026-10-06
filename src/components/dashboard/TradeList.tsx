@@ -21,11 +21,11 @@ interface TradeListProps {
     selectedTradeId?: string;
 }
 
-// 虚拟化阈值：超过此数量启用虚拟滚动
+// Virtualize the list above this many trades
 const VIRTUALIZATION_THRESHOLD = 100;
-// 预估行高 (px)
+// Estimated row height (px)
 const ESTIMATED_ROW_HEIGHT = 72;
-// 列表最大高度 (px)
+// Max list height (px)
 const MAX_LIST_HEIGHT = 600;
 
 export function TradeList({
@@ -51,15 +51,13 @@ export function TradeList({
         });
     }, [trades, symbolFilter, setupTypeFilter]);
 
-    // 是否需要虚拟化
     const shouldVirtualize = filteredTrades.length > VIRTUALIZATION_THRESHOLD;
 
-    // 虚拟化配置
     const virtualizer = useVirtualizer({
         count: filteredTrades.length,
         getScrollElement: () => parentRef.current,
         estimateSize: () => ESTIMATED_ROW_HEIGHT,
-        overscan: 5, // 预渲染 5 个额外项以提升滚动体验
+        overscan: 5, // render 5 extra rows for smoother scrolling
     });
 
     return (
@@ -114,7 +112,7 @@ export function TradeList({
                     <p>No trades found</p>
                 </div>
             ) : shouldVirtualize ? (
-                /* 虚拟化列表 - 大数据量 */
+                /* Virtualized list for large datasets */
                 <div
                     ref={parentRef}
                     className="overflow-auto"
@@ -152,7 +150,7 @@ export function TradeList({
                     </div>
                 </div>
             ) : (
-                /* 常规列表 - 小数据量 */
+                /* Plain list for small datasets */
                 <div className="space-y-2">
                     {filteredTrades.map((trade, index) => (
                         <TradeListItem

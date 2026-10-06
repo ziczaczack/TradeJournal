@@ -13,9 +13,9 @@ export function QueryProvider({ children }: QueryProviderProps) {
             new QueryClient({
                 defaultOptions: {
                     queries: {
-                        staleTime: 5 * 60 * 1000,  // 5 分钟内数据视为新鲜，不重新获取
-                        gcTime: 10 * 60 * 1000,    // 10 分钟后垃圾回收未使用的 queries
-                        refetchOnWindowFocus: false, // 禁止窗口聚焦时自动刷新
+                        staleTime: 5 * 60 * 1000,  // data stays fresh for 5 minutes
+                        gcTime: 10 * 60 * 1000,    // drop unused queries after 10 minutes
+                        refetchOnWindowFocus: false, // no refetch on window focus
                     },
                 },
             })

@@ -90,7 +90,7 @@ function parseTimestamp(timestampStr: string | null | undefined): string | null 
 
     const [, month, day, year, hours, minutes, seconds] = match;
 
-    // 使用 Date.UTC 确保时间戳以 UTC 存储，不受客户端时区影响
+    // Date.UTC stores timestamps in UTC regardless of the client's time zone
     const utcMillis = Date.UTC(
         parseInt(year, 10),
         parseInt(month, 10) - 1,

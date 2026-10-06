@@ -27,6 +27,7 @@ import {
     RefreshCw,
 } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 // ============================================
 // Checklist Item Component
@@ -254,8 +255,8 @@ export function PreTradeChecklist({ onComplete, showEditor = true }: PreTradeChe
                 data.forEach(t => { initialStates[t.id] = false; });
                 setCheckedStates(initialStates);
             }
-        } catch (error) {
-            console.error('Error loading templates:', error);
+        } catch {
+            toast.error("Couldn’t load your checklist.");
         } finally {
             setIsLoading(false);
         }
@@ -330,8 +331,8 @@ export function PreTradeChecklist({ onComplete, showEditor = true }: PreTradeChe
             await navigator.clipboard.writeText(text);
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
-        } catch (error) {
-            console.error('Failed to copy:', error);
+        } catch {
+            toast.error("Couldn’t copy to the clipboard.");
         }
     };
 
@@ -352,8 +353,8 @@ export function PreTradeChecklist({ onComplete, showEditor = true }: PreTradeChe
             });
 
             onComplete?.({ checkedItems, allPassed });
-        } catch (error) {
-            console.error('Error saving checklist log:', error);
+        } catch {
+            toast.error("Couldn’t save the checklist. Try again.");
         } finally {
             setIsSaving(false);
         }

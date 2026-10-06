@@ -20,6 +20,14 @@ import {
     Share2,
 } from 'lucide-react';
 import { ShareDialog } from '@/components/share/ShareDialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { useTradesForCurrentAccount } from '@/hooks/useTrades';
 import {
     PlaybookSetup,
@@ -30,6 +38,7 @@ import {
 } from '@/lib/playbookQueries';
 import { ScreenshotUploader } from '@/components/ScreenshotUploader';
 import { useAccount } from '@/components/providers/AccountContext';
+import { toast } from 'sonner';
 
 export default function PlaybookPage() {
     const { currentAccount } = useAccount();
@@ -39,6 +48,8 @@ export default function PlaybookPage() {
     const [selectedSetup, setSelectedSetup] = useState<PlaybookSetup | null>(null);
     const [showForm, setShowForm] = useState(false);
     const [shareSetup, setShareSetup] = useState<PlaybookSetup | null>(null);
+    const [deletingSetup, setDeletingSetup] = useState<PlaybookSetup | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
     const { data: accountTrades = [] } = useTradesForCurrentAccount();
 
     // Form state
@@ -58,8 +69,8 @@ export default function PlaybookPage() {
             setIsLoading(true);
             const data = await fetchPlaybookSetups();
             setSetups(data);
-        } catch (err) {
-            console.error('Failed to load setups:', err);
+        } catch {
+            toast.error("Couldn’t load your playbook setups.");
         } finally {
             setIsLoading(false);
         }
@@ -77,7 +88,7 @@ export default function PlaybookPage() {
         if (!name.trim()) return;
 
         if (!currentAccount?.user_id) {
-            console.error('No active session or account available.');
+            toast.error("No account selected. Sign in again or pick an account.");
             return;
         }
 
@@ -100,8 +111,8 @@ export default function PlaybookPage() {
                 setSetups([created, ...setups]);
             }
             resetForm();
-        } catch (err) {
-            console.error('Failed to save setup:', err);
+        } catch {
+            toast.error("Couldn’t save the setup. Your changes are still in the form.");
         } finally {
             setIsCreating(false);
         }
@@ -129,13 +140,17 @@ export default function PlaybookPage() {
         setShowForm(true);
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Are you sure you want to delete this setup?')) return;
+    const handleDelete = async () => {
+        if (!deletingSetup) return;
         try {
-            await deletePlaybookSetup(id);
-            setSetups(setups.filter(s => s.id !== id));
-        } catch (err) {
-            console.error('Failed to delete setup:', err);
+            setIsDeleting(true);
+            await deletePlaybookSetup(deletingSetup.id);
+            setSetups(setups.filter(s => s.id !== deletingSetup.id));
+            setDeletingSetup(null);
+        } catch {
+            toast.error("Couldn’t delete the setup. Try again.");
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -333,7 +348,7 @@ export default function PlaybookPage() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    onClick={() => handleDelete(setup.id)}
+                                                    onClick={() => setDeletingSetup(setup)}
                                                     className="w-8 h-8 text-muted-foreground hover:text-rose-400"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
@@ -361,6 +376,33 @@ export default function PlaybookPage() {
                     </div>
                 )}
             </div>
+            <Dialog open={!!deletingSetup} onOpenChange={(open) => !open && setDeletingSetup(null)}>
+                <DialogContent className="bg-zinc-900 border-zinc-700">
+                    <DialogHeader>
+                        <DialogTitle className="text-white">Delete Setup</DialogTitle>
+                        <DialogDescription className="text-zinc-400">
+                            Are you sure you want to delete &ldquo;{deletingSetup?.name}&rdquo;?
+                            This action cannot be undone.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button
+                            variant="outline"
+                            onClick={() => setDeletingSetup(null)}
+                            className="border-zinc-700"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleDelete}
+                            disabled={isDeleting}
+                            className="bg-red-600 hover:bg-red-500"
+                        >
+                            {isDeleting ? 'Deleting...' : 'Delete Setup'}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
             {shareSetup && (
                 <ShareDialog
                     open

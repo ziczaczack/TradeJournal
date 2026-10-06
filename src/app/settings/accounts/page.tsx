@@ -37,6 +37,7 @@ import {
     deleteAccount,
     setDefaultAccount,
 } from '@/lib/accountQueries';
+import { toast } from 'sonner';
 
 export default function AccountSettingsPage() {
     const { accounts, refreshAccounts, isLoading } = useAccount();
@@ -136,8 +137,8 @@ export default function AccountSettingsPage() {
 
             await setDefaultAccount(user.id, account.id);
             await refreshAccounts();
-        } catch (err) {
-            console.error('Failed to set default:', err);
+        } catch {
+            toast.error("Couldn’t set the default account. Try again.");
         }
     };
 

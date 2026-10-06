@@ -61,12 +61,7 @@ export default function Home() {
             <div className="animate-pulse text-zinc-400">Checking session...</div>
           </div>
         ) : user ? (
-          <FileUploader
-            userId={user.id}
-            onUploadComplete={(result) => {
-              console.log('Upload complete:', result);
-            }}
-          />
+          <FileUploader userId={user.id} />
         ) : (
           <div className="glass-card p-12 text-center space-y-8 relative overflow-hidden group">
             {/* Animated background decoration */}

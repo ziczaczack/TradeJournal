@@ -32,6 +32,7 @@ import { PlaybookSetup, fetchPlaybookSetups } from '@/lib/playbookQueries';
 import dynamic from 'next/dynamic';
 import { Share2 } from 'lucide-react';
 import { ShareDialog } from '@/components/share/ShareDialog';
+import { toast } from 'sonner';
 
 // Load chart client-side only (uses browser APIs)
 const TradingChart = dynamic(
@@ -108,8 +109,8 @@ export function TradeDetailSheet({
             try {
                 const data = await fetchPlaybookSetups();
                 setPlaybookSetups(data);
-            } catch (err) {
-                console.error('Failed to load playbook setups:', err);
+            } catch {
+                toast.error("Couldn’t load your playbook setups.");
             }
         };
         loadSetups();

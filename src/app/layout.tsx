@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AccountProvider } from "@/components/providers/AccountContext";
 import { MotionProvider } from "@/components/providers/MotionProvider";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,7 +17,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trading Journal Pro",
+  title: {
+    default: "Trading Journal Pro",
+    template: "%s · Trading Journal Pro",
+  },
   description: "Professional trading journal for serious traders - track, analyze, and improve your trading performance",
 };
 
@@ -37,6 +41,7 @@ export default function RootLayout({
             </AccountProvider>
           </QueryProvider>
         </MotionProvider>
+        <Toaster />
       </body>
     </html>
   );

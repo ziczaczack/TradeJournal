@@ -27,6 +27,7 @@ import {
 import { fetchPlaybookSetups } from '@/lib/playbookQueries';
 import { TrendingDown, Scale, LineChart, BarChart3, Brain, TableProperties, Loader2, Download, Grid3X3, BookOpen } from 'lucide-react';
 import { MistakeAnalysis } from '@/components/analytics/MistakeAnalysis';
+import { toast } from 'sonner';
 
 // Defaults for the empty state
 const DEFAULT_STATS = {
@@ -96,7 +97,7 @@ export default function AnalyticsPage() {
                 };
             });
             setPlaybookComparison(comparison.filter(c => c.tradeCount > 0 || true)); // show all setups
-        }).catch(console.error);
+        }).catch(() => toast.error("Couldn’t load the playbook comparison."));
     }, [trades]);
 
     // CSV Export

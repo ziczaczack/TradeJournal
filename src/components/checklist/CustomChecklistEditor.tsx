@@ -41,6 +41,7 @@ import {
     ArrowLeft,
 } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 // ============================================
 // Draggable Item Component
@@ -247,8 +248,8 @@ export function CustomChecklistEditor() {
             setIsLoading(true);
             const data = await fetchChecklistTemplates(currentAccount?.id);
             setTemplates(data);
-        } catch (error) {
-            console.error('Error loading templates:', error);
+        } catch {
+            toast.error("Couldn’t load your checklist.");
         } finally {
             setIsLoading(false);
         }
@@ -281,8 +282,8 @@ export function CustomChecklistEditor() {
                 await reorderTemplates(ids, category);
             }
             setHasChanges(false);
-        } catch (error) {
-            console.error('Error saving order:', error);
+        } catch {
+            toast.error("Couldn’t save the new order. Try again.");
         } finally {
             setIsSaving(false);
         }
@@ -325,8 +326,8 @@ export function CustomChecklistEditor() {
 
             await loadTemplates();
             setEditDialogOpen(false);
-        } catch (error) {
-            console.error('Error saving item:', error);
+        } catch {
+            toast.error("Couldn’t save the item. Try again.");
         } finally {
             setIsSaving(false);
         }
@@ -346,8 +347,8 @@ export function CustomChecklistEditor() {
             await deleteChecklistTemplate(selectedTemplate.id);
             await loadTemplates();
             setDeleteDialogOpen(false);
-        } catch (error) {
-            console.error('Error deleting item:', error);
+        } catch {
+            toast.error("Couldn’t delete the item. Try again.");
         } finally {
             setIsDeleting(false);
         }

@@ -36,6 +36,7 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianG
 import { ScreenshotUploader } from '@/components/ScreenshotUploader';
 import { useAccount } from '@/components/providers/AccountContext';
 import { CHART } from '@/lib/chartTheme';
+import { toast } from 'sonner';
 
 // ============================================
 // Session List View
@@ -219,8 +220,8 @@ function SessionDetail({
             setIsLoading(true);
             const data = await fetchBacktestTrades(session.id);
             setTrades(data);
-        } catch (err) {
-            console.error('Failed to load backtest trades:', err);
+        } catch {
+            toast.error("Couldn’t load backtest trades.");
         } finally {
             setIsLoading(false);
         }
@@ -228,7 +229,7 @@ function SessionDetail({
 
     useEffect(() => {
         loadTrades();
-        fetchPlaybookSetups().then(setPlaybookSetups).catch(console.error);
+        fetchPlaybookSetups().then(setPlaybookSetups).catch(() => toast.error("Couldn’t load your playbook setups."));
     }, [loadTrades]);
 
     // ---- Stats ----
@@ -279,8 +280,8 @@ function SessionDetail({
             setRrr('');
             setSymbol('');
             setScreenshotUrl(null);
-        } catch (err) {
-            console.error('Failed to add trade:', err);
+        } catch {
+            toast.error("Couldn’t add the trade. Try again.");
         } finally {
             setIsAdding(false);
         }
@@ -290,8 +291,8 @@ function SessionDetail({
         try {
             await deleteBacktestTrade(id);
             setTrades(prev => prev.filter(t => t.id !== id));
-        } catch (err) {
-            console.error('Failed to delete trade:', err);
+        } catch {
+            toast.error("Couldn’t delete the trade. Try again.");
         }
     };
 
@@ -541,8 +542,8 @@ export default function BacktestPage() {
             setIsLoading(true);
             const data = await fetchBacktestSessions();
             setSessions(data);
-        } catch (err) {
-            console.error('Failed to load sessions:', err);
+        } catch {
+            toast.error("Couldn’t load backtest sessions.");
         } finally {
             setIsLoading(false);
         }
@@ -553,8 +554,8 @@ export default function BacktestPage() {
             setIsCreating(true);
             const session = await createBacktestSession({ name, description, initial_balance: balance });
             setSessions(prev => [session, ...prev]);
-        } catch (err) {
-            console.error('Failed to create session:', err);
+        } catch {
+            toast.error("Couldn’t create the session. Try again.");
         } finally {
             setIsCreating(false);
         }
@@ -564,8 +565,8 @@ export default function BacktestPage() {
         try {
             await deleteBacktestSession(id);
             setSessions(prev => prev.filter(s => s.id !== id));
-        } catch (err) {
-            console.error('Failed to delete session:', err);
+        } catch {
+            toast.error("Couldn’t delete the session. Try again.");
         }
     };
 
